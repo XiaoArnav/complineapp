@@ -1,0 +1,2 @@
+# Compline Gothic Wind-Down Companion
+# Zero external pip packages required - runs entirely on Python Standard Library

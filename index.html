@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+  <meta name="theme-color" content="#08060a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="Classical Gothic Bedside Sleep &amp; Wind-Down Companion for Hacktoberfest 2026. Powered by Gemma 2 and the interactive Abbey Phonograph player.">
+  <title>Compline — Classical Gothic Wind-Down Companion</title>
+
+  <!-- Preconnect to Google Fonts for zero-waterfall instant streaming -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
+
+  <link rel="stylesheet" href="/static/css/gothic.css">
+  <link rel="stylesheet" href="/static/css/candle-intro.css">
+  <link rel="stylesheet" href="/static/css/tarot.css">
+  <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       3D INTERACTIVE CELESTIAL STELLAR MAP
+       Live 3D cosmos, constellations, armillary rings, & mouse orbit
+       ══════════════════════════════════════════════════════════= -->
+  <canvas id="stellarMapCanvas" class="stellar-map-canvas"></canvas>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CINEMATIC INTRO OVERLAY
+       Pitch-black screen → match strike → candle lights → site reveals
+       ══════════════════════════════════════════════════════════= -->
+  <div id="introOverlay">
+    <div class="intro-candle-wrap">
+
+      <!-- Ambient halo glow (expands to fill darkness) -->
+      <div class="intro-halo"></div>
+
+      <!-- Match-strike spark -->
+      <svg class="match-spark" width="28" height="28" viewBox="0 0 28 28">
+        <g stroke="#fff8a0" stroke-linecap="round" stroke-width="1.5" opacity="0.9">
+          <line x1="14" y1="2"  x2="14" y2="8"/>
+          <line x1="14" y1="20" x2="14" y2="26"/>
+          <line x1="2"  y1="14" x2="8"  y2="14"/>
+          <line x1="20" y1="14" x2="26" y2="14"/>
+          <line x1="5"  y1="5"  x2="9"  y2="9"/>
+          <line x1="19" y1="19" x2="23" y2="23"/>
+          <line x1="5"  y1="23" x2="9"  y2="19"/>
+          <line x1="19" y1="9"  x2="23" y2="5"/>
+        </g>
+      </svg>
+
+      <!-- The intro candle (Classical Gothic wrought-iron & aged beeswax) -->
+      <svg class="intro-candle-svg" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 120 230" width="120" height="230"
+           style="overflow:visible">
+        <defs>
+          <!-- Intro flame glow -->
+          <radialGradient id="iFlameGlow" cx="50%" cy="60%" r="50%">
+            <stop offset="0%"   stop-color="#fff6c0"/>
+            <stop offset="25%"  stop-color="#ffb020" stop-opacity="0.95"/>
+            <stop offset="60%"  stop-color="#c83200" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#5a0000"  stop-opacity="0"/>
+          </radialGradient>
+          <!-- Dark wrought iron -->
+          <linearGradient id="iIronG" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#1a1510"/>
+            <stop offset="30%"  stop-color="#3d3020"/>
+            <stop offset="60%"  stop-color="#554535"/>
+            <stop offset="100%" stop-color="#1a1510"/>
+          </linearGradient>
+          <linearGradient id="iIronGV" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stop-color="#403325"/>
+            <stop offset="50%"  stop-color="#2a2018"/>
+            <stop offset="100%" stop-color="#0e0b07"/>
+          </linearGradient>
+          <!-- Aged dark beeswax -->
+          <linearGradient id="iWaxG" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#a8946a"/>
+            <stop offset="40%"  stop-color="#d4ba82"/>
+            <stop offset="70%"  stop-color="#c4a870"/>
+            <stop offset="100%" stop-color="#8c7448"/>
+          </linearGradient>
+          <!-- Wax drip -->
+          <linearGradient id="iDripG" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stop-color="#c4a870"/>
+            <stop offset="100%" stop-color="#a08050" stop-opacity="0.4"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ══════════════════════════════
+             GOTHIC IRON CANDLESTICK
+             ══════════════════════════════ -->
+
+        <!-- Scalloped drip-pan / bobeche -->
+        <ellipse cx="60" cy="162" rx="28" ry="7" fill="url(#iIronG)" stroke="#0a0806" stroke-width="1"/>
+        <path d="M 33,162 Q 36,156 40,162 Q 44,156 48,162 Q 52,156 56,162 Q 60,156 64,162 Q 68,156 72,162 Q 76,156 80,162 Q 84,156 87,162"
+              fill="none" stroke="#0a0806" stroke-width="1.2"/>
+
+        <!-- Tapered fluted stem -->
+        <path d="M 55,162 L 53,195 L 67,195 L 65,162 Z" fill="url(#iIronGV)"/>
+        <path d="M 55,162 L 54,195" fill="none" stroke="#5a4a35" stroke-width="0.6" opacity="0.7"/>
+        <path d="M 65,162 L 66,195" fill="none" stroke="#5a4a35" stroke-width="0.6" opacity="0.7"/>
+
+        <!-- Gothic trefoil base with pointed feet -->
+        <ellipse cx="60" cy="196" rx="34" ry="9" fill="url(#iIronG)" stroke="#0a0806" stroke-width="1"/>
+        <path d="M 30,196 Q 38,188 46,196" fill="none" stroke="#0a0806" stroke-width="1.5"/>
+        <path d="M 74,196 Q 82,188 90,196" fill="none" stroke="#0a0806" stroke-width="1.5"/>
+        <path d="M 32,196 L 28,206 L 36,200 Z" fill="url(#iIronGV)" stroke="#0a0806" stroke-width="0.5"/>
+        <path d="M 46,199 L 44,208 L 52,202 Z" fill="url(#iIronGV)" stroke="#0a0806" stroke-width="0.5"/>
+        <path d="M 74,199 L 76,208 L 68,202 Z" fill="url(#iIronGV)" stroke="#0a0806" stroke-width="0.5"/>
+        <path d="M 88,196 L 92,206 L 84,200 Z" fill="url(#iIronGV)" stroke="#0a0806" stroke-width="0.5"/>
+        <ellipse cx="60" cy="194" rx="30" ry="5" fill="none" stroke="#6a5540" stroke-width="0.8" opacity="0.5"/>
+
+        <!-- ══════════════════════════════
+             BEESWAX CANDLE BODY
+             ══════════════════════════════ -->
+
+        <!-- Wax pillar -->
+        <rect x="47" y="80" width="26" height="82" fill="url(#iWaxG)" rx="2"/>
+        <rect x="47" y="80" width="5" height="82" fill="#7a6040" opacity="0.35" rx="2"/>
+        <rect x="66" y="80" width="7" height="82" fill="#c4a870" opacity="0.18" rx="2"/>
+
+        <!-- Wax drips -->
+        <path d="M 47,86 C 44,95 46,108 45,115 C 46,108 48,96 49,86 Z"
+              fill="url(#iDripG)" opacity="0.8"/>
+        <path d="M 68,90 C 71,102 70,116 71,124 C 70,116 68,102 67,90 Z"
+              fill="url(#iDripG)" opacity="0.7"/>
+        <path d="M 55,82 C 53,89 54,95 53,100 C 54,95 55,88 56,82 Z"
+              fill="url(#iDripG)" opacity="0.5"/>
+
+        <!-- Melted wax top rim -->
+        <ellipse cx="60" cy="80" rx="13" ry="4" fill="#c4a870"/>
+        <ellipse cx="60" cy="80" rx="9"  ry="2.5" fill="#d8bc88"/>
+
+        <!-- Cold unlit wick (pure black) -->
+        <path id="introColdWick" d="M 60,80 Q 61,72 59,67"
+              fill="none" stroke="#120c06" stroke-width="2.2" stroke-linecap="round"/>
+
+        <!-- ══════════════════════════════
+             FLAME (Revealed ONLY upon match strike)
+             Strictly hidden initially with SVG attribute display="none"
+             ══════════════════════════════ -->
+        <g id="introFlame" class="intro-flame" display="none"
+           style="display:none !important; opacity:0 !important; visibility:hidden !important;">
+          <!-- Wick ember glow (only visible when lit) -->
+          <circle cx="59.5" cy="67" r="2" fill="#ff8c00" opacity="0.8"/>
+          <!-- Blue combustion base -->
+          <ellipse cx="59.5" cy="67" rx="5" ry="3.5" fill="#2040a0" opacity="0.75"/>
+          <!-- Outer flame teardrop -->
+          <path d="M 59.5,67 C 51,57 50,38 60,24 C 70,38 69,57 59.5,67 Z"
+                fill="url(#iFlameGlow)"/>
+          <!-- Mid warm core -->
+          <path d="M 59.5,65 C 54,57 54,44 60,32 C 66,44 66,57 59.5,65 Z"
+                fill="#ffcc44" opacity="0.75"/>
+          <!-- Inner bright core -->
+          <path d="M 59.5,63 C 56,57 57,47 60,38 C 63,47 64,57 59.5,63 Z"
+                fill="#ffffff" opacity="0.85"/>
+          <!-- Hot tip -->
+          <circle cx="60" cy="26" r="2.5" fill="#fff9e0"/>
+        </g>
+      </svg><!-- /intro candle svg -->
+
+    </div><!-- /intro-candle-wrap -->
+
+    <p class="intro-label">Nocturne of the Abbey</p>
+    <p style="font-size:11px;letter-spacing:2.5px;color:rgba(212,175,55,0.7);text-transform:uppercase;margin-top:6px;font-family:var(--font-display);user-select:none;text-align:center;">
+      ✦ Drag to Orbit 3D Cosmos • Tap Candle to Light ✦
+    </p>
+  </div><!-- /introOverlay -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN SITE CONTENT (hidden until intro completes)
+       ══════════════════════════════════════════════════════════= -->
+  <div id="mainContent" style="opacity:0">
+
+    <!-- Atmospheric Floating Dust Motes -->
+    <div class="gothic-particles"></div>
+
+    <div class="cathedral-container">
+
+      <!-- Cathedral Header & Stained Glass Portal -->
+      <header class="cathedral-header">
+        <!-- Interactive Gothic Rose Wheel of Fate -->
+        <div class="rose-window-wrapper" title="Click to spin the WHEEL OF FATE">
+          <div class="wheel-pointer">
+            <svg viewBox="0 0 24 24"><polygon points="12,22 4,6 20,6" /></svg>
+          </div>
+          <img id="roseWheel" class="rose-wheel-interactive" src="/static/assets/rose-window.svg" alt="Stained Glass Rose Window" width="100%" height="100%">
+          <div class="wheel-spin-hint">⚙️ WHEEL OF FATE</div>
+        </div>
+        <h1 class="cathedral-title">Compline</h1>
+        <p class="cathedral-subtitle">Nocturne of the Abbey • International Sloth Day</p>
+
+        <div class="gothic-divider"><span>✠</span></div>
+
+        <div id="modelStatus" class="model-badge">
+          <span class="dot"></span> Connecting to Scriptorium...
+        </div>
+
+        <!-- Header Actions: Grimoire, Settings & Celestial Astrolabe -->
+        <div class="header-actions-group" style="margin-top: 14px;">
+          <button id="btnOpenGrimoire" class="header-action-btn" title="View your personal Scriptorium Grimoire">
+            <span>📖</span> Grimoire <span id="grimoireCountBadge" class="grimoire-badge">0</span>
+          </button>
+          <button id="btnOpenSettings" class="header-action-btn" title="Configure Reliquary, Gemma & Voice">
+            <span>⚙️</span> Reliquary Settings
+          </button>
+
+          <!-- 3D Celestial Astrolabe HUD Toggle -->
+          <div style="position:relative;display:inline-block;">
+            <button id="btnToggleStellarHUD" class="header-action-btn stellar-hud-button" title="Interactive 3D Astrolabe & Stellar Map">
+              <span id="stellarCoordsLabel" class="stellar-hud-coords">✦ RA 19h 50m • DEC +28°</span>
+            </button>
+            <div id="stellarPopover" class="stellar-controls-popover">
+              <div style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;letter-spacing:1.5px;">
+                ✠ CELESTIAL ASTROLABE
+              </div>
+              <div class="stellar-control-row">
+                <span class="stellar-control-label">Constellations</span>
+                <input type="checkbox" id="chkConstellations" checked>
+              </div>
+              <div class="stellar-control-row">
+                <span class="stellar-control-label">Astrolabe Rings</span>
+                <input type="checkbox" id="chkAstrolabeRings" checked>
+              </div>
+              <div class="stellar-control-row">
+                <span class="stellar-control-label">Diurnal Auto-Drift</span>
+                <input type="checkbox" id="chkAutoDrift" checked>
+              </div>
+              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:4px;width:100%;">
+                ⭐ Reset to Polaris (North Star)
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scriptorium Central Altar -->
+      <main class="scriptorium-chamber">
+
+        <!-- ── Left Column: Tome of Slumber ── -->
+        <section class="tome-card">
+          <div class="lancet-arch-cap">
+            <svg viewBox="0 0 60 30">
+              <path d="M 0,30 Q 30,0 60,30" />
+              <circle cx="30" cy="18" r="4" fill="var(--gold-antique)" />
+            </svg>
+          </div>
+
+          <div class="tome-header">
+            <h2 id="tomeTitle" class="tome-title">The Sloth of the Cloister Rafters</h2>
+            <p id="tomeMeta" class="tome-meta">Chapter I • Hypnagogic Decrescendo</p>
+          </div>
+
+          <article id="tomeBody" class="tome-body">
+            <p><span class="drop-cap">H</span>igh above the stone flagstones of Saint Jerome's
+            Abbey, among the vaulted oak rafters where the dust of centuries rests undisturbed,
+            dwells Brother Silo…</p>
+          </article>
+
+          <div class="tome-narrator-bar">
+            <div class="narration-controls">
+              <button id="btnSoundscape" class="btn-gothic" style="flex:1;">
+                <span>📻</span> Abbey Phonograph (Put Pin on Disc)
+              </button>
+            </div>
+            <div style="font-size:13px;font-style:italic;color:var(--text-muted);">
+              Slow Cadence • Hypnagogic Rhythm
+            </div>
+          </div>
+
+          <div class="tome-actions-row">
+            <button id="btnBookmark" class="btn-tome-action" title="Inscribe current chapter into your Grimoire">
+              <span id="bookmarkIcon">🔖</span> <span id="bookmarkLabel">Inscribe in Grimoire</span>
+            </button>
+          </div>
+
+          <button id="btnSummon" class="btn-sloth-summon">
+            🦥 Drift Into Slumber (New Chapter)
+          </button>
+        </section>
+
+        <!-- ── Right Column: Reliquary ── -->
+        <aside class="reliquary-column">
+
+          <!-- ★ INTERACTIVE BEESWAX CANDLE SHRINE (NOCTURNAL OWL HYBRID) ★ -->
+          <div class="reliquary-card candle-shrine">
+            <div class="reliquary-title">
+              <span>🕯️</span> Nocturnal Owl Shrine
+            </div>
+
+            <!-- Gothic Candle — Nocturnal Owl Sculpture + Live-Flame Hybrid -->
+            <div id="candleWrapper" class="owl-candle-wrapper"
+                 title="Click to blow out / relight the candle">
+              <div class="owl-artwork-frame">
+                <img src="/static/assets/owl-candle-concept.jpg"
+                     alt="Gothic Nocturnal Owl Candle Holder"
+                     class="owl-sculpture-img"
+                     loading="eager" />
+
+                <svg id="mainCandle" class="owl-flame-overlay"
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 100 134">
+                  <defs>
+                    <!-- Flame glow -->
+                    <radialGradient id="flameGlowLive" cx="50%" cy="60%" r="50%">
+                      <stop offset="0%"   stop-color="#fff6c0"/>
+                      <stop offset="25%"  stop-color="#ffb020" stop-opacity="0.95"/>
+                      <stop offset="60%"  stop-color="#c83200" stop-opacity="0.5"/>
+                      <stop offset="100%" stop-color="#5a0000" stop-opacity="0"/>
+                    </radialGradient>
+                    <!-- Halo that lights the room -->
+                    <radialGradient id="haloLive" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"   stop-color="#ffe070" stop-opacity="0.55"/>
+                      <stop offset="50%"  stop-color="#c05000" stop-opacity="0.2"/>
+                      <stop offset="100%" stop-color="#000"    stop-opacity="0"/>
+                    </radialGradient>
+                    <!-- Snuffer shadow mask when blown out -->
+                    <radialGradient id="snufferGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"   stop-color="#0e0a12" stop-opacity="0.98"/>
+                      <stop offset="55%"  stop-color="#140f1a" stop-opacity="0.92"/>
+                      <stop offset="85%"  stop-color="#1a1420" stop-opacity="0.65"/>
+                      <stop offset="100%" stop-color="#1a1420" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+
+                  <!-- Ambient room halo -->
+                  <ellipse id="candleHalo" cx="60.3" cy="17" rx="36" ry="30"
+                           fill="url(#haloLive)" opacity="0.9"
+                           style="transition:opacity 1.2s ease; pointer-events:none"/>
+
+                  <!-- Snuffer mask to shadow static flame when unlit -->
+                  <ellipse id="snufferCap" cx="60.3" cy="17" rx="9" ry="12"
+                           fill="url(#snufferGradient)"/>
+
+                  <!-- Wick (lit / dead) -->
+                  <path id="wickLit" d="M 60.3,23 Q 60.8,21 60.3,19"
+                        fill="none" stroke="#1a0f00" stroke-width="1.2"
+                        stroke-linecap="round"/>
+                  <path id="wickDead" d="M 60.3,23 Q 59,21 57.5,20"
+                        fill="none" stroke="#0a0704" stroke-width="1.2"
+                        stroke-linecap="round" opacity="0"/>
+                  <circle id="charTip" cx="57.5" cy="20" r="1.3" fill="#050302" opacity="0"/>
+
+                  <!-- Live animated flame -->
+                  <g id="mainCandleFlame" class="candle-flame-live">
+                    <!-- Blue combustion base -->
+                    <ellipse cx="60.3" cy="22" rx="3.2" ry="2" fill="#2040a0" opacity="0.75"/>
+                    <!-- Outer flame teardrop -->
+                    <path d="M 60.3,22 C 55,16 54,9 60.3,3 C 66,9 65.6,16 60.3,22 Z"
+                          fill="url(#flameGlowLive)"/>
+                    <!-- Mid warm core -->
+                    <path d="M 60.3,21 C 56.5,16 56.5,11 60.3,6 C 64,11 64,16 60.3,21 Z"
+                          fill="#ffcc44" opacity="0.78"/>
+                    <!-- Inner bright core -->
+                    <path d="M 60.3,20 C 58,16 58,12 60.3,8 C 62.5,12 62.5,16 60.3,20 Z"
+                          fill="#ffffff" opacity="0.9"/>
+                    <!-- Hot tip -->
+                    <circle cx="60.3" cy="4.2" r="1.2" fill="#fff9e0"/>
+                  </g>
+
+                  <!-- Smoke wisps -->
+                  <g id="smokeContainer" opacity="0" style="transition:opacity 0.3s ease; pointer-events:none">
+                    <path class="smoke-wisp smoke-wisp-1"
+                          d="M 60.3,22 Q 58,14 60,6 Q 64,-2 58,-10 Q 54,-18 60,-26"
+                          fill="none" stroke="#b0b0b0" stroke-width="2.2"
+                          stroke-linecap="round" opacity="0.6"/>
+                    <path class="smoke-wisp smoke-wisp-2"
+                          d="M 59.5,22 Q 54,13 58,4 Q 62,-5 55,-15 Q 50,-24 57,-34"
+                          fill="none" stroke="#909090" stroke-width="1.6"
+                          stroke-linecap="round" opacity="0.45"/>
+                    <path class="smoke-wisp smoke-wisp-3"
+                          d="M 61,22 Q 66,13 62,4 Q 58,-5 65,-16 Q 70,-26 62,-36"
+                          fill="none" stroke="#c0c0c0" stroke-width="1.2"
+                          stroke-linecap="round" opacity="0.35"/>
+                  </g>
+                </svg>
+              </div><!-- /owl-artwork-frame -->
+            </div><!-- /candleWrapper -->
+
+            <p id="candleStatus" class="candle-status-text">
+              Beeswax flame lit — click to blow it out
+            </p>
+          </div><!-- /candle shrine -->
+
+          <!-- ★ THE ABBEY PHONOGRAPH — ONLY THE CD & THE PIN ★ -->
+          <div class="reliquary-card phonograph-card" id="phonographCard">
+            <div class="reliquary-title phonograph-card-title">
+              <span>📻</span> The Abbey Phonograph
+              <span class="phonograph-status-badge" id="phonographStatusBadge">Pin Off Disc</span>
+            </div>
+
+            <!-- Sacred Track Selector / Vinyl Disc Changer -->
+            <div class="phonograph-tracklist" id="phonographTracklist">
+              <button class="track-tab active" data-track="0" title="Opus I: Abbey Nocturne (Piano &amp; Strings)">
+                <span class="track-disc-icon">💿</span>
+                <span class="track-tab-name">Opus I • Nocturne</span>
+              </button>
+              <button class="track-tab" data-track="1" title="Opus II: Gothic Vespers (Sanctuary Bells &amp; Choir)">
+                <span class="track-disc-icon">💿</span>
+                <span class="track-tab-name">Opus II • Vespers</span>
+              </button>
+            </div>
+
+            <!-- Phonograph Stage with ONLY the CD and the Pin -->
+            <div class="phonograph-stage" id="phonographStage" title="Click CD or Pin to Play / Turn Off">
+              <!-- The CD / Vinyl Disc -->
+              <div class="turntable-platter" id="turntablePlatter" title="Click to Put Pin on Disc or Take it Off">
+                <div class="vinyl-record" id="vinylRecord">
+                  <!-- Micro-Groove Rings on CD -->
+                  <div class="groove-ring r1"></div>
+                  <div class="groove-ring r2"></div>
+                  <div class="groove-ring r3"></div>
+                  <div class="groove-ring r4"></div>
+                  <div class="groove-ring r5"></div>
+                  <!-- Iridescent Glossy Reflection Sheen -->
+                  <div class="vinyl-reflection"></div>
+                  <!-- Center Gothic Disc Label -->
+                  <div class="record-center-label">
+                    <div class="label-cross">✠</div>
+                    <div class="label-title">COMPLINE</div>
+                    <div class="label-sub" id="recordLabelSub">OPUS I • NOCTURNE</div>
+                  </div>
+                  <!-- Center Spindle Pin -->
+                  <div class="record-spindle"></div>
+                </div>
+              </div>
+
+              <!-- The Pin (Tone-Arm & Stylus Needle) -->
+              <div class="tone-arm-assembly" id="toneArmAssembly" title="The Pin — Click to Put on Disc or Take Off">
+                <div class="tone-arm-base">
+                  <div class="tone-arm-counterweight"></div>
+                  <div class="tone-arm-rest-clip"></div>
+                </div>
+                <div class="tone-arm-rod" id="toneArmRod">
+                  <div class="tone-arm-headshell">
+                    <div class="ruby-stylus" id="rubyStylus"></div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /phonograph-stage -->
+
+            <!-- Single Master Play / Turn Off Feature Button -->
+            <button id="btnPinToggle" class="btn-pin-toggle" title="Put Pin on CD to Play, Take Off to Turn Off">
+              <span id="pinBtnIcon">📍</span> <span id="pinBtnLabel">Put Pin on Disc (Play Nocturne)</span>
+            </button>
+          </div><!-- /phonographCard -->
+
+          <!-- Mood Runes -->
+          <div class="reliquary-card">
+            <div class="reliquary-title"><span>📜</span> Sacred Themes</div>
+            <div class="mood-runes-row">
+              <button class="rune-pill active" data-mood="sloth">Brother Silo</button>
+              <button class="rune-pill" data-mood="rain">Rain on Glass</button>
+              <button class="rune-pill" data-mood="stars">Quiet Stars</button>
+              <button class="rune-pill" data-mood="hearth">Castle Hearth</button>
+              <button class="rune-pill" data-mood="herbarium">Lavender Cellar</button>
+            </div>
+            <input type="text" id="moodInput" class="gothic-input"
+                   placeholder="Or whisper your own mood…" value="sloth in cathedral">
+          </div>
+
+        </aside>
+      </main><!-- /scriptorium-chamber -->
+
+      <!-- Footer -->
+      <footer class="cathedral-footer">
+        <div class="gargoyle-sloth-emblem">
+          <img src="/static/assets/gargoyle-sloth.svg" alt="Brother Silo Stone Sloth"
+               width="100%" height="100%">
+        </div>
+        <p>Crafted with devotion for <strong>Hacktoberfest 2026 Week 3: Slow &amp; Steady</strong></p>
+        <p style="margin-top:4px;">
+          Powered by open-weight AI (Gemma 2) &amp; procedural Web Audio.
+          Zero tracking. 100% Airplane Mode Safe.
+        </p>
+      </footer>
+
+    </div><!-- /cathedral-container -->
+  </div><!-- /mainContent -->
+
+  <!-- Gothic Tarot Card Modal (Revealed by Rose Wheel) -->
+  <div id="tarotModal" class="tarot-modal-backdrop">
+    <div class="tarot-card-stage">
+      <div class="gothic-tarot-card">
+        <div id="tarotNumeral" class="tarot-numeral">Arcana 0</div>
+        <div id="tarotIcon" class="tarot-card-artwork">🦥</div>
+        <h3 id="tarotTitle" class="tarot-title">The Cathedral Sloth</h3>
+        <p id="tarotSubtitle" class="tarot-subtitle">The Patron of Stillness</p>
+        <p id="tarotMeaning" class="tarot-meaning">"The greatest wisdom is the courage to do nothing..."</p>
+        <div id="tarotBlessing" class="tarot-blessing">✨ Sleep Blessing: Freedom from haste.</div>
+        <div class="tarot-actions-row">
+          <button id="btnTarotWeave" class="btn-tarot-weave">📖 Weave Tale from this Card</button>
+          <button id="btnTarotDismiss" class="btn-tarot-dismiss">Dismiss</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       THE SCRIPTORIUM GRIMOIRE MODAL (Saved Chapters)
+       ══════════════════════════════════════════════════════════= -->
+  <div id="grimoireModal" class="gothic-modal-overlay">
+    <div class="gothic-modal-card">
+      <div class="gothic-modal-header">
+        <button class="modal-close-cross" id="btnCloseGrimoire" title="Close Grimoire">✠</button>
+        <h3 class="gothic-modal-title">📖 Scriptorium Grimoire</h3>
+        <p class="gothic-modal-sub">Inscribed nocturnal chapters preserved for future slumbers</p>
+      </div>
+      <div class="gothic-modal-body">
+        <div id="grimoireList" class="grimoire-list">
+          <!-- Dynamically populated or empty state -->
+        </div>
+      </div>
+      <div class="gothic-modal-footer">
+        <button id="btnGrimoireDone" class="btn-gothic">✠ Close Grimoire</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       RELIQUARY SETTINGS MODAL (Gemma Models & Soundscape Defaults)
+       ══════════════════════════════════════════════════════════= -->
+  <div id="settingsModal" class="gothic-modal-overlay">
+    <div class="gothic-modal-card gothic-brass-border">
+      <div class="gothic-modal-header">
+        <button class="modal-close-cross" id="btnCloseSettings" title="Close Settings">✠</button>
+        <h3 class="gothic-modal-title">⚙️ Reliquary &amp; Alchemical Settings</h3>
+        <p class="gothic-modal-sub">Tune the Scriptorium Intelligence, Voice, and Sleep Waves</p>
+      </div>
+      <div class="gothic-modal-body">
+
+        <!-- Section 1: Gemma Local Intelligence -->
+        <div class="settings-section">
+          <div class="settings-section-title"><span>🔮</span> Scribe Intelligence (Gemma 2)</div>
+          <div class="settings-row">
+            <label class="settings-label" for="settingModel">Select Local Model</label>
+            <select id="settingModel" class="settings-select">
+              <option value="gemma2:2b">Gemma 2 2B — Swift &amp; Hypnagogic (Recommended for Sleep)</option>
+              <option value="gemma2:9b">Gemma 2 9B — Deep Classical Gothic Vocabulary</option>
+              <option value="gemma2:27b">Gemma 2 27B — Cathedral Scholar</option>
+              <option value="offline_procedural">Offline Monastic Engine (Instant / Zero GPU)</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <label class="settings-checkbox-row">
+              <input type="checkbox" id="settingForceOffline">
+              <span>Always prioritize zero-network offline procedural engine</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 2: Abbey Phonograph -->
+        <div class="settings-section">
+          <div class="settings-section-title"><span>📻</span> Abbey Phonograph Defaults</div>
+          <div class="settings-row">
+            <label class="settings-label" for="settingPhonographSpeed">Default Turntable Speed</label>
+            <select id="settingPhonographSpeed" class="settings-select">
+              <option value="0.85">33 RPM — Monastic Sloth (Slow &amp; Hypnagogic)</option>
+              <option value="1.0" selected>45 RPM — Standard Classical Nocturne</option>
+              <option value="1.15">78 RPM — Allegro Twilight</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <label class="settings-checkbox-row">
+              <input type="checkbox" id="settingDefaultCrackle" checked>
+              <span>Enable vintage wax cylinder needle crackle by default</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 3: Cinematic Abbey Intro -->
+        <div class="settings-section">
+          <div class="settings-section-title"><span>🕯️</span> Abbey Candle Lighting Ritual</div>
+          <div class="settings-row" style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--text-muted);">Replay the cold-to-lit candle awakening ritual</span>
+            <button type="button" id="btnReplayIntro" class="btn-gothic" style="padding:6px 14px;font-size:12px;">
+              🕯️ Replay Intro
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="gothic-modal-footer">
+        <button id="btnSaveSettings" class="btn-gothic-save">✠ Inscribe &amp; Seal Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gothic Toast Notification -->
+  <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
+
+  <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
+  <script src="/static/js/stellar-map.js"></script>
+  <script src="/static/js/soundscape.js"></script>
+  <script src="/static/js/candle-sound.js"></script>
+  <script src="/static/js/candle-intro.js"></script>
+  <script src="/static/js/tarot-wheel.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

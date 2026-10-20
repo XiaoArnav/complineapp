@@ -1,0 +1,1813 @@
+/* ==========================================================================
+   SLOTH LULLABY — CLASSICAL GOTHIC NIGHTSTAND WIND-DOWN COMPANION
+   Medieval architecture, pointed lancet arches, stained glass, blackletter,
+   deep purples, obsidian blacks, and tarnished bronze filigree.
+   ========================================================================== */
+
+:root {
+  --bg-deep-black: #08060a;
+  --bg-crypt: #110d18;
+  --bg-altar: #191222;
+  --bg-parchment: #1d1526;
+  --purple-royal: #3b1446;
+  --purple-velvet: #2a0b33;
+  --purple-glow: rgba(97, 30, 115, 0.4);
+  
+  --gold-antique: #d4af37;
+  --gold-bronze: #a8842c;
+  --gold-dim: #6e551c;
+  --gold-glow: rgba(212, 175, 55, 0.25);
+  
+  --ruby-glass: #8a142e;
+  --sapphire-glass: #183668;
+  --amethyst-glass: #5c1e6b;
+  
+  --text-primary: #ede3d1;
+  --text-muted: #a69888;
+  --text-dim: #6d6154;
+  
+  --font-blackletter: 'UnifrakturMaguntia', 'MedievalSharp', serif;
+  --font-display: 'Cinzel Decorative', 'MedievalSharp', serif;
+  --font-reading: 'Cormorant Garamond', Georgia, serif;
+  
+  --border-radius-arch: 140px 140px 12px 12px;
+}
+
+/* Reset & Universal Selection Lock */
+*, *::before, *::after,
+html, body,
+h1, h2, h3, h4, h5, h6,
+p, span, div, a, button, section, header, footer, aside, main {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Neutralize any browser selection background highlight completely */
+::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+::-moz-selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+input::selection, textarea::selection {
+  background: rgba(212, 175, 55, 0.45) !important;
+  color: #ffffff !important;
+}
+
+button, input, select, .rune-pill, .header-action-btn, .rose-window-wrapper, .btn-tarot-weave, .btn-tarot-dismiss {
+  touch-action: manipulation;
+}
+
+/* Prevent all text selection during active 3D celestial orbit */
+body.is-orbiting,
+body.is-orbiting * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* ── 3D Interactive Celestial Stellar Map Canvas ── */
+.stellar-map-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
+  z-index: 0;
+  pointer-events: auto;
+  display: block;
+}
+
+html {
+  background-color: #07040c;
+  min-height: 100%;
+}
+
+body {
+  background-color: #07040c;
+  background-image: 
+    radial-gradient(circle at 50% 15%, rgba(68, 20, 84, 0.15) 0%, transparent 65%),
+    radial-gradient(circle at 10% 90%, rgba(24, 54, 104, 0.10) 0%, transparent 50%),
+    radial-gradient(circle at 90% 85%, rgba(138, 20, 46, 0.08) 0%, transparent 50%);
+  color: var(--text-primary);
+  font-family: var(--font-reading);
+  font-size: 19px;
+  line-height: 1.75;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  overflow-x: hidden;
+  position: relative;
+  transition: opacity 1.5s ease;
+}
+
+/* Ambient Floating Dust Motes / Embers */
+.gothic-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.45;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 15% 25%, #d4af37 100%, transparent),
+    radial-gradient(1px 1px at 35% 65%, #ede3d1 100%, transparent),
+    radial-gradient(2px 2px at 75% 35%, #a8842c 100%, transparent),
+    radial-gradient(1px 1px at 85% 80%, #611e73 100%, transparent);
+  background-size: 550px 550px;
+  animation: floatDust 45s linear infinite;
+}
+
+@keyframes floatDust {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-40px) translateX(20px); }
+  100% { transform: translateY(0); }
+}
+
+/* Main Cathedral Layout */
+.cathedral-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 30px 20px 80px 20px;
+}
+
+/* Header & Stained Glass Portal */
+.cathedral-header {
+  text-align: center;
+  margin-bottom: 35px;
+  position: relative;
+}
+
+.rose-window-wrapper {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px auto;
+  position: relative;
+  filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.35)) drop-shadow(0 0 45px rgba(138, 20, 46, 0.3));
+  animation: rosePulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes rosePulse {
+  0% { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.25)) drop-shadow(0 0 35px rgba(68, 20, 84, 0.4)); transform: scale(1); }
+  100% { filter: drop-shadow(0 0 32px rgba(212, 175, 55, 0.5)) drop-shadow(0 0 50px rgba(138, 20, 46, 0.45)); transform: scale(1.02); }
+}
+
+.cathedral-title {
+  font-family: var(--font-blackletter);
+  font-size: 54px;
+  font-weight: 400;
+  letter-spacing: 2.5px;
+  color: var(--gold-antique);
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.4), 0 3px 6px #000;
+  margin-bottom: 6px;
+}
+
+.cathedral-subtitle {
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.gothic-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 18px 0;
+  opacity: 0.6;
+}
+
+.gothic-divider::before,
+.gothic-divider::after {
+  content: "";
+  height: 1px;
+  width: 140px;
+  background: linear-gradient(to right, transparent, var(--gold-antique), transparent);
+}
+
+.gothic-divider span {
+  margin: 0 14px;
+  color: var(--gold-antique);
+  font-size: 18px;
+}
+
+/* Scriptorium Central Altar (Lancet Arch Frame) */
+.scriptorium-chamber {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+@media (max-width: 860px) {
+  .scriptorium-chamber {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left: The Tome of Slumber (Story Reading Altar) */
+.tome-card {
+  background: linear-gradient(175deg, rgba(28, 19, 40, 0.86) 0%, rgba(15, 11, 22, 0.90) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--border-radius-arch);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.8),
+    inset 0 0 50px rgba(59, 20, 70, 0.25),
+    0 0 20px var(--gold-glow);
+  padding: 55px 42px 45px 42px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ornate Tracery Corners */
+.tome-card::before {
+  content: "✠";
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  font-size: 20px;
+  color: var(--gold-antique);
+  opacity: 0.5;
+}
+
+.tome-card::after {
+  content: "✠";
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  font-size: 20px;
+  color: var(--gold-antique);
+  opacity: 0.5;
+}
+
+/* Lancet Arch Top Ornament */
+.lancet-arch-cap {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.lancet-arch-cap svg {
+  width: 60px;
+  height: 30px;
+  fill: none;
+  stroke: var(--gold-antique);
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+.tome-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.tome-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold-antique);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.tome-meta {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.tome-body {
+  min-height: 280px;
+  font-size: 21px;
+  color: var(--text-primary);
+  text-align: justify;
+}
+
+.tome-body p {
+  margin-bottom: 20px;
+  text-indent: 1.5em;
+}
+
+.tome-body p:first-of-type {
+  text-indent: 0;
+}
+
+/* Illuminated Drop Capital */
+.drop-cap {
+  float: left;
+  font-family: var(--font-blackletter);
+  font-size: 74px;
+  line-height: 58px;
+  padding-top: 4px;
+  padding-right: 12px;
+  padding-left: 2px;
+  color: var(--gold-antique);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px var(--ruby-glass);
+}
+
+/* Spoken Sentence Highlight (Hypnagogic Warm Glow) */
+.sentence-highlight {
+  background: linear-gradient(to right, rgba(212, 175, 55, 0.18), rgba(92, 30, 107, 0.22));
+  color: #fff9e6;
+  border-radius: 4px;
+  padding: 2px 4px;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+  transition: all 0.4s ease;
+}
+
+/* Sloth Audio Narration Bar */
+.tome-narrator-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.narration-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-gothic {
+  background: linear-gradient(180deg, #2c1a3b 0%, #170d22 100%);
+  border: 1px solid var(--gold-bronze);
+  color: var(--gold-antique);
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 2px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.btn-gothic:hover {
+  background: linear-gradient(180deg, #422659 0%, #251438 100%);
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 15px var(--gold-glow);
+  transform: translateY(-1px);
+}
+
+.btn-gothic:active {
+  transform: translateY(1px);
+}
+
+.btn-gothic.active {
+  background: linear-gradient(180deg, var(--gold-antique) 0%, var(--gold-bronze) 100%);
+  color: #110d18;
+  font-weight: 700;
+  box-shadow: 0 0 20px var(--gold-antique);
+}
+
+/* Big Sleep Launcher Button */
+.btn-sloth-summon {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  border-radius: 40px;
+  border: 1.5px solid var(--gold-antique);
+  background: linear-gradient(180deg, #531863 0%, #2a0b33 100%);
+  color: #fff4d1;
+  text-shadow: 0 1px 4px #000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 25px var(--purple-glow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-sloth-summon:hover {
+  background: linear-gradient(180deg, #6c2182 0%, #3a0f47 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 35px var(--gold-glow);
+  transform: translateY(-2px);
+}
+
+/* Right Column: Reliquary Controls & Candle Shrine */
+.reliquary-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Gothic Reliquary Cards */
+.reliquary-card {
+  background: linear-gradient(180deg, rgba(24, 16, 34, 0.86) 0%, rgba(13, 9, 18, 0.90) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.reliquary-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--gold-antique);
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  padding-bottom: 8px;
+}
+
+/* Interactive Beeswax Candle Shrine */
+.candle-shrine {
+  text-align: center;
+  padding: 15px 0 5px 0;
+  position: relative;
+}
+
+.candle-art-wrapper {
+  width: 110px;
+  height: 200px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: filter 0.4s ease;
+}
+
+.candle-art-wrapper:hover {
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.5));
+}
+
+.candle-flame {
+  animation: candleFlicker 3s infinite ease-in-out;
+  transform-origin: 50px 50px;
+}
+
+@keyframes candleFlicker {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.95; }
+  25% { transform: scale(0.96, 1.04) rotate(-1.5deg); opacity: 0.88; }
+  50% { transform: scale(1.05, 0.94) rotate(1.2deg); opacity: 1; }
+  75% { transform: scale(0.98, 1.02) rotate(-0.8deg); opacity: 0.92; }
+  100% { transform: scale(1) rotate(0deg); opacity: 0.95; }
+}
+
+.candle-status-text {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* =================================================================
+   ABBEY PHONOGRAPH — THE CD & THE PIN ONLY
+   ================================================================= */
+.phonograph-card {
+  background: linear-gradient(180deg, rgba(28, 18, 38, 0.98) 0%, rgba(14, 9, 20, 0.99) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 
+    0 16px 42px rgba(0, 0, 0, 0.85),
+    inset 0 0 35px rgba(59, 20, 70, 0.3),
+    0 0 25px rgba(212, 175, 55, 0.2);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.phonograph-card::before {
+  content: "✠";
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 14px;
+  color: var(--gold-antique);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.phonograph-card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.phonograph-status-badge {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(35, 20, 50, 0.85);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold-antique);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.phonograph-card.playing .phonograph-status-badge,
+.phonograph-status-badge.playing {
+  background: rgba(85, 30, 110, 0.85);
+  border-color: var(--gold-bright);
+  color: #fff4cb;
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ── Phonograph Tracklist Tabs (Vinyl Disc Changer) ── */
+.phonograph-tracklist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.track-tab {
+  background: #190f24;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-tab:hover {
+  background: #271439;
+  border-color: var(--gold-antique);
+  color: #fff4d0;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.track-tab.active {
+  background: linear-gradient(180deg, #441754 0%, #22092c 100%);
+  border-color: var(--gold-antique);
+  color: var(--gold-bright);
+  box-shadow: 0 0 12px var(--gold-glow), inset 0 0 8px rgba(212, 175, 55, 0.25);
+  font-weight: 700;
+}
+
+.track-disc-icon {
+  font-size: 13px;
+  transition: transform 0.3s ease;
+}
+
+.track-tab.active .track-disc-icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 4px var(--gold-antique));
+}
+
+/* ── Turntable Stage (Only CD & Pin) ── */
+.phonograph-stage {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: radial-gradient(circle at 45% 50%, #170e24 0%, #08050c 80%);
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.95), 0 4px 15px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* ── The CD / Vinyl Disc ── */
+.turntable-platter {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: #08060a;
+  border: 2px solid #3d2812;
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(212, 175, 55, 0.2),
+    inset 0 0 10px rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  margin-right: 20px;
+  transition: transform 0.2s ease;
+}
+
+.turntable-platter:hover {
+  transform: scale(1.02);
+}
+
+.vinyl-record {
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle, #0e0a12 0%, #050408 85%),
+    repeating-radial-gradient(circle, rgba(255, 255, 255, 0.035) 0px, transparent 1.5px, transparent 3px);
+  position: relative;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.phonograph-card.playing .vinyl-record,
+.vinyl-record.spinning {
+  animation: spinDisc 3.4s linear infinite;
+}
+
+@keyframes spinDisc {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Concentric Vinyl Grooves on the CD */
+.groove-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+.groove-ring.r1 { width: 142px; height: 142px; }
+.groove-ring.r2 { width: 124px; height: 124px; }
+.groove-ring.r3 { width: 104px; height: 104px; }
+.groove-ring.r4 { width: 84px; height: 84px; }
+.groove-ring.r5 { width: 66px; height: 66px; }
+
+/* Vinyl Reflection Sheen */
+.vinyl-reflection {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.08) 45deg,
+    transparent 90deg,
+    transparent 180deg,
+    rgba(255, 255, 255, 0.08) 225deg,
+    transparent 270deg
+  );
+  pointer-events: none;
+}
+
+/* Center Gothic Gold Foil Disc Label */
+.record-center-label {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #681d7a 0%, #290a33 70%, #15051c 100%);
+  border: 1.5px solid var(--gold-antique);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 0 6px var(--gold-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2px;
+  z-index: 2;
+  user-select: none;
+}
+
+.label-cross {
+  font-size: 11px;
+  color: var(--gold-antique);
+  line-height: 1;
+}
+
+.label-title {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.8px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.label-sub {
+  font-size: 5.5px;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/* Center Spindle */
+.record-spindle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f0e0a0 0%, #7d5b1b 80%, #302008 100%);
+  border: 1px solid #1a1005;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  z-index: 3;
+}
+
+/* ── The Pin (Tone-Arm Assembly & Ruby Stylus) ── */
+.tone-arm-assembly {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 55px;
+  height: 145px;
+  z-index: 4;
+  transform-origin: 27px 16px;
+  transform: rotate(0deg);
+  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Pin ON the Disc */
+.phonograph-card.playing .tone-arm-assembly,
+.tone-arm-assembly.pin-on-disc {
+  transform: rotate(26deg);
+  animation: pinJitter 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes pinJitter {
+  0% { transform: rotate(25.8deg) translateY(0); }
+  50% { transform: rotate(26.2deg) translateY(-0.25px); }
+  100% { transform: rotate(26.0deg) translateY(0.2px); }
+}
+
+.tone-arm-base {
+  position: absolute;
+  top: 6px;
+  left: 17px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f5e08b 0%, #a8842c 60%, #4a3512 100%);
+  border: 1.5px solid #2d1c08;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.tone-arm-counterweight {
+  position: absolute;
+  top: -8px;
+  left: 3px;
+  width: 14px;
+  height: 10px;
+  background: #2b1f13;
+  border: 1px solid var(--gold-antique);
+  border-radius: 2px;
+}
+
+.tone-arm-rest-clip {
+  position: absolute;
+  top: 18px;
+  left: 7px;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--gold-dim);
+  border-top: none;
+  opacity: 0.6;
+}
+
+.tone-arm-rod {
+  position: absolute;
+  top: 18px;
+  left: 25px;
+  width: 4px;
+  height: 98px;
+  background: linear-gradient(90deg, #f0df92 0%, #8c6a21 50%, #47320b 100%);
+  border-radius: 2px;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.7);
+  transform-origin: top center;
+  transform: rotate(-7deg);
+}
+
+.tone-arm-headshell {
+  position: absolute;
+  bottom: -10px;
+  left: -8px;
+  width: 18px;
+  height: 14px;
+  background: #1b1224;
+  border: 1.5px solid var(--gold-antique);
+  border-radius: 3px;
+  transform: rotate(28deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ruby-stylus {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ff2a55;
+  box-shadow: 0 0 6px #ff2a55;
+  transition: all 0.3s ease;
+}
+
+.phonograph-card.playing .ruby-stylus {
+  box-shadow: 0 0 10px #ff2a55, 0 0 20px rgba(255, 42, 85, 0.9);
+}
+
+/* ── Big Tactile Pin Toggle Button ── */
+.btn-pin-toggle {
+  width: 100%;
+  background: linear-gradient(180deg, #581d68 0%, #2f0c3a 100%);
+  border: 1.5px solid var(--gold-antique);
+  color: #fff6db;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(212, 175, 55, 0.2);
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-pin-toggle:hover {
+  background: linear-gradient(180deg, #712686 0%, #441154 100%);
+  box-shadow: 0 0 18px var(--gold-glow);
+  transform: translateY(-1px);
+}
+
+.btn-pin-toggle.active {
+  background: linear-gradient(180deg, #781c1c 0%, #3e0c0c 100%);
+  border-color: #ff9999;
+  color: #ffe0e0;
+  box-shadow: 0 0 16px rgba(255, 60, 60, 0.4);
+}
+
+.sound-channel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sound-channel.master-channel {
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.channel-label {
+  font-size: 12.5px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 145px;
+  flex-shrink: 0;
+}
+
+.sound-channel.master-channel .channel-label {
+  color: var(--gold-bright);
+  font-weight: 600;
+}
+
+.gothic-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  background: #2b1f35;
+  border-radius: 2px;
+  outline: none;
+}
+
+.gothic-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold-antique);
+  border: 1.5px solid #100a17;
+  box-shadow: 0 0 6px var(--gold-glow);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.gothic-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--gold-bright);
+}
+
+.gothic-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold-antique);
+  border: 1.5px solid #100a17;
+  box-shadow: 0 0 6px var(--gold-glow);
+  cursor: pointer;
+}
+  background: var(--gold-antique);
+  box-shadow: 0 0 8px var(--gold-antique);
+  cursor: pointer;
+}
+
+/* Quick Mood Runes */
+.mood-runes-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.rune-pill {
+  background: #1b1224;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rune-pill:hover,
+.rune-pill.active {
+  background: var(--purple-velvet);
+  border-color: var(--gold-antique);
+  color: var(--gold-antique);
+}
+
+/* Custom Prompt Input */
+.gothic-input {
+  width: 100%;
+  background: #130c1d;
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-reading);
+  font-size: 16px;
+  outline: none;
+  margin-top: 10px;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.gothic-input:focus {
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* Model & Offline Indicator */
+.model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  background: rgba(33, 20, 48, 0.8);
+  border: 1px solid var(--gold-dim);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: var(--gold-antique);
+}
+
+.model-badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #39e39f;
+  box-shadow: 0 0 6px #39e39f;
+}
+
+/* Cathedral Footer */
+.cathedral-footer {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.cathedral-footer a {
+  color: var(--gold-antique);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--gold-antique);
+}
+
+.gargoyle-sloth-emblem {
+  width: 180px;
+  margin: 10px auto;
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+
+.gargoyle-sloth-emblem:hover {
+  opacity: 1;
+}
+
+/* =================================================================
+   SCRIBE INK STREAMING & LIVE VELLUM EFFECTS
+   ================================================================= */
+.ink-word {
+  display: inline;
+  opacity: 0;
+  filter: blur(2px);
+  animation: inkFadeIn 0.55s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes inkFadeIn {
+  0% {
+    opacity: 0;
+    filter: blur(2.5px);
+    color: #ffd88a; /* fresh luminous wet amber gold */
+    text-shadow: 0 0 10px rgba(230, 183, 106, 0.9);
+    transform: translateY(1.5px);
+  }
+  35% {
+    opacity: 0.9;
+    filter: blur(0.7px);
+    color: #c99b53; /* wet sepia oak-gall ink */
+    text-shadow: 0 0 4px rgba(200, 150, 80, 0.35);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    color: inherit; /* deep dried oak-gall ink */
+    text-shadow: none;
+    transform: translateY(0);
+  }
+}
+
+.scribe-cursor {
+  display: inline-block;
+  width: 2.5px;
+  height: 1.15em;
+  background: linear-gradient(180deg, #ffe082 0%, #d4af37 60%, #8c734b 100%);
+  margin-left: 3px;
+  vertical-align: middle;
+  border-radius: 1px;
+  animation: scribeBlink 0.75s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.9), 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes scribeBlink {
+  0%, 100% { opacity: 0.15; transform: scaleY(0.9); }
+  50% { opacity: 1; transform: scaleY(1.05); }
+}
+
+.scribe-active-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+}
+
+/* Tome Action Buttons (Bookmark, etc.) */
+.tome-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.btn-tome-action {
+  background: rgba(30, 16, 42, 0.75);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  color: var(--gold-antique);
+  font-family: var(--font-display);
+  font-size: 13px;
+  padding: 7px 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.btn-tome-action:hover {
+  background: rgba(50, 24, 70, 0.9);
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-tome-action.bookmarked {
+  background: rgba(85, 45, 12, 0.6);
+  border-color: var(--gold-bright);
+  color: #fff2c4;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Header Action Buttons */
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-action-btn {
+  background: rgba(18, 12, 26, 0.85);
+  border: 1px solid var(--gold-dim);
+  border-radius: 20px;
+  color: var(--gold-antique);
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  letter-spacing: 1px;
+  padding: 7px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.header-action-btn:hover {
+  background: rgba(45, 20, 65, 0.9);
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+.grimoire-badge {
+  background: var(--gold-antique);
+  color: #0b0710;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-left: 2px;
+}
+
+/* =================================================================
+   GOTHIC MODAL SYSTEM (GRIMOIRE & SETTINGS)
+   ================================================================= */
+.gothic-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 8, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.gothic-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gothic-modal-card {
+  width: 90%;
+  max-width: 680px;
+  max-height: 85vh;
+  background: #110b19;
+  border: 2px solid var(--gold-antique);
+  border-radius: 20px 20px 8px 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(212, 175, 55, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gothic-brass-border {
+  border: 2px solid #b8860b !important;
+  box-shadow: 
+    0 0 0 1px #3a220a,
+    0 20px 60px rgba(0, 0, 0, 0.95),
+    0 0 35px rgba(212, 175, 55, 0.35),
+    inset 0 0 25px rgba(184, 134, 11, 0.18) !important;
+}
+
+.gothic-modal-overlay.active .gothic-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.gothic-modal-header {
+  padding: 24px 28px 16px 28px;
+  border-bottom: 1px solid var(--gold-dim);
+  background: linear-gradient(180deg, rgba(38, 18, 54, 0.7) 0%, rgba(17, 11, 25, 0.95) 100%);
+  position: relative;
+  text-align: center;
+}
+
+.gothic-modal-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gold-antique);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.gothic-modal-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.modal-close-cross {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: var(--gold-dim);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close-cross:hover {
+  color: var(--gold-bright);
+  transform: scale(1.15);
+}
+
+.gothic-modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.gothic-modal-footer {
+  padding: 16px 28px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(14, 9, 21, 0.95);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Grimoire Specific Styles */
+.grimoire-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.grimoire-card {
+  background: rgba(23, 14, 34, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 16px 20px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.grimoire-card:hover {
+  background: rgba(36, 20, 52, 0.9);
+  border-color: var(--gold-antique);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+}
+
+.grimoire-card-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--gold-antique);
+  margin-bottom: 4px;
+}
+
+.grimoire-card-meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.grimoire-card-excerpt {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  font-style: italic;
+}
+
+.grimoire-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-grimoire-action {
+  background: rgba(17, 11, 25, 0.8);
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-grimoire-action:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+}
+
+.btn-grimoire-erase:hover {
+  border-color: #d94b4b;
+  color: #ff8888;
+}
+
+.grimoire-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 15px;
+}
+
+.grimoire-empty-icon {
+  font-size: 38px;
+  margin-bottom: 14px;
+  opacity: 0.6;
+}
+
+/* Settings Specific Styles */
+.settings-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.settings-section-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-row {
+  margin-bottom: 14px;
+}
+
+.settings-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.settings-select,
+.settings-input {
+  width: 100%;
+  background: #0a0610;
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: var(--gold-antique);
+  font-family: var(--font-reading);
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.settings-select:focus,
+.settings-input:focus {
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.settings-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.settings-checkbox-row input[type="checkbox"] {
+  accent-color: var(--gold-antique);
+  width: 16px;
+  height: 16px;
+}
+
+.btn-gothic-save {
+  background: linear-gradient(135deg, rgba(82, 38, 115, 0.8) 0%, rgba(42, 16, 62, 0.9) 100%);
+  border: 1px solid var(--gold-bright);
+  border-radius: 6px;
+  color: #fff6d9;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 9px 22px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-gothic-save:hover {
+  background: linear-gradient(135deg, rgba(110, 50, 155, 0.9) 0%, rgba(65, 25, 95, 1) 100%);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Toast notification */
+.gothic-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: #190f26;
+  border: 1.5px solid var(--gold-antique);
+  border-radius: 25px;
+  padding: 10px 24px;
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.4);
+  z-index: 20000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gothic-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* =================================================================
+   UNIVERSAL DEVICE RESPONSIVENESS & SMOOTH PERFORMANCE
+   Optimized for iPhones, iPads, Android, Laptops & High-DPI screens
+   ================================================================= */
+
+/* Hardware acceleration & Compositing layers */
+.rose-wheel-interactive,
+.intro-halo,
+.intro-flame,
+.gothic-tarot-card,
+.gothic-modal-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Tablets and Medium Laptops */
+@media (max-width: 1024px) {
+  .cathedral-container {
+    max-width: 95%;
+    padding: 24px 16px;
+  }
+  .scriptorium-chamber {
+    grid-template-columns: 1fr 310px;
+    gap: 20px;
+  }
+}
+
+/* Mobile Devices (Portrait) & Small Tablets */
+@media (max-width: 860px) {
+  .scriptorium-chamber {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .cathedral-container {
+    padding: 18px 12px;
+  }
+  .cathedral-header {
+    margin-bottom: 25px;
+  }
+  .cathedral-title {
+    font-size: 46px;
+    letter-spacing: 3px;
+  }
+  .cathedral-subtitle {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+  }
+  .rose-window-wrapper {
+    width: 125px;
+    height: 125px;
+    margin-bottom: 14px;
+  }
+  .tome-card {
+    padding: 34px 20px 28px 20px;
+    border-radius: 60px 60px 12px 12px;
+  }
+  .tome-card::before { left: 16px; top: 16px; font-size: 16px; }
+  .tome-card::after { right: 16px; top: 16px; font-size: 16px; }
+  .tome-title {
+    font-size: 28px;
+    letter-spacing: 1.5px;
+  }
+  .tome-body {
+    font-size: 18px;
+    line-height: 1.65;
+  }
+  .tome-actions {
+    margin-top: 24px;
+  }
+  .action-btn-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .btn-gothic-action {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  .header-actions-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .header-action-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    min-height: 42px;
+  }
+  .reliquary-card {
+    padding: 20px 16px;
+  }
+  .gothic-modal-card {
+    width: 94vw;
+    max-height: 88dvh;
+    border-radius: 16px;
+  }
+  .gothic-modal-header {
+    padding: 18px 16px 12px 16px;
+  }
+  .gothic-modal-title {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  .gothic-modal-body {
+    padding: 16px;
+  }
+  .gothic-modal-footer {
+    padding: 12px 16px;
+  }
+  .modal-close-cross {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 8px;
+    right: 8px;
+  }
+}
+
+/* Small Phones (iPhone SE, Galaxy, 320px - 480px) */
+@media (max-width: 480px) {
+  body {
+    font-size: 17px;
+  }
+  .cathedral-title {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+  .rose-window-wrapper {
+    width: 105px;
+    height: 105px;
+  }
+  .wheel-spin-hint {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    bottom: -14px;
+  }
+  .model-badge {
+    font-size: 11px;
+    padding: 5px 12px;
+    max-width: 95%;
+  }
+  .tome-card {
+    padding: 26px 14px 20px 14px;
+    border-radius: 40px 40px 10px 10px;
+  }
+  .tome-title {
+    font-size: 24px;
+  }
+  .drop-cap {
+    font-size: 44px;
+    margin-right: 6px;
+  }
+  .mood-runes-row {
+    gap: 6px;
+  }
+  .rune-pill {
+    padding: 6px 9px;
+    font-size: 11.5px;
+    min-height: 36px;
+  }
+  .owl-candle-wrapper {
+    max-width: 100%;
+  }
+  .gothic-slider-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .gothic-slider-label {
+    width: 100%;
+  }
+  .settings-row {
+    margin-bottom: 14px;
+  }
+  .settings-select, .settings-input {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  .tarot-card-stage {
+    width: 295px;
+    max-width: 92vw;
+  }
+  .gothic-tarot-card {
+    padding: 18px 14px 16px 14px;
+    max-height: 85dvh;
+    overflow-y: auto;
+  }
+  .tarot-card-artwork {
+    width: 110px;
+    height: 110px;
+    font-size: 46px;
+    margin: 8px auto 10px auto;
+  }
+  .tarot-title {
+    font-size: 26px;
+  }
+  .tarot-meaning {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
+
+/* Landscape Orientation on Mobile Phones */
+@media (max-height: 540px) and (orientation: landscape) {
+  .cathedral-header {
+    margin-bottom: 15px;
+  }
+  .rose-window-wrapper {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 8px;
+  }
+  .cathedral-title {
+    font-size: 28px;
+  }
+  .scriptorium-chamber {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gothic-modal-card {
+    max-height: 92dvh;
+  }
+  .tarot-card-stage {
+    max-height: 92dvh;
+  }
+  .gothic-tarot-card {
+    max-height: 88dvh;
+    overflow-y: auto;
+  }
+}
+
+/* ── Celestial Astrolabe HUD & 3D Controls ── */
+.stellar-hud-button {
+  background: linear-gradient(180deg, #24143a 0%, #150924 100%);
+  border: 1.5px solid var(--gold-antique);
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(212, 175, 55, 0.2);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stellar-hud-button:hover {
+  background: linear-gradient(180deg, #371b56 0%, #200c36 100%);
+  box-shadow: 0 0 16px var(--gold-glow);
+  transform: translateY(-1px);
+}
+
+.stellar-hud-coords {
+  font-family: monospace;
+  font-size: 11px;
+  color: #a0d8ef;
+}
+
+.stellar-controls-popover {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: linear-gradient(180deg, rgba(28, 18, 42, 0.96) 0%, rgba(13, 9, 20, 0.98) 100%);
+  border: 1.5px solid var(--gold-antique);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
+  width: 280px;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.stellar-controls-popover.active {
+  display: flex;
+}
+
+.stellar-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-primary);
+}
+
+.stellar-control-label {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  color: var(--gold-antique);
+  letter-spacing: 1px;
+}

@@ -1,0 +1,356 @@
+/* =================================================================
+   CANDLE INTRO & LIVE HYBRID NOCTURNAL OWL CANDLE
+   ================================================================= */
+
+/* ── Full-screen intro overlay (translucent over 3D stellar universe) ── */
+#introOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at center, rgba(8, 5, 14, 0.45) 0%, rgba(3, 2, 7, 0.88) 100%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 2s ease;
+  cursor: grab;
+}
+
+#introOverlay:active {
+  cursor: grabbing;
+}
+
+#introOverlay.dissolve {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Intro candle container ── */
+.intro-candle-wrap {
+  position: relative;
+  width: 120px;
+  height: 240px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.intro-candle-wrap .intro-candle-svg {
+  position: relative;
+  z-index: 2;
+  filter: brightness(0.35) contrast(1.25); /* Cold, dark unlit silhouette initially */
+  transition: filter 1.4s ease;
+}
+
+/* When flame turns on, the candle catches the candlelight */
+.intro-candle-wrap.flame-on .intro-candle-svg {
+  filter: brightness(1) contrast(1);
+}
+
+/* Ambient halo behind the candle (starts strictly at 0px and invisible) */
+.intro-halo {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0px;
+  height: 0px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 100, 0.85) 0%, rgba(212, 140, 30, 0.35) 45%, transparent 70%);
+  opacity: 0;
+  transition: opacity 1.2s ease, width 2.8s cubic-bezier(0.16, 1, 0.3, 1), height 2.8s cubic-bezier(0.16, 1, 0.3, 1), top 2.8s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Match flash: small spark flare right over the wick */
+.intro-candle-wrap.match-flash .intro-halo {
+  opacity: 0.9;
+  width: 65px;
+  height: 65px;
+  top: 35px;
+  background: radial-gradient(circle, #fffbe0 0%, rgba(255, 200, 60, 0.75) 45%, transparent 70%);
+  transition: opacity 0.1s ease, width 0.15s ease, height 0.15s ease;
+}
+
+/* Flame is strictly OFF initially */
+.intro-candle-wrap .intro-flame {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+
+/* Stage 2: When wick catches fire, flame turns ON with burst & flicker */
+.intro-candle-wrap.flame-on .intro-flame {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  animation: flameBurst 0.6s ease-out forwards, flameFlicker 4s ease-in-out infinite 0.6s !important;
+  transform-origin: 60px 67px;
+}
+
+/* Stage 2: Candle flame is burning alone in the dark (only small 85px local wick glow) */
+.intro-candle-wrap.flame-on:not(.halo-expand) .intro-halo {
+  opacity: 0.65;
+  width: 85px;
+  height: 85px;
+  top: 25px;
+  background: radial-gradient(circle, rgba(255, 220, 110, 0.75) 0%, rgba(212, 140, 30, 0.25) 50%, transparent 75%);
+  transition: opacity 0.6s ease, width 0.8s ease, height 0.8s ease;
+}
+
+/* Stage 3: Surrounding becomes bright as the golden halo expands across the dark screen */
+.intro-candle-wrap.halo-expand .intro-halo {
+  opacity: 1;
+  width: 1100px;
+  height: 1100px;
+  top: -480px;
+  background: radial-gradient(circle, rgba(255, 225, 130, 0.7) 0%, rgba(212, 140, 30, 0.32) 40%, rgba(65, 20, 80, 0.18) 70%, transparent 88%);
+}
+
+/* ── Match-strike spark overlay ── */
+.match-spark {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.05s ease;
+}
+.intro-candle-wrap.match-flash .match-spark {
+  opacity: 1;
+}
+
+/* ── Intro label text ── */
+.intro-label {
+  margin-top: 28px;
+  font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: rgba(212, 175, 55, 0.6);
+  text-transform: uppercase;
+  text-align: center;
+  transition: all 1.8s ease;
+  text-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+  user-select: none;
+}
+.intro-candle-wrap.halo-expand ~ .intro-label {
+  color: rgba(255, 230, 140, 0.95);
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+}
+
+/* ── Main content fade-in ── */
+#mainContent {
+  transition: opacity 2s ease;
+}
+#mainContent.fade-in-lit {
+  opacity: 1 !important;
+}
+
+/* =================================================================
+   INTERACTIVE NOCTURNAL OWL CANDLE SHRINE (LIVE HYBRID)
+   ================================================================= */
+
+.owl-candle-wrapper {
+  width: 175px;
+  margin: 0 auto;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  user-select: none;
+}
+
+.owl-candle-wrapper:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.45));
+}
+
+.owl-artwork-frame {
+  position: relative;
+  width: 100%;
+  height: 235px;
+  border-radius: 88px 88px 12px 12px; /* Gothic lancet arch top */
+  border: 1.5px solid var(--gold-antique);
+  overflow: hidden;
+  background: #09060d;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9), 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+.owl-sculpture-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transition: filter 0.8s ease, transform 0.8s ease;
+  display: block;
+}
+
+/* When candle is extinguished, owl statue dims to shadowed night chiaroscuro */
+.owl-candle-wrapper.candle-dead .owl-sculpture-img {
+  filter: brightness(0.28) contrast(1.25) saturate(0.5);
+}
+
+/* Flame overlay strictly positioned over the candle top in the frame */
+.owl-flame-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Snuffer cap appears when candle is dead to mask any static flame */
+#snufferCap {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.owl-candle-wrapper.candle-dead #snufferCap {
+  opacity: 1 !important;
+}
+
+/* Flickering flame — organic multi-keyframe */
+.candle-flame-live {
+  animation: flameFlicker 4s ease-in-out infinite;
+  transform-origin: 60.3px 22px;
+}
+
+@keyframes flameFlicker {
+  0%   { transform: scaleX(1)    scaleY(1)    rotate(0deg);    opacity: 1;    }
+  8%   { transform: scaleX(0.91) scaleY(1.07) rotate(-2.2deg); opacity: 0.90; }
+  18%  { transform: scaleX(1.06) scaleY(0.94) rotate(1.5deg);  opacity: 0.97; }
+  30%  { transform: scaleX(0.96) scaleY(1.05) rotate(-0.8deg); opacity: 1;    }
+  42%  { transform: scaleX(1.05) scaleY(0.95) rotate(1.8deg);  opacity: 0.93; }
+  55%  { transform: scaleX(0.94) scaleY(1.06) rotate(-1.3deg); opacity: 0.98; }
+  70%  { transform: scaleX(1.03) scaleY(0.96) rotate(1.0deg);  opacity: 0.95; }
+  85%  { transform: scaleX(0.93) scaleY(1.04) rotate(-1.8deg); opacity: 0.91; }
+  100% { transform: scaleX(1)    scaleY(1)    rotate(0deg);    opacity: 1;    }
+}
+
+/* Extinguished — flame hides instantly */
+#mainCandleFlame.flame-dead {
+  animation: none;
+  opacity: 0 !important;
+  transition: opacity 0.25s ease;
+}
+
+/* Wick states */
+#wickLit.wick-hide {
+  opacity: 0 !important;
+}
+#wickDead.wick-show {
+  opacity: 1 !important;
+}
+#charTip.char-show {
+  opacity: 1 !important;
+}
+
+/* Halo dies */
+#candleHalo.halo-dead {
+  opacity: 0.04 !important;
+}
+
+/* ── SMOKE WISPS ── */
+#smokeContainer {
+  pointer-events: none;
+}
+#smokeContainer.smoke-active {
+  opacity: 1 !important;
+}
+
+.smoke-wisp {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+}
+
+.smoke-wisp-1 {
+  animation:
+    smokeRise1  3.5s ease-out forwards,
+    smokeFade   3.2s ease-in  forwards 0.3s;
+}
+.smoke-wisp-2 {
+  animation:
+    smokeRise2  3.0s ease-out forwards 0.15s,
+    smokeFade   2.8s ease-in  forwards 0.5s;
+}
+.smoke-wisp-3 {
+  animation:
+    smokeRise3  3.8s ease-out forwards 0.05s,
+    smokeFade   3.6s ease-in  forwards 0.2s;
+}
+
+@keyframes smokeRise1 {
+  0%   { d: path("M 60.3,22 Q 58,22 60.3,22 Q 63,22 60.3,22"); stroke-width: 2.2; }
+  40%  { d: path("M 60.3,22 Q 56,14 60,6 Q 64,-2 58,-10 Q 54,-18 60,-26"); stroke-width: 1.8; }
+  100% { d: path("M 60.3,22 Q 55,8 60,-6 Q 65,-20 57,-34 Q 51,-44 60,-52"); stroke-width: 1.0; }
+}
+@keyframes smokeRise2 {
+  0%   { d: path("M 59.5,22 Q 59.5,22 59.5,22"); stroke-width: 1.6; }
+  40%  { d: path("M 59.5,22 Q 54,13 58,4 Q 62,-5 55,-15 Q 50,-24 57,-34"); stroke-width: 1.2; }
+  100% { d: path("M 59.5,22 Q 53,6 57,-10 Q 61,-26 53,-39 Q 46,-50 56,-60"); stroke-width: 0.5; }
+}
+@keyframes smokeRise3 {
+  0%   { d: path("M 61,22 Q 61,22 61,22"); stroke-width: 1.2; }
+  40%  { d: path("M 61,22 Q 66,13 62,4 Q 58,-5 65,-16 Q 70,-26 62,-36"); stroke-width: 0.8; }
+  100% { d: path("M 61,22 Q 67,6 62,-10 Q 57,-26 66,-40 Q 73,-52 62,-62"); stroke-width: 0.3; }
+}
+
+@keyframes smokeFade {
+  0%   { opacity: 0.65; }
+  60%  { opacity: 0.35; }
+  100% { opacity: 0; }
+}
+
+/* Flame reborn burst */
+@keyframes flameBurst {
+  0%   { transform: scale(0.2); opacity: 0; }
+  40%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+#mainCandleFlame.flame-reborn {
+  animation: flameBurst 0.5s ease-out forwards;
+}
+
+/* Wind-puff animation on wrapper */
+@keyframes windPuff {
+  0%   { transform: rotate(0deg)  scaleX(1);    }
+  20%  { transform: rotate(-3deg) scaleX(0.95); }
+  50%  { transform: rotate(5deg)  scaleX(1.05); }
+  75%  { transform: rotate(-2deg) scaleX(0.98); }
+  100% { transform: rotate(0deg)  scaleX(1);    }
+}
+#candleWrapper.wind-puff {
+  animation: windPuff 0.55s ease-in-out;
+}
+
+/* =================================================================
+   DARK GOTHIC MODE — when candle is blown out
+   Dims cathedral sanctuary cards without breaking fixed 3D celestial canvas
+   ================================================================= */
+
+body.gothic-dark-mode .tome-card,
+body.gothic-dark-mode .reliquary-card:not(.candle-shrine),
+body.gothic-dark-mode .cathedral-header,
+body.gothic-dark-mode .cathedral-footer {
+  filter: brightness(0.38) contrast(0.92);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+  transition: filter 1.2s ease, box-shadow 1.2s ease;
+}
+
+body.gothic-dark-mode .candle-shrine {
+  box-shadow: 0 0 24px rgba(212, 175, 55, 0.25);
+  transition: box-shadow 1.2s ease;
+}
+
+.tome-card,
+.reliquary-card,
+.cathedral-header,
+.cathedral-footer {
+  transition: filter 1.2s ease, box-shadow 1.2s ease;
+}

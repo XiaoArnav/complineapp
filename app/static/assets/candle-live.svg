@@ -1,0 +1,79 @@
+<svg id="mainCandle" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 100 200" width="100%" height="100%"
+     style="overflow:visible">
+  <defs>
+    <!-- Flame gradient — changes when dead -->
+    <radialGradient id="flameGlowLive" cx="50%" cy="55%" r="50%">
+      <stop offset="0%"  stop-color="#fff8d6"/>
+      <stop offset="30%" stop-color="#ffb326" stop-opacity="0.9"/>
+      <stop offset="65%" stop-color="#e64a19" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#7a1400" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Brass candlestick -->
+    <linearGradient id="brassG" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#54431a"/>
+      <stop offset="35%"  stop-color="#c9a23b"/>
+      <stop offset="70%"  stop-color="#f5d77f"/>
+      <stop offset="100%" stop-color="#4a3b17"/>
+    </linearGradient>
+    <!-- Wax -->
+    <linearGradient id="waxG" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#d6ccb6"/>
+      <stop offset="50%"  stop-color="#fdfaf0"/>
+      <stop offset="100%" stop-color="#c2b79f"/>
+    </linearGradient>
+    <!-- Halo glow -->
+    <radialGradient id="haloG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#fff8d6" stop-opacity="0.55"/>
+      <stop offset="60%"  stop-color="#ffb326"  stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#e64a19"  stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Candle halo (ambient light) -->
+  <ellipse id="candleHalo" cx="50" cy="48" rx="46" ry="44"
+           fill="url(#haloG)" opacity="0.7"
+           style="transition: opacity 0.8s ease"/>
+
+  <!-- Brass base -->
+  <ellipse cx="50" cy="185" rx="36" ry="10" fill="url(#brassG)" stroke="#221908" stroke-width="1.5"/>
+  <rect x="44" y="145" width="12" height="40" fill="url(#brassG)" rx="2"/>
+  <ellipse cx="50" cy="145" rx="18" ry="5" fill="url(#brassG)"/>
+  <path d="M 32,143 C 32,150 68,150 68,143 Z" fill="url(#brassG)"/>
+
+  <!-- Wax shaft -->
+  <rect x="40" y="70" width="20" height="73" fill="url(#waxG)" rx="2"/>
+  <!-- Wax drips -->
+  <path d="M 40,75 C 38,85 41,92 41,95 C 43,92 42,82 43,76 Z" fill="#fdfaf0"/>
+  <path d="M 57,75 C 59,88 56,102 56,108 C 55,102 54,84 55,75 Z" fill="#ede5d3"/>
+  <ellipse cx="50" cy="70" rx="10" ry="3" fill="#fdfaf0"/>
+
+  <!-- Wick -->
+  <path id="candleWick" d="M 50,70 Q 52,60 48,56"
+        fill="none" stroke="#221a11" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ===== FLAME GROUP ===== -->
+  <g id="mainCandleFlame" class="candle-flame-live">
+    <!-- Blue base -->
+    <ellipse cx="49" cy="56" rx="4" ry="3" fill="#355cb0" opacity="0.8"/>
+    <!-- Outer teardrop -->
+    <path d="M 49,56 C 42,48 42,32 50,22 C 58,32 58,48 49,56 Z"
+          fill="url(#flameGlowLive)"/>
+    <!-- Inner white core -->
+    <path d="M 49.5,54 C 45,49 46,38 50,30 C 53,38 54,49 49.5,54 Z"
+          fill="#ffffff" opacity="0.9"/>
+    <!-- Tiny hot tip -->
+    <circle cx="50" cy="24" r="2" fill="#fffbe0"/>
+  </g>
+
+  <!-- Smoke wisps (appear when extinguished) -->
+  <g id="smokeWisps" opacity="0" style="transition:opacity 0.4s ease">
+    <path d="M 50,55 Q 47,46 50,38 Q 53,30 50,22"
+          fill="none" stroke="#888" stroke-width="1.5"
+          stroke-linecap="round" opacity="0.5"/>
+    <path d="M 50,55 Q 53,48 50,40 Q 47,34 51,26"
+          fill="none" stroke="#aaa" stroke-width="1"
+          stroke-linecap="round" opacity="0.3"/>
+  </g>
+</svg>

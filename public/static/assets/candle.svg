@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8d6" stop-opacity="1"/>
+      <stop offset="30%" stop-color="#ffb326" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#e64a19" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#7a1400" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#54431a"/>
+      <stop offset="35%" stop-color="#c9a23b"/>
+      <stop offset="70%" stop-color="#f5d77f"/>
+      <stop offset="100%" stop-color="#4a3b17"/>
+    </linearGradient>
+    <linearGradient id="waxGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d6ccb6"/>
+      <stop offset="50%" stop-color="#fdfaf0"/>
+      <stop offset="100%" stop-color="#c2b79f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Candle Light Halo -->
+  <circle class="candle-halo" cx="50" cy="45" r="42" fill="url(#flameGlow)" opacity="0.6"/>
+
+  <!-- Candlestick Base (Heavy Gothic Brass) -->
+  <ellipse cx="50" cy="185" rx="36" ry="10" fill="url(#brassGrad)" stroke="#221908" stroke-width="1.5"/>
+  <path d="M 30,183 Q 50,165 70,183 Z" fill="url(#brassGrad)"/>
+  <cylinder cx="50" cy="155" r="14" fill="url(#brassGrad)"/>
+  <rect x="44" y="145" width="12" height="25" fill="url(#brassGrad)" rx="2"/>
+  <ellipse cx="50" cy="145" rx="18" ry="5" fill="url(#brassGrad)"/>
+  <!-- Drip pan / Bobeche -->
+  <path d="M 32,143 C 32,150 68,150 68,143 Z" fill="url(#brassGrad)"/>
+
+  <!-- Beeswax Candle Shaft -->
+  <rect class="candle-wax" x="40" y="70" width="20" height="73" fill="url(#waxGrad)" rx="2"/>
+  <!-- Wax Drippings down side -->
+  <path d="M 40,75 C 38,85 41,92 41,95 C 43,92 42,82 43,76 Z" fill="#fdfaf0"/>
+  <path d="M 57,75 C 59,88 56,102 56,108 C 55,102 54,84 55,75 Z" fill="#ede5d3"/>
+  <ellipse cx="50" cy="70" rx="10" ry="3" fill="#fdfaf0"/>
+
+  <!-- Black Wick -->
+  <path d="M 50,70 Q 52,60 48,56" fill="none" stroke="#221a11" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Flickering Flame -->
+  <g class="candle-flame">
+    <!-- Outer Blue Base -->
+    <ellipse cx="49" cy="56" rx="4" ry="3" fill="#355cb0" opacity="0.8"/>
+    <!-- Main Teardrop Flame -->
+    <path d="M 49,56 C 42,48 42,32 50,22 C 58,32 58,48 49,56 Z" fill="url(#flameGlow)"/>
+    <!-- Inner White Core -->
+    <path d="M 49.5,54 C 45,49 46,38 50,30 C 53,38 54,49 49.5,54 Z" fill="#ffffff"/>
+  </g>
+</svg>
