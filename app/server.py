@@ -157,9 +157,13 @@ class GothicServerHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
 
-            # Smart caching policy: HTML re-validates, static assets cached aggressively
-            is_html = content_type.startswith("text/html")
-            cache_control = "no-cache, must-revalidate" if is_html else "public, max-age=86400, stale-while-revalidate=604800"
+            # Smart caching policy: HTML, CSS, JS re-validate with ETag; media/fonts cached aggressively
+            is_revalidate = (
+                content_type.startswith("text/html")
+                or content_type.startswith("text/css")
+                or content_type in ("application/javascript", "text/javascript")
+            )
+            cache_control = "no-cache, must-revalidate" if is_revalidate else "public, max-age=86400, stale-while-revalidate=604800"
 
             accept_encoding = self.headers.get("Accept-Encoding", "")
             can_gzip = "gzip" in accept_encoding and (

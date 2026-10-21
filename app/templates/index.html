@@ -15,10 +15,236 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css">
-  <link rel="stylesheet" href="/static/css/candle-intro.css">
-  <link rel="stylesheet" href="/static/css/tarot.css">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=4.0">
+  <link rel="stylesheet" href="/static/css/candle-intro.css?v=4.0">
+  <link rel="stylesheet" href="/static/css/tarot.css?v=4.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
+
+  <!-- Critical Repertoire Switcher Styles to Guarantee Immediate Ornate Gothic Render -->
+  <style>
+    .sacred-repertoire-box {
+      background: linear-gradient(180deg, rgba(22, 14, 32, 0.95) 0%, rgba(13, 8, 19, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 10px;
+      padding: 10px 12px 12px;
+      margin-bottom: 12px;
+      box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.7), 0 2px 10px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .repertoire-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 9px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
+    }
+    .repertoire-heading {
+      font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      color: #d4af37;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .rep-cross { font-size: 9px; color: #a8842c; }
+    .track-stepper-bar { display: flex; align-items: center; gap: 6px; }
+    .track-stepper-btn {
+      background: #1b1126;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 4px;
+      color: #d4af37;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    .stepper-arrow { font-size: 15px; line-height: 1; font-weight: bold; transform: translateY(-1px); }
+    .track-stepper-btn:hover { background: #39174e; border-color: #f5d479; color: #fff9e6; box-shadow: 0 0 8px rgba(212, 175, 55, 0.35); transform: scale(1.08); }
+    .track-stepper-btn:active { transform: scale(0.95); }
+    .track-stepper-display {
+      font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #cfbe9f;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 0 2px;
+      white-space: nowrap;
+    }
+    .repertoire-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .repertoire-card {
+      background: linear-gradient(145deg, #180f24 0%, #100818 100%);
+      border: 1.5px solid rgba(212, 175, 55, 0.22);
+      border-radius: 8px;
+      padding: 8px 9px;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transition: all 0.22s ease-out;
+      overflow: hidden;
+      text-align: left;
+    }
+    .repertoire-card:hover {
+      background: linear-gradient(145deg, #241436 0%, #150a21 100%);
+      border-color: rgba(212, 175, 55, 0.55);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(212, 175, 55, 0.15);
+    }
+    .repertoire-card.active {
+      background: linear-gradient(145deg, #30133e 0%, #190928 100%);
+      border-color: #d4af37;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.3), inset 0 0 10px rgba(212, 175, 55, 0.12);
+    }
+    .rep-disc-sleeve {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: radial-gradient(circle at 45% 45%, #241b2e 0%, #08050c 80%);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .rep-mini-disc {
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: repeating-radial-gradient(circle at center, #1b1322 0px, #1b1322 2px, #0c0812 3px, #0c0812 4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease;
+    }
+    .rep-mini-center {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+    .rep-mini-center::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 4px;
+      background: #08050c;
+      border-radius: 50%;
+    }
+    .gold-foil {
+      background: radial-gradient(circle, #f3d47d 0%, #a8842c 100%);
+      box-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
+    }
+    .amethyst-foil {
+      background: radial-gradient(circle, #cb7ce3 0%, #5d177a 100%);
+      box-shadow: 0 0 4px rgba(203, 124, 227, 0.6);
+    }
+    .phonograph-card.playing .repertoire-card.active .rep-mini-disc {
+      animation: repDiscSpin 4.5s linear infinite;
+    }
+    @keyframes repDiscSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .rep-card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .rep-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+    .rep-opus-badge {
+      font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #d4af37;
+      text-transform: uppercase;
+    }
+    .rep-active-indicator {
+      font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+      font-size: 7.5px;
+      letter-spacing: 0.6px;
+      padding: 1px 5px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      color: #7f7466;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+    .repertoire-card.active .rep-active-indicator {
+      background: rgba(212, 175, 55, 0.18);
+      color: #fff4d0;
+      border-color: #d4af37;
+      box-shadow: 0 0 6px rgba(212, 175, 55, 0.3);
+    }
+    .phonograph-card.playing .repertoire-card.active .rep-active-indicator {
+      background: rgba(56, 179, 107, 0.25);
+      color: #a4f5cb;
+      border-color: #38b36b;
+      box-shadow: 0 0 8px rgba(56, 179, 107, 0.4);
+    }
+    .rep-track-title {
+      font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ede3d1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.4px;
+    }
+    .repertoire-card.active .rep-track-title {
+      color: #fff7d6;
+      text-shadow: 0 0 8px rgba(212, 175, 55, 0.35);
+    }
+    .rep-track-desc {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 10px;
+      color: #a69888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-style: italic;
+      margin-top: 1px;
+    }
+    .rep-corner-flourish {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 12px 12px 0;
+      border-color: transparent transparent transparent transparent;
+      transition: border-color 0.2s ease;
+    }
+    .repertoire-card.active .rep-corner-flourish {
+      border-color: transparent #d4af37 transparent transparent;
+      filter: drop-shadow(0 0 3px #f3d47d);
+    }
+    @media (max-width: 440px) {
+      .repertoire-cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -394,17 +620,63 @@
               <span class="phonograph-status-badge" id="phonographStatusBadge">Pin Off Disc</span>
             </div>
 
-            <!-- Sacred Track Selector / Vinyl Disc Changer -->
-            <div class="phonograph-tracklist" id="phonographTracklist">
-              <button class="track-tab active" data-track="0" title="Opus I: Abbey Nocturne (Piano &amp; Strings)">
-                <span class="track-disc-icon">💿</span>
-                <span class="track-tab-name">Opus I • Nocturne</span>
-              </button>
-              <button class="track-tab" data-track="1" title="Opus II: Gothic Vespers (Sanctuary Bells &amp; Choir)">
-                <span class="track-disc-icon">💿</span>
-                <span class="track-tab-name">Opus II • Vespers</span>
-              </button>
-            </div>
+            <!-- Sacred Repertoire Selector / Vinyl Disc Changer -->
+            <div class="sacred-repertoire-box" id="sacredRepertoireBox">
+              <div class="repertoire-header">
+                <span class="repertoire-heading">
+                  <span class="rep-cross">✠</span> SACRED REPERTOIRE <span class="rep-cross">✠</span>
+                </span>
+                <div class="track-stepper-bar">
+                  <button type="button" class="track-stepper-btn" id="btnPrevTrack" title="Previous Opus (Shift+Left)" aria-label="Previous Track">
+                    <span class="stepper-arrow">‹</span>
+                  </button>
+                  <span class="track-stepper-display" id="trackStepperDisplay">OPUS I • 1 OF 2</span>
+                  <button type="button" class="track-stepper-btn" id="btnNextTrack" title="Next Opus (Shift+Right)" aria-label="Next Track">
+                    <span class="stepper-arrow">›</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="repertoire-cards-grid" id="repertoireCardsGrid" role="tablist" aria-label="Select Opus to play on the Abbey Phonograph">
+                <!-- Card 0: Opus I -->
+                <div class="repertoire-card active" data-track="0" role="tab" tabindex="0" aria-selected="true" id="repertoireCard0" title="Load Opus I onto turntable">
+                  <div class="rep-disc-sleeve">
+                    <div class="rep-mini-disc disc-opus1">
+                      <div class="rep-mini-center gold-foil"></div>
+                    </div>
+                    <span class="rep-card-icon">💿</span>
+                  </div>
+                  <div class="rep-card-content">
+                    <div class="rep-card-top">
+                      <span class="rep-opus-badge">OPUS I</span>
+                      <span class="rep-active-indicator" id="repBadge0">ON PLATTER</span>
+                    </div>
+                    <div class="rep-track-title">Abbey Nocturne</div>
+                    <div class="rep-track-desc">Nocturnal Piano &amp; Strings</div>
+                  </div>
+                  <div class="rep-corner-flourish"></div>
+                </div>
+
+                <!-- Card 1: Opus II -->
+                <div class="repertoire-card" data-track="1" role="tab" tabindex="0" aria-selected="false" id="repertoireCard1" title="Load Opus II onto turntable">
+                  <div class="rep-disc-sleeve">
+                    <div class="rep-mini-disc disc-opus2">
+                      <div class="rep-mini-center amethyst-foil"></div>
+                    </div>
+                    <span class="rep-card-icon">💿</span>
+                  </div>
+                  <div class="rep-card-content">
+                    <div class="rep-card-top">
+                      <span class="rep-opus-badge">OPUS II</span>
+                      <span class="rep-active-indicator" id="repBadge1">IN SLEEVE</span>
+                    </div>
+                    <div class="rep-track-title">Gothic Vespers</div>
+                    <div class="rep-track-desc">Sanctuary Bells &amp; Choir</div>
+                  </div>
+                  <div class="rep-corner-flourish"></div>
+                </div>
+              </div>
+            </div><!-- /sacred-repertoire-box -->
 
             <!-- Phonograph Stage with ONLY the CD and the Pin -->
             <div class="phonograph-stage" id="phonographStage" title="Click CD or Pin to Play / Turn Off">
@@ -595,11 +867,11 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js"></script>
-  <script src="/static/js/soundscape.js"></script>
-  <script src="/static/js/candle-sound.js"></script>
-  <script src="/static/js/candle-intro.js"></script>
-  <script src="/static/js/tarot-wheel.js"></script>
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/stellar-map.js?v=4.0"></script>
+  <script src="/static/js/soundscape.js?v=4.0"></script>
+  <script src="/static/js/candle-sound.js?v=4.0"></script>
+  <script src="/static/js/candle-intro.js?v=4.0"></script>
+  <script src="/static/js/tarot-wheel.js?v=4.0"></script>
+  <script src="/static/js/app.js?v=4.0"></script>
 </body>
 </html>

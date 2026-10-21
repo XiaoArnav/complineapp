@@ -549,14 +549,310 @@ body {
   box-shadow: 0 0 12px var(--gold-glow);
 }
 
-/* ── Phonograph Tracklist Tabs (Vinyl Disc Changer) ── */
-.phonograph-tracklist {
+/* ── Sacred Repertoire Suite (Ornate Vinyl Disc Selector & Stepper) ── */
+.sacred-repertoire-box {
+  background: linear-gradient(180deg, rgba(22, 14, 32, 0.95) 0%, rgba(13, 8, 19, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 10px;
+  padding: 10px 12px 12px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.7), 0 2px 10px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.repertoire-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
+}
+
+.repertoire-heading {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  color: var(--gold-antique);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rep-cross {
+  font-size: 9px;
+  color: var(--gold-bronze);
+}
+
+.track-stepper-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.track-stepper-btn {
+  background: #1b1126;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 4px;
+  color: var(--gold-antique);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.stepper-arrow {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: bold;
+  transform: translateY(-1px);
+}
+
+.track-stepper-btn:hover {
+  background: #39174e;
+  border-color: var(--gold-bright);
+  color: #fff9e6;
+  box-shadow: 0 0 8px var(--gold-glow);
+  transform: scale(1.08);
+}
+
+.track-stepper-btn:active {
+  transform: scale(0.95);
+}
+
+.track-stepper-display {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #cfbe9f;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+/* ── Repertoire Cards Grid ── */
+.repertoire-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
+.repertoire-card {
+  background: linear-gradient(145deg, #180f24 0%, #100818 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.22);
+  border-radius: 8px;
+  padding: 8px 9px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: all 0.22s ease-out;
+  overflow: hidden;
+  text-align: left;
+}
+
+.repertoire-card:hover {
+  background: linear-gradient(145deg, #241436 0%, #150a21 100%);
+  border-color: rgba(212, 175, 55, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+.repertoire-card.active {
+  background: linear-gradient(145deg, #30133e 0%, #190928 100%);
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.3), inset 0 0 10px rgba(212, 175, 55, 0.12);
+}
+
+/* Mini Vinyl Disc Sleeve */
+.rep-disc-sleeve {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 45% 45%, #241b2e 0%, #08050c 80%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.rep-mini-disc {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    #1b1322 0px,
+    #1b1322 2px,
+    #0c0812 3px,
+    #0c0812 4px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+.rep-mini-center {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.rep-mini-center::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: #08050c;
+  border-radius: 50%;
+}
+
+.gold-foil {
+  background: radial-gradient(circle, #f3d47d 0%, #a8842c 100%);
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
+}
+
+.amethyst-foil {
+  background: radial-gradient(circle, #cb7ce3 0%, #5d177a 100%);
+  box-shadow: 0 0 4px rgba(203, 124, 227, 0.6);
+}
+
+.rep-card-icon {
+  display: none;
+}
+
+/* Spin mini disc when active and phonograph is playing */
+.phonograph-card.playing .repertoire-card.active .rep-mini-disc {
+  animation: repDiscSpin 4.5s linear infinite;
+}
+
+@keyframes repDiscSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Card Content Details */
+.rep-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rep-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.rep-opus-badge {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--gold-antique);
+  text-transform: uppercase;
+}
+
+.rep-active-indicator {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.6px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  color: #7f7466;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.repertoire-card.active .rep-active-indicator {
+  background: rgba(212, 175, 55, 0.18);
+  color: #fff4d0;
+  border-color: var(--gold-antique);
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.3);
+}
+
+.phonograph-card.playing .repertoire-card.active .rep-active-indicator {
+  background: rgba(56, 179, 107, 0.25);
+  color: #a4f5cb;
+  border-color: #38b36b;
+  box-shadow: 0 0 8px rgba(56, 179, 107, 0.4);
+}
+
+.rep-track-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: #ede3d1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.4px;
+}
+
+.repertoire-card.active .rep-track-title {
+  color: #fff7d6;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.35);
+}
+
+.rep-track-desc {
+  font-family: var(--font-reading);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
+  margin-top: 1px;
+}
+
+.rep-corner-flourish {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 12px 12px 0;
+  border-color: transparent transparent transparent transparent;
+  transition: border-color 0.2s ease;
+}
+
+.repertoire-card.active .rep-corner-flourish {
+  border-color: transparent var(--gold-antique) transparent transparent;
+  filter: drop-shadow(0 0 3px var(--gold-bright));
+}
+
+@media (max-width: 440px) {
+  .repertoire-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fallback for legacy .track-tab if referenced anywhere */
 .track-tab {
   background: #190f24;
   border: 1px solid rgba(212, 175, 55, 0.25);
@@ -572,34 +868,11 @@ body {
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-
-.track-tab:hover {
-  background: #271439;
-  border-color: var(--gold-antique);
-  color: #fff4d0;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-}
-
 .track-tab.active {
   background: linear-gradient(180deg, #441754 0%, #22092c 100%);
   border-color: var(--gold-antique);
   color: var(--gold-bright);
-  box-shadow: 0 0 12px var(--gold-glow), inset 0 0 8px rgba(212, 175, 55, 0.25);
-  font-weight: 700;
-}
-
-.track-disc-icon {
-  font-size: 13px;
-  transition: transform 0.3s ease;
-}
-
-.track-tab.active .track-disc-icon {
-  transform: scale(1.15);
-  filter: drop-shadow(0 0 4px var(--gold-antique));
 }
 
 /* ── Turntable Stage (Only CD & Pin) ── */

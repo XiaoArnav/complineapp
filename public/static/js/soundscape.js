@@ -81,9 +81,19 @@ class GothicSoundscape {
 
   setTrack(index, autoPlay = null) {
     if (index < 0 || index >= this.playlist.length) return;
-    const shouldPlay = autoPlay !== null ? autoPlay : this.isPhonographPlaying;
 
-    if (this.isPhonographPlaying) {
+    // If tapping the already selected track
+    if (index === this.currentTrackIndex) {
+      if (!this.isPhonographPlaying && autoPlay !== false) {
+        this.playPhonograph();
+      }
+      return;
+    }
+
+    const wasPlaying = this.isPhonographPlaying;
+    const shouldPlay = autoPlay !== null ? autoPlay : wasPlaying;
+
+    if (wasPlaying) {
       this.pausePhonograph();
     }
 
@@ -98,7 +108,7 @@ class GothicSoundscape {
     if (shouldPlay) {
       setTimeout(() => {
         this.playPhonograph();
-      }, 150);
+      }, 180);
     }
   }
 

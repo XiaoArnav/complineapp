@@ -543,6 +543,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const currentTrack = window.gothicSoundscape ? window.gothicSoundscape.getCurrentTrack() : null;
     const trackShortTitle = currentTrack ? currentTrack.title : "Nocturne";
+    const curIdx = window.gothicSoundscape ? window.gothicSoundscape.currentTrackIndex : 0;
+
+    // Update Repertoire Cards & Stepper Badges
+    const repCards = document.querySelectorAll(".repertoire-card");
+    const repBadge0 = document.getElementById("repBadge0");
+    const repBadge1 = document.getElementById("repBadge1");
+    const stepperDisplay = document.getElementById("trackStepperDisplay");
+
+    repCards.forEach((c, idx) => {
+      const isCardActive = (idx === curIdx);
+      c.classList.toggle("active", isCardActive);
+      c.setAttribute("aria-selected", isCardActive ? "true" : "false");
+    });
+
+    if (repBadge0) {
+      repBadge0.textContent = (curIdx === 0) ? (isPlaying ? "PLAYING" : "ON PLATTER") : "IN SLEEVE";
+    }
+    if (repBadge1) {
+      repBadge1.textContent = (curIdx === 1) ? (isPlaying ? "PLAYING" : "ON PLATTER") : "IN SLEEVE";
+    }
+    if (stepperDisplay) {
+      stepperDisplay.textContent = curIdx === 0 ? "OPUS I • 1 OF 2" : "OPUS II • 2 OF 2";
+    }
 
     if (isPlaying) {
       phonographCard.classList.add("playing");
@@ -588,14 +611,70 @@ document.addEventListener("DOMContentLoaded", () => {
     const platter = document.getElementById("turntablePlatter");
     const pinBtn = document.getElementById("btnPinToggle");
 
-    // Sacred Track Tabs (Opus I & Opus II)
+    // Sacred Repertoire Cards & Stepper Bar
+    const repCards = document.querySelectorAll(".repertoire-card");
+    const stepperDisplay = document.getElementById("trackStepperDisplay");
+    const btnPrev = document.getElementById("btnPrevTrack");
+    const btnNext = document.getElementById("btnNextTrack");
+
+    function selectTrackByIndex(idx) {
+      if (window.gothicSoundscape) {
+        window.gothicSoundscape.setTrack(idx);
+      }
+    }
+
+    repCards.forEach(card => {
+      card.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const trackIdx = parseInt(card.dataset.track, 10);
+        selectTrackByIndex(trackIdx);
+      });
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const trackIdx = parseInt(card.dataset.track, 10);
+          selectTrackByIndex(trackIdx);
+        }
+      });
+    });
+
+    if (btnPrev) {
+      btnPrev.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack();
+      });
+    }
+
+    if (btnNext) {
+      btnNext.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack();
+      });
+    }
+
+    // Keyboard shortcuts: Shift+Left / Shift+Right for song switching
+    document.addEventListener("keydown", (e) => {
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+      if (e.shiftKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack();
+      } else if (e.shiftKey && e.key === "ArrowRight") {
+        e.preventDefault();
+        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack();
+      }
+    });
+
+    // Backwards compatibility for any legacy .track-tab elements
     const trackTabs = document.querySelectorAll(".track-tab");
     trackTabs.forEach(tab => {
       tab.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         const trackIdx = parseInt(tab.dataset.track, 10);
-        window.gothicSoundscape.setTrack(trackIdx);
+        selectTrackByIndex(trackIdx);
       });
     });
 
@@ -628,6 +707,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (platter) platter.addEventListener("click", togglePinAction);
     // 3. The Master Feature Button
     if (pinBtn) pinBtn.addEventListener("click", togglePinAction);
+  }
   }
 
   // --- 6. 📻 Tome Reading Bar Phonograph Button ---
