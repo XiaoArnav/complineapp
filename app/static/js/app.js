@@ -909,32 +909,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const btnAlignTonightSky = document.getElementById("btnAlignTonightSky");
-    if (btnAlignTonightSky) {
-      btnAlignTonightSky.addEventListener("click", () => {
-        if (!window.stellarMap) return;
+    const btnAlignTonightSkyHeader = document.getElementById("btnAlignTonightSkyHeader");
+    const btnAlignTonightSkySettings = document.getElementById("btnAlignTonightSkySettings");
+    const tonightSkyHeaderLabel = document.getElementById("tonightSkyHeaderLabel");
+    const realSkyStatusPill = document.getElementById("realSkyStatusPill");
 
-        const performAlign = (lat, lon) => {
-          const res = window.stellarMap.alignToTonightSky(lat, lon);
-          if (res) {
-            const latStr = `${res.latDeg >= 0 ? "+" : ""}${res.latDeg.toFixed(1)}°`;
-            showToast(`Astrolabe Aligned to Tonight's Real Sky Overhead (Lat ${latStr}) ✠`);
+    const performRealSkyAlignment = () => {
+      if (!window.stellarMap) return;
+
+      const onCoordsResolved = (lat, lon, isGps = false) => {
+        const res = window.stellarMap.alignToTonightSky(lat, lon);
+        if (res) {
+          const sign = res.latDeg >= 0 ? "+" : "";
+          const latStr = `${sign}${res.latDeg.toFixed(1)}°`;
+          const methodStr = isGps ? "GPS" : "Timezone";
+          if (tonightSkyHeaderLabel) {
+            tonightSkyHeaderLabel.innerHTML = `Overhead (${latStr})`;
           }
-        };
-
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              performAlign(pos.coords.latitude, pos.coords.longitude);
-            },
-            () => {
-              // Graceful fallback to timezone-derived coordinates
-              performAlign(null, null);
-            },
-            { timeout: 3500 }
-          );
-        } else {
-          performAlign(null, null);
+          if (realSkyStatusPill) {
+            realSkyStatusPill.textContent = `ALIGNED • LAT ${latStr}`;
+            realSkyStatusPill.style.color = "#76ff94";
+          }
+          showToast(`Astrolabe Aligned to Real Sky • Lat ${latStr} (${methodStr}) ✠`);
         }
+      };
+
+      if (navigator.geolocation) {
+        showToast("Querying Celestial Coordinates & Geolocation... ✠");
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            onCoordsResolved(pos.coords.latitude, pos.coords.longitude, true);
+          },
+          () => {
+            // Graceful fallback to timezone-derived coordinates
+            onCoordsResolved(null, null, false);
+          },
+          { timeout: 4000, enableHighAccuracy: false }
+        );
+      } else {
+        onCoordsResolved(null, null, false);
+      }
+    };
+
+    if (btnAlignTonightSky) {
+      btnAlignTonightSky.addEventListener("click", performRealSkyAlignment);
+    }
+    if (btnAlignTonightSkyHeader) {
+      btnAlignTonightSkyHeader.addEventListener("click", performRealSkyAlignment);
+    }
+    if (btnAlignTonightSkySettings) {
+      btnAlignTonightSkySettings.addEventListener("click", () => {
+        performRealSkyAlignment();
+        const settingsModal = document.getElementById("settingsModal");
+        if (settingsModal) settingsModal.classList.remove("active");
       });
     }
 
