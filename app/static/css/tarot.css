@@ -250,24 +250,29 @@
 }
 
 /* Dynamic State-Based Stacking & Hit Testing */
+.tarot-3d-card:not(.is-faceup) .tarot-face-back,
 .tarot-3d-card.is-facedown .tarot-face-back {
   z-index: 20;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
 }
+
+.tarot-3d-card:not(.is-faceup) .tarot-face-front,
 .tarot-3d-card.is-facedown .tarot-face-front {
   z-index: 1;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
 .tarot-3d-card.is-faceup .tarot-face-front {
   z-index: 20;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
 }
+
 .tarot-3d-card.is-faceup .tarot-face-back {
   z-index: 1;
   opacity: 0 !important;
