@@ -30,6 +30,13 @@ class GothicSoundscape {
         discLabel: "OPUS II • VESPERS",
         src: "/static/assets/ambient-vespers.mp3",
         desc: "Sanctuary Bells & Choral Chant"
+      },
+      {
+        id: "opus3",
+        title: "Opus III: White Night (Morpheus)",
+        discLabel: "OPUS III • MORPHEUS",
+        src: "/static/assets/ambient-morpheus.mp3",
+        desc: "Hypnagogic Chants & Moonlight"
       }
     ];
     this.currentTrackIndex = 0;

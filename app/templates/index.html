@@ -134,20 +134,20 @@
       white-space: nowrap;
     }
     .repertoire-cards-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
     .repertoire-card {
       background: linear-gradient(145deg, #180f24 0%, #100818 100%);
       border: 1.5px solid rgba(212, 175, 55, 0.22);
       border-radius: 8px;
-      padding: 8px 9px;
+      padding: 8px 10px;
       cursor: pointer;
       position: relative;
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
       transition: all 0.22s ease-out;
       overflow: hidden;
       text-align: left;
@@ -212,6 +212,10 @@
     .amethyst-foil {
       background: radial-gradient(circle, #cb7ce3 0%, #5d177a 100%);
       box-shadow: 0 0 4px rgba(203, 124, 227, 0.6);
+    }
+    .sapphire-foil {
+      background: radial-gradient(circle, #7cc4ff 0%, #1a4f8b 100%);
+      box-shadow: 0 0 5px rgba(124, 196, 255, 0.7);
     }
     .phonograph-card.playing .repertoire-card.active .rep-mini-disc {
       animation: repDiscSpin 4.5s linear infinite;
@@ -683,7 +687,7 @@
                   <button type="button" class="track-stepper-btn" id="btnPrevTrack" title="Previous Opus (Shift+Left)" aria-label="Previous Track">
                     <span class="stepper-arrow">‹</span>
                   </button>
-                  <span class="track-stepper-display" id="trackStepperDisplay">OPUS I • 1 OF 2</span>
+                  <span class="track-stepper-display" id="trackStepperDisplay">OPUS I • 1 OF 3</span>
                   <button type="button" class="track-stepper-btn" id="btnNextTrack" title="Next Opus (Shift+Right)" aria-label="Next Track">
                     <span class="stepper-arrow">›</span>
                   </button>
@@ -725,6 +729,25 @@
                     </div>
                     <div class="rep-track-title">Gothic Vespers</div>
                     <div class="rep-track-desc">Sanctuary Bells &amp; Choir</div>
+                  </div>
+                  <div class="rep-corner-flourish"></div>
+                </div>
+
+                <!-- Card 2: Opus III -->
+                <div class="repertoire-card" data-track="2" role="tab" tabindex="0" aria-selected="false" id="repertoireCard2" title="Load Opus III onto turntable">
+                  <div class="rep-disc-sleeve">
+                    <div class="rep-mini-disc disc-opus3">
+                      <div class="rep-mini-center sapphire-foil"></div>
+                    </div>
+                    <span class="rep-card-icon">💿</span>
+                  </div>
+                  <div class="rep-card-content">
+                    <div class="rep-card-top">
+                      <span class="rep-opus-badge">OPUS III</span>
+                      <span class="rep-active-indicator" id="repBadge2">IN SLEEVE</span>
+                    </div>
+                    <div class="rep-track-title">White Night (Morpheus)</div>
+                    <div class="rep-track-desc">Hypnagogic Chants &amp; Moonlight</div>
                   </div>
                   <div class="rep-corner-flourish"></div>
                 </div>

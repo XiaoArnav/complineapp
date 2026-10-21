@@ -658,21 +658,21 @@ body {
 
 /* ── Repertoire Cards Grid ── */
 .repertoire-cards-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .repertoire-card {
   background: linear-gradient(145deg, #180f24 0%, #100818 100%);
   border: 1.5px solid rgba(212, 175, 55, 0.22);
   border-radius: 8px;
-  padding: 8px 9px;
+  padding: 8px 10px;
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   transition: all 0.22s ease-out;
   overflow: hidden;
   text-align: left;
@@ -752,6 +752,11 @@ body {
 .amethyst-foil {
   background: radial-gradient(circle, #cb7ce3 0%, #5d177a 100%);
   box-shadow: 0 0 4px rgba(203, 124, 227, 0.6);
+}
+
+.sapphire-foil {
+  background: radial-gradient(circle, #7cc4ff 0%, #1a4f8b 100%);
+  box-shadow: 0 0 5px rgba(124, 196, 255, 0.7);
 }
 
 .rep-card-icon {

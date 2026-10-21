@@ -569,26 +569,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const trackShortTitle = currentTrack ? currentTrack.title : "Nocturne";
     const curIdx = window.gothicSoundscape ? window.gothicSoundscape.currentTrackIndex : 0;
 
-    // Update Repertoire Cards & Stepper Badges
+    // Update Repertoire Cards & Stepper Badges dynamically
     const repCards = document.querySelectorAll(".repertoire-card");
-    const repBadge0 = document.getElementById("repBadge0");
-    const repBadge1 = document.getElementById("repBadge1");
     const stepperDisplay = document.getElementById("trackStepperDisplay");
+    const totalTracks = window.gothicSoundscape ? window.gothicSoundscape.playlist.length : 3;
+    const romanNumerals = ["OPUS I", "OPUS II", "OPUS III", "OPUS IV", "OPUS V"];
 
     repCards.forEach((c, idx) => {
       const isCardActive = (idx === curIdx);
       c.classList.toggle("active", isCardActive);
       c.setAttribute("aria-selected", isCardActive ? "true" : "false");
+
+      const badge = c.querySelector(".rep-active-indicator");
+      if (badge) {
+        badge.textContent = isCardActive ? (isPlaying ? "PLAYING" : "ON PLATTER") : "IN SLEEVE";
+      }
     });
 
-    if (repBadge0) {
-      repBadge0.textContent = (curIdx === 0) ? (isPlaying ? "PLAYING" : "ON PLATTER") : "IN SLEEVE";
-    }
-    if (repBadge1) {
-      repBadge1.textContent = (curIdx === 1) ? (isPlaying ? "PLAYING" : "ON PLATTER") : "IN SLEEVE";
-    }
     if (stepperDisplay) {
-      stepperDisplay.textContent = curIdx === 0 ? "OPUS I • 1 OF 2" : "OPUS II • 2 OF 2";
+      const roman = romanNumerals[curIdx] || `OPUS ${curIdx + 1}`;
+      stepperDisplay.textContent = `${roman} • ${curIdx + 1} OF ${totalTracks}`;
     }
 
     if (isPlaying) {
