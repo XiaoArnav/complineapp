@@ -45,6 +45,10 @@ class StellarMap {
     this.dragStartY = 0;
     this.hoveredStar = null;
 
+    // Interactive Constellation Focus & Isolation
+    this.activeConstellation = null;
+    this.constellationFocusWeight = 0;
+
     // Display toggles
     this.showConstellations = true;
     this.showAstrolabeRings = true;
@@ -813,7 +817,7 @@ class StellarMap {
 
     // 3. Project All Stars into Screen Space
     let closestMajor = null;
-    let closestDist = 28;
+    let closestDist = 32;
 
     const pointer = { x: this.pointerX, y: this.pointerY };
 
@@ -837,6 +841,18 @@ class StellarMap {
     }
     this.hoveredStar = closestMajor;
 
+    // Smooth Constellation Focus Transition
+    if (this.hoveredStar) {
+      this.activeConstellation = this.hoveredStar.constell;
+      this.constellationFocusWeight += (1 - this.constellationFocusWeight) * 0.14;
+    } else {
+      this.constellationFocusWeight += (0 - this.constellationFocusWeight) * 0.08;
+      if (this.constellationFocusWeight < 0.01) {
+        this.constellationFocusWeight = 0;
+        this.activeConstellation = null;
+      }
+    }
+
     // 4. Render 3D Armillary Astrolabe Coordinate Rings
     if (this.showAstrolabeRings) {
       this.renderAstrolabeRings(ctx, cx, cy, cosX, sinX, cosY, sinY);
@@ -856,7 +872,10 @@ class StellarMap {
     // 8. Render Gravitational Shockwave Ripples
     this.renderPulses(ctx);
 
-    // 9. Render Candle Bloom Flash (if triggered)
+    // 9. Render Floating Constellation Title Banner
+    this.renderConstellationBanner(ctx);
+
+    // 10. Render Candle Bloom Flash (if triggered)
     if (this.bloomAlpha > 0.005) {
       ctx.fillStyle = `rgba(255, 215, 120, ${this.bloomAlpha * 0.35})`;
       ctx.fillRect(0, 0, w, h);
@@ -909,7 +928,9 @@ class StellarMap {
   }
 
   renderConstellations(ctx) {
-    ctx.lineWidth = 1.2;
+    const focusW = this.constellationFocusWeight;
+    const activeConstell = this.activeConstellation;
+
     this.constellationLinks.forEach(([nameA, nameB]) => {
       const idxA = this.majorStarIndexMap[nameA];
       const idxB = this.majorStarIndexMap[nameB];
@@ -921,15 +942,66 @@ class StellarMap {
 
       // Depth fading
       const avgZ = (sA.pz + sB.pz) / 2;
-      const alpha = Math.max(0.12, Math.min(0.55, (1200 - avgZ) / 1600));
+      const baseAlpha = Math.max(0.12, Math.min(0.55, (1200 - avgZ) / 1600));
 
-      // Delicate golden-cyan constellation filament
-      ctx.strokeStyle = `rgba(212, 175, 55, ${alpha})`;
-      ctx.beginPath();
-      ctx.moveTo(sA.px, sA.py);
-      ctx.lineTo(sB.px, sB.py);
-      ctx.stroke();
+      const isInter = sA.constell !== sB.constell;
+      const isMember = activeConstell && (sA.constell === activeConstell || sB.constell === activeConstell);
+
+      if (focusW > 0.01) {
+        if (isMember) {
+          // Focused Constellation: radiant solar gold with ethereal bloom
+          const highlightAlpha = Math.min(1.0, baseAlpha * (1 - focusW) + 0.95 * focusW);
+
+          // Soft bloom glow underlay
+          ctx.setLineDash([]);
+          ctx.strokeStyle = `rgba(255, 195, 75, ${highlightAlpha * 0.38})`;
+          ctx.lineWidth = 4.2;
+          ctx.beginPath();
+          ctx.moveTo(sA.px, sA.py);
+          ctx.lineTo(sB.px, sB.py);
+          ctx.stroke();
+
+          // Sharp bright gold inner core
+          ctx.strokeStyle = `rgba(255, 238, 160, ${highlightAlpha})`;
+          ctx.lineWidth = 1.8 + 0.6 * focusW;
+          ctx.beginPath();
+          ctx.moveTo(sA.px, sA.py);
+          ctx.lineTo(sB.px, sB.py);
+          ctx.stroke();
+        } else {
+          // Dimmed non-focused constellations
+          const dimAlpha = baseAlpha * (1 - 0.72 * focusW);
+          ctx.setLineDash(isInter ? [3, 4] : []);
+          ctx.strokeStyle = isInter
+            ? `rgba(130, 175, 215, ${dimAlpha * 0.4})`
+            : `rgba(165, 138, 70, ${dimAlpha})`;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(sA.px, sA.py);
+          ctx.lineTo(sB.px, sB.py);
+          ctx.stroke();
+        }
+      } else {
+        // Balanced ambient state: clean filaments
+        if (isInter) {
+          // Navigation bridge (Summer Triangle, Pointers): delicate dashed starlight
+          ctx.setLineDash([3, 4]);
+          ctx.strokeStyle = `rgba(175, 220, 255, ${baseAlpha * 0.45})`;
+          ctx.lineWidth = 0.85;
+        } else {
+          // Authentic constellation bone: solid antique gold
+          ctx.setLineDash([]);
+          ctx.strokeStyle = `rgba(212, 175, 55, ${baseAlpha * 0.65})`;
+          ctx.lineWidth = 1.05;
+        }
+        ctx.beginPath();
+        ctx.moveTo(sA.px, sA.py);
+        ctx.lineTo(sB.px, sB.py);
+        ctx.stroke();
+      }
     });
+
+    ctx.setLineDash([]);
   }
 
   renderCursorFilaments(ctx, pointer) {
@@ -976,41 +1048,66 @@ class StellarMap {
 
   renderStars(ctx) {
     const now = performance.now() * 0.001;
+    const focusW = this.constellationFocusWeight;
+    const activeConstell = this.activeConstellation;
 
     for (let i = 0; i < this.stars.length; i++) {
       const s = this.stars[i];
       if (!s.visible) continue;
 
       const twinkle = 0.75 + Math.sin(now * s.twinkleSpeed * 10 + s.twinklePhase) * 0.25;
-      const r = Math.max(0.6, s.baseR * s.scale * twinkle);
+      let r = Math.max(0.6, s.baseR * s.scale * twinkle);
 
       // Depth fog fading
-      const depthAlpha = Math.max(0.18, Math.min(1.0, (1100 - s.pz) / 1400));
+      let depthAlpha = Math.max(0.18, Math.min(1.0, (1100 - s.pz) / 1400));
+
+      const isMember = activeConstell && s.constell === activeConstell;
+
+      if (focusW > 0.01) {
+        if (isMember) {
+          // Boost focused constellation stars
+          r *= (1 + 0.35 * focusW);
+          depthAlpha = Math.min(1.0, depthAlpha + 0.3 * focusW);
+        } else {
+          // Dim non-member stars gracefully
+          depthAlpha *= (1 - 0.55 * focusW);
+        }
+      }
 
       ctx.globalAlpha = depthAlpha;
 
       if (s.isMajor) {
+        const haloMultiplier = isMember ? 6.2 : 4.5;
         // Radiant halo for major historical stars
-        const haloGrad = ctx.createRadialGradient(s.px, s.py, 0, s.px, s.py, r * 4.5);
+        const haloGrad = ctx.createRadialGradient(s.px, s.py, 0, s.px, s.py, r * haloMultiplier);
         haloGrad.addColorStop(0, s.color);
-        haloGrad.addColorStop(0.35, "rgba(212, 175, 55, 0.35)");
+        haloGrad.addColorStop(0.35, isMember ? "rgba(255, 215, 90, 0.55)" : "rgba(212, 175, 55, 0.35)");
         haloGrad.addColorStop(1, "rgba(212, 175, 55, 0)");
         ctx.fillStyle = haloGrad;
         ctx.beginPath();
-        ctx.arc(s.px, s.py, r * 4.5, 0, Math.PI * 2);
+        ctx.arc(s.px, s.py, r * haloMultiplier, 0, Math.PI * 2);
         ctx.fill();
 
         // 4-point Diamond Diffraction Cross
-        if (s.mag < 1.6) {
-          ctx.strokeStyle = s.color;
-          ctx.lineWidth = 0.8;
-          const spikeLen = r * 3.8;
+        if (s.mag < 1.6 || isMember) {
+          ctx.strokeStyle = isMember ? "#ffe499" : s.color;
+          ctx.lineWidth = isMember ? 1.1 : 0.8;
+          const spikeLen = r * (isMember ? 4.5 : 3.8);
           ctx.beginPath();
           ctx.moveTo(s.px - spikeLen, s.py);
           ctx.lineTo(s.px + spikeLen, s.py);
           ctx.moveTo(s.px, s.py - spikeLen);
           ctx.lineTo(s.px, s.py + spikeLen);
           ctx.stroke();
+        }
+
+        // Render delicate member star name tag when constellation is focused
+        if (isMember && focusW > 0.25) {
+          ctx.save();
+          ctx.font = "italic 600 10px 'Cinzel Decorative', 'MedievalSharp', serif";
+          ctx.fillStyle = `rgba(255, 240, 180, ${focusW * 0.9})`;
+          ctx.fillText(s.name, s.px + r + 6, s.py - r);
+          ctx.restore();
         }
       }
 
@@ -1040,6 +1137,90 @@ class StellarMap {
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       ctx.stroke();
     }
+  }
+
+  renderConstellationBanner(ctx) {
+    if (!this.activeConstellation || this.constellationFocusWeight < 0.05) return;
+
+    // Find all visible stars in active constellation
+    let sumX = 0, sumY = 0, count = 0, minY = Infinity;
+    for (let i = 0; i < this.stars.length; i++) {
+      const s = this.stars[i];
+      if (s.isMajor && s.constell === this.activeConstellation && s.visible) {
+        sumX += s.px;
+        sumY += s.py;
+        count++;
+        if (s.py < minY) minY = s.py;
+      }
+    }
+
+    if (count === 0) return;
+
+    const cx = sumX / count;
+    const cy = Math.max(48, minY - 38);
+    const alpha = this.constellationFocusWeight;
+
+    // Constellation Realm Subtitles
+    const zodiacs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpius", "Sagittarius", "Capricornus", "Aquarius", "Pisces"];
+    const circumpolars = ["Ursa Major", "Ursa Minor", "Cassiopeia", "Cepheus", "Draco", "Camelopardalis"];
+    const southerns = ["Crux", "Centaurus", "Carina", "Vela", "Puppis", "Eridanus", "Pavo", "Grus", "Tucana", "Phoenix", "Piscis Austrinus", "Triangulum Australe", "Hydra", "Octans", "Lupus", "Ara"];
+
+    let realm = "CLASSICAL CELESTIAL FIGURE";
+    if (zodiacs.includes(this.activeConstellation)) {
+      realm = "ZODIAC CONSTELLATION • ECLIPTIC REALM";
+    } else if (circumpolars.includes(this.activeConstellation)) {
+      realm = "NORTHERN CIRCUMPOLAR • NEVER-SETTING";
+    } else if (southerns.includes(this.activeConstellation)) {
+      realm = "AUSTRAL SKY • SOUTHERN HORIZON";
+    }
+
+    const title = `✦ ${this.activeConstellation.toUpperCase()} ✦`;
+    const subtitle = realm;
+
+    const fontTitle = "bold 13px 'Cinzel Decorative', 'MedievalSharp', serif";
+    const fontSub = "italic 9.5px 'Cormorant Garamond', Georgia, serif";
+
+    ctx.save();
+    ctx.font = fontTitle;
+    const w1 = ctx.measureText(title).width;
+    ctx.font = fontSub;
+    const w2 = ctx.measureText(subtitle).width;
+
+    const boxW = Math.max(w1, w2) + 36;
+    const boxH = 42;
+    const boxX = Math.max(16, Math.min(this.width - boxW - 16, cx - boxW / 2));
+    const boxY = Math.max(16, Math.min(this.height - boxH - 16, cy));
+
+    // Glass velvet card
+    ctx.fillStyle = `rgba(10, 6, 18, ${0.88 * alpha})`;
+    ctx.strokeStyle = `rgba(255, 215, 100, ${0.75 * alpha})`;
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(boxX, boxY, boxW, boxH, 8);
+    } else {
+      ctx.rect(boxX, boxY, boxW, boxH);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    // Subtle golden glow around banner
+    ctx.strokeStyle = `rgba(212, 175, 55, ${0.28 * alpha})`;
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    // Inner Title
+    ctx.fillStyle = `rgba(255, 235, 140, ${alpha})`;
+    ctx.font = fontTitle;
+    ctx.textAlign = "center";
+    ctx.fillText(title, boxX + boxW / 2, boxY + 18);
+
+    // Subtitle
+    ctx.fillStyle = `rgba(200, 215, 235, ${alpha * 0.9})`;
+    ctx.font = fontSub;
+    ctx.fillText(subtitle, boxX + boxW / 2, boxY + 32);
+
+    ctx.restore();
   }
 
   renderStarTooltip(ctx, star) {
@@ -1077,8 +1258,8 @@ class StellarMap {
     if (y + boxH - 14 > this.height - 12) {
       y = this.height - boxH - 12 + 14;
     }
-    if (y - 14 < 12) {
-      y = 26;
+    if (y - 14 < 68) {
+      y = star.py + 26;
     }
 
     // Tooltip Card
