@@ -979,13 +979,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnToggleRosePrismSettings = document.getElementById("btnToggleRosePrismSettings");
 
     const onCycleRosePrism = () => {
-      if (!window.rosePrism) return;
-      const pal = window.rosePrism.cyclePalette();
-      if (rosePrismLabel) {
-        const shortName = pal.name.split(" ")[0];
-        rosePrismLabel.textContent = `Prism (${shortName})`;
+      let pal = null;
+      if (window.stellarMap && window.stellarMap.cycleRosePrismPalette) {
+        pal = window.stellarMap.cycleRosePrismPalette();
       }
-      showToast(`Rose Window Lux: ${pal.name} ✠`);
+      if (window.rosePrism && window.rosePrism.cyclePalette) {
+        pal = window.rosePrism.cyclePalette();
+      }
+      if (pal) {
+        if (rosePrismLabel) {
+          const shortName = pal.name.split(" ")[0];
+          rosePrismLabel.textContent = `Prism (${shortName})`;
+        }
+        showToast(`Rose Window Lux: ${pal.name} ✠`);
+      }
     };
 
     if (btnToggleRosePrism) {
@@ -1002,6 +1009,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const roseWheel = document.getElementById("roseWheel");
     if (roseWheel) {
       roseWheel.addEventListener("click", () => {
+        if (window.stellarMap && window.stellarMap.cycleRosePrismPalette) {
+          window.stellarMap.cycleRosePrismPalette();
+        }
         if (window.rosePrism) {
           window.rosePrism.triggerBurst();
         }

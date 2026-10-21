@@ -2535,7 +2535,6 @@ body {
   height: 100dvh;
   z-index: 1;
   pointer-events: none;
-  mix-blend-mode: screen;
   opacity: 1;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
