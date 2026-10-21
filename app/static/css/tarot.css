@@ -196,7 +196,7 @@
   cursor: grabbing;
 }
 
-/* Entrance Animation: Materializing out of nowhere */
+/* Entrance Animation: Materializing out of nowhere facedown */
 .tarot-modal-backdrop.active .tarot-3d-card.materializing {
   animation: tarotMaterializeFromVoid 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -204,7 +204,7 @@
 @keyframes tarotMaterializeFromVoid {
   0% {
     opacity: 0;
-    transform: translate3d(0, 140px, -800px) rotateX(60deg) rotateY(-180deg) scale(0.08);
+    transform: translate3d(0, 140px, -800px) rotateX(60deg) rotateY(0deg) scale(0.08);
     filter: blur(16px);
   }
   50% {
@@ -213,7 +213,7 @@
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) scale(1);
     filter: blur(0px);
   }
 }
@@ -575,10 +575,16 @@
 
 .tarot-back-footer {
   font-family: var(--font-display);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  color: rgba(212, 175, 55, 0.8);
+  font-size: 9.5px;
+  letter-spacing: 1.8px;
+  color: var(--gold-antique);
   text-transform: uppercase;
+  animation: backFooterGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes backFooterGlow {
+  0% { opacity: 0.75; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.04); color: #fff8da; text-shadow: 0 0 10px rgba(212, 175, 55, 0.7); }
 }
 
 /* ==========================================================================
@@ -630,6 +636,20 @@
 
 .tarot-tool-btn:hover .tool-icon {
   transform: scale(1.18);
+}
+
+.tarot-tool-btn.unrevealed {
+  background: linear-gradient(180deg, #872ca3 0%, #4c1260 100%);
+  border-color: var(--gold-bright);
+  color: #fff9e6;
+  font-weight: 700;
+  animation: revealBtnPulse 1.8s ease-in-out infinite alternate;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.45);
+}
+
+@keyframes revealBtnPulse {
+  0% { transform: translateY(0); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+  100% { transform: translateY(-2px); box-shadow: 0 0 22px rgba(212, 175, 55, 0.65); }
 }
 
 .tarot-tool-btn.highlight {

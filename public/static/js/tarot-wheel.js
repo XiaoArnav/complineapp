@@ -378,11 +378,15 @@ class GothicTarotWheel {
   showTarotCard(card) {
     if (!this.modalEl || !this.cardEl) return;
     this.currentCard = card;
-    this.isFlipped = false;
+    this.isFlipped = true; // Initially facedown showing back face (Click to reveal!)
+    this.hasBeenRevealed = false;
     this.targetRotX = 0;
     this.targetRotY = 0;
     this.cardRotX = 0;
     this.cardRotY = 0;
+
+    // Update button text to "Reveal Prophecy"
+    this.updateFlipButtonState();
 
     // Populate Card Front Elements
     const elNum = document.getElementById("tarotNumeral");
@@ -423,6 +427,18 @@ class GothicTarotWheel {
       this.cardEl.classList.remove("materializing");
       this.startFloatingLoop();
     }, 1100);
+  }
+
+  updateFlipButtonState() {
+    const btnFlip = document.getElementById("btnTarotFlip");
+    if (!btnFlip) return;
+    if (this.isFlipped) {
+      btnFlip.innerHTML = '<span class="tool-icon">✨</span> Reveal Prophecy';
+      btnFlip.classList.add("unrevealed");
+    } else {
+      btnFlip.innerHTML = '<span class="tool-icon">🔄</span> Flip Card';
+      btnFlip.classList.remove("unrevealed");
+    }
   }
 
   // --- 3D Levitation & Physics Animation Loop ---
@@ -623,6 +639,19 @@ class GothicTarotWheel {
   flipCard() {
     this.isFlipped = !this.isFlipped;
     this.playCardFlipSound();
+    this.updateFlipButtonState();
+
+    // When flipping to front for the first time, celebrate with harmonic chime & aura flash!
+    if (!this.isFlipped && !this.hasBeenRevealed) {
+      this.hasBeenRevealed = true;
+      this.playCommuneChime(this.currentCard ? this.currentCard.frequency : 432);
+
+      if (this.artworkChamberEl) {
+        this.artworkChamberEl.classList.remove("communing");
+        void this.artworkChamberEl.offsetWidth;
+        this.artworkChamberEl.classList.add("communing");
+      }
+    }
   }
 
   // --- Card Action: Commune with Harmonic Resonance ---
