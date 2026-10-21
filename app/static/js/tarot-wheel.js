@@ -391,6 +391,11 @@ class GothicTarotWheel {
     this.targetFlipAngle = 180;
     this.lastFlipTime = 0;
 
+    if (this.cardEl) {
+      this.cardEl.classList.add("is-facedown");
+      this.cardEl.classList.remove("is-faceup");
+    }
+
     // Update button text to "Reveal Prophecy" if button present
     this.updateFlipButtonState();
 
@@ -468,7 +473,12 @@ class GothicTarotWheel {
       }
 
       // Smooth 3D flip rotation physics (180deg = card back, 0deg = prophecy front)
-      this.flipAngle += (this.targetFlipAngle - this.flipAngle) * 0.14;
+      const flipDiff = this.targetFlipAngle - this.flipAngle;
+      if (Math.abs(flipDiff) < 0.2) {
+        this.flipAngle = this.targetFlipAngle;
+      } else {
+        this.flipAngle += flipDiff * 0.16;
+      }
       const finalRotY = this.cardRotY + this.flipAngle;
 
       if (this.cardEl) {
@@ -501,23 +511,81 @@ class GothicTarotWheel {
   bind3DInteractivity() {
     if (!this.modalEl || !this.cardEl) return;
 
-    // 1. Mouse Tracking Tilt across entire screen
+    // A. Native Touch Support (Mobile / Tablet / Touchscreen)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchMoved = false;
+
+    const handleTouchStart = (e) => {
+      if (this.isMaterializing) return;
+      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      touchMoved = false;
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        const t = e.touches[0];
+        if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 22) {
+          touchMoved = true;
+        }
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (this.isMaterializing) return;
+      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      if (!touchMoved) {
+        this.flipCard();
+      }
+    };
+
+    this.cardEl.addEventListener("touchstart", handleTouchStart, { passive: true });
+    this.cardEl.addEventListener("touchmove", handleTouchMove, { passive: true });
+    this.cardEl.addEventListener("touchend", handleTouchEnd);
+
+    if (this.stageEl) {
+      this.stageEl.addEventListener("touchstart", handleTouchStart, { passive: true });
+      this.stageEl.addEventListener("touchmove", handleTouchMove, { passive: true });
+      this.stageEl.addEventListener("touchend", handleTouchEnd);
+    }
+
+    // B. Direct Native Click Support (Desktop / Laptop)
+    const handleCardClick = (e) => {
+      if (this.isMaterializing) return;
+      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      this.flipCard();
+    };
+
+    this.cardEl.addEventListener("click", handleCardClick);
+    if (this.stageEl) {
+      this.stageEl.addEventListener("click", handleCardClick);
+    }
+
+    // C. 3D Parallax & Optional Drag-to-Tilt
+    let isMouseDown = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let hasDraggedDistance = false;
+
     this.modalEl.addEventListener("pointermove", (e) => {
       if (this.isMaterializing) return;
 
-      if (this.isDragging) {
-        // Dragging to rotate
-        const deltaX = e.clientX - this.dragStartX;
-        const deltaY = e.clientY - this.dragStartY;
-        if (Math.hypot(deltaX, deltaY) > 14) {
-          this.hasDragged = true;
+      if (isMouseDown) {
+        const deltaX = e.clientX - dragStartX;
+        const deltaY = e.clientY - dragStartY;
+        if (Math.hypot(deltaX, deltaY) > 25) {
+          hasDraggedDistance = true;
+          this.isDragging = true;
+          if (this.cardEl) this.cardEl.classList.add("is-dragging");
+          this.cardRotY = this.dragStartRotY + deltaX * 0.45;
+          this.cardRotX = Math.max(-45, Math.min(45, this.dragStartRotX - deltaY * 0.45));
+          this.targetRotX = this.cardRotX;
+          this.targetRotY = this.cardRotY;
         }
-        this.cardRotY = this.dragStartRotY + deltaX * 0.45;
-        this.cardRotX = Math.max(-45, Math.min(45, this.dragStartRotX - deltaY * 0.45));
-        this.targetRotX = this.cardRotX;
-        this.targetRotY = this.cardRotY;
       } else {
-        // Natural mouse tilt parallax
         const rect = this.cardEl.getBoundingClientRect();
         const cardCenterX = rect.left + rect.width / 2;
         const cardCenterY = rect.top + rect.height / 2;
@@ -538,67 +606,31 @@ class GothicTarotWheel {
       }
     });
 
-    // 2. Drag & Touch / Click Flip on Card
-    let pointerDownTime = 0;
-    let pointerDownX = 0;
-    let pointerDownY = 0;
-
-    this.cardEl.addEventListener("pointerdown", (e) => {
+    this.cardEl.addEventListener("mousedown", (e) => {
       if (this.isMaterializing) return;
-      if (e.target.closest("button") || e.target.closest("a")) return;
-
-      this.isDragging = true;
-      this.hasDragged = false;
-      this.cardEl.classList.add("is-dragging");
-      this.dragStartX = e.clientX;
-      this.dragStartY = e.clientY;
-      pointerDownX = e.clientX;
-      pointerDownY = e.clientY;
-      pointerDownTime = performance.now();
+      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      isMouseDown = true;
+      hasDraggedDistance = false;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
       this.dragStartRotX = this.cardRotX;
       this.dragStartRotY = this.cardRotY;
-
-      if (window.getSelection) window.getSelection().removeAllRanges();
     });
 
-    window.addEventListener("pointerup", (e) => {
-      if (!this.isDragging) return;
+    window.addEventListener("mouseup", () => {
+      if (!isMouseDown) return;
+      isMouseDown = false;
       this.isDragging = false;
       if (this.cardEl) this.cardEl.classList.remove("is-dragging");
-
-      const deltaX = Math.abs(e.clientX - pointerDownX);
-      const deltaY = Math.abs(e.clientY - pointerDownY);
-      const elapsed = performance.now() - pointerDownTime;
-
-      // Touch / Tap / Click recognition: flips if not intentionally dragged
-      if (!this.hasDragged || (deltaX < 15 && deltaY < 15) || elapsed < 260) {
-        this.flipCard();
-      } else {
-        // Settle smoothly back towards mouse parallax
+      if (hasDraggedDistance) {
         this.targetRotX = 0;
         this.targetRotY = 0;
       }
     });
 
-    window.addEventListener("pointercancel", () => {
-      if (this.isDragging) {
-        this.isDragging = false;
-        if (this.cardEl) this.cardEl.classList.remove("is-dragging");
-        this.targetRotX = 0;
-        this.targetRotY = 0;
-      }
-    });
-
-    // Direct click fallback on card
-    this.cardEl.addEventListener("click", (e) => {
-      if (this.isMaterializing) return;
-      if (e.target.closest("button") || e.target.closest("a")) return;
-      this.flipCard();
-    });
-
-    // 3. Reset tilt when pointer leaves window
+    // Reset tilt when pointer leaves window
     document.addEventListener("mouseleave", () => {
-      if (!this.isDragging) {
+      if (!isMouseDown) {
         this.targetRotX = 0;
         this.targetRotY = 0;
       }
@@ -662,11 +694,23 @@ class GothicTarotWheel {
   // --- Card Action: 3D Double-Sided Flip ---
   flipCard() {
     const now = performance.now();
-    if (now - this.lastFlipTime < 320) return; // Debounce rapid double-triggers
+    if (now - this.lastFlipTime < 240) return; // Debounce rapid double-triggers
     this.lastFlipTime = now;
 
     this.isFlipped = !this.isFlipped;
     this.targetFlipAngle = this.isFlipped ? 180 : 0;
+
+    // Toggle active face class for bulletproof CSS z-index and pointer-events
+    if (this.cardEl) {
+      if (this.isFlipped) {
+        this.cardEl.classList.add("is-facedown");
+        this.cardEl.classList.remove("is-faceup");
+      } else {
+        this.cardEl.classList.add("is-faceup");
+        this.cardEl.classList.remove("is-facedown");
+      }
+    }
+
     this.playCardFlipSound();
     this.updateFlipButtonState();
 

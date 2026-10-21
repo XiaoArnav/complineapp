@@ -227,7 +227,6 @@
   border-radius: 18px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  overflow: hidden;
   box-shadow: 
     0 30px 80px rgba(0, 0, 0, 0.95),
     0 0 35px rgba(212, 175, 55, 0.3),
@@ -240,14 +239,34 @@
 .tarot-face-front {
   background: linear-gradient(160deg, #1f132e 0%, #11091b 55%, #07040c 100%);
   border: 2px solid var(--gold-antique);
-  transform: rotateY(0deg);
+  transform: rotateY(0deg) translateZ(1px);
+  -webkit-transform: rotateY(0deg) translateZ(1px);
 }
 
 /* Back Face (Gothic Sacred Geometry & Rota Fortunae Seal) */
 .tarot-face-back {
   background: radial-gradient(circle at center, #2b133d 0%, #140921 70%, #08030e 100%);
   border: 2px solid var(--gold-antique);
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
+  -webkit-transform: rotateY(180deg) translateZ(1px);
+}
+
+/* Dynamic State-Based Stacking & Hit Testing */
+.tarot-3d-card.is-facedown .tarot-face-back {
+  z-index: 20;
+  pointer-events: auto;
+}
+.tarot-3d-card.is-facedown .tarot-face-front {
+  z-index: 1;
+  pointer-events: none;
+}
+.tarot-3d-card.is-faceup .tarot-face-front {
+  z-index: 20;
+  pointer-events: auto;
+}
+.tarot-3d-card.is-faceup .tarot-face-back {
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Holographic Foil Layer (Dynamic Rainbow Sheen) */
