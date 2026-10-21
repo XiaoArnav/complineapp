@@ -33,6 +33,9 @@ class GothicTarotWheel {
     this.dragStartRotX = 0;
     this.dragStartRotY = 0;
     this.hasDragged = false;
+    this.flipAngle = 180;
+    this.targetFlipAngle = 180;
+    this.lastFlipTime = 0;
     this.animFrameId = null;
     this.currentCard = null;
 
@@ -384,8 +387,11 @@ class GothicTarotWheel {
     this.targetRotY = 0;
     this.cardRotX = 0;
     this.cardRotY = 0;
+    this.flipAngle = 180;
+    this.targetFlipAngle = 180;
+    this.lastFlipTime = 0;
 
-    // Update button text to "Reveal Prophecy"
+    // Update button text to "Reveal Prophecy" if button present
     this.updateFlipButtonState();
 
     // Populate Card Front Elements
@@ -461,9 +467,9 @@ class GothicTarotWheel {
         this.cardRotY += (this.targetRotY - this.cardRotY) * 0.12;
       }
 
-      // Flip offset: 180deg when back face is facing forward
-      const flipAngle = this.isFlipped ? 180 : 0;
-      const finalRotY = this.cardRotY + flipAngle;
+      // Smooth 3D flip rotation physics (180deg = card back, 0deg = prophecy front)
+      this.flipAngle += (this.targetFlipAngle - this.flipAngle) * 0.14;
+      const finalRotY = this.cardRotY + this.flipAngle;
 
       if (this.cardEl) {
         this.cardEl.style.transform = `translate3d(0, ${floatY}px, 0) rotateX(${this.cardRotX.toFixed(2)}deg) rotateY(${finalRotY.toFixed(2)}deg) rotateZ(${floatRotZ.toFixed(2)}deg)`;
@@ -503,7 +509,7 @@ class GothicTarotWheel {
         // Dragging to rotate
         const deltaX = e.clientX - this.dragStartX;
         const deltaY = e.clientY - this.dragStartY;
-        if (Math.hypot(deltaX, deltaY) > 5) {
+        if (Math.hypot(deltaX, deltaY) > 14) {
           this.hasDragged = true;
         }
         this.cardRotY = this.dragStartRotY + deltaX * 0.45;
@@ -532,7 +538,11 @@ class GothicTarotWheel {
       }
     });
 
-    // 2. Drag & Click Flip on Card
+    // 2. Drag & Touch / Click Flip on Card
+    let pointerDownTime = 0;
+    let pointerDownX = 0;
+    let pointerDownY = 0;
+
     this.cardEl.addEventListener("pointerdown", (e) => {
       if (this.isMaterializing) return;
       if (e.target.closest("button") || e.target.closest("a")) return;
@@ -542,6 +552,9 @@ class GothicTarotWheel {
       this.cardEl.classList.add("is-dragging");
       this.dragStartX = e.clientX;
       this.dragStartY = e.clientY;
+      pointerDownX = e.clientX;
+      pointerDownY = e.clientY;
+      pointerDownTime = performance.now();
       this.dragStartRotX = this.cardRotX;
       this.dragStartRotY = this.cardRotY;
 
@@ -553,14 +566,34 @@ class GothicTarotWheel {
       this.isDragging = false;
       if (this.cardEl) this.cardEl.classList.remove("is-dragging");
 
-      // If user tapped without dragging: flip card!
-      if (!this.hasDragged) {
+      const deltaX = Math.abs(e.clientX - pointerDownX);
+      const deltaY = Math.abs(e.clientY - pointerDownY);
+      const elapsed = performance.now() - pointerDownTime;
+
+      // Touch / Tap / Click recognition: flips if not intentionally dragged
+      if (!this.hasDragged || (deltaX < 15 && deltaY < 15) || elapsed < 260) {
         this.flipCard();
       } else {
         // Settle smoothly back towards mouse parallax
         this.targetRotX = 0;
         this.targetRotY = 0;
       }
+    });
+
+    window.addEventListener("pointercancel", () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        if (this.cardEl) this.cardEl.classList.remove("is-dragging");
+        this.targetRotX = 0;
+        this.targetRotY = 0;
+      }
+    });
+
+    // Direct click fallback on card
+    this.cardEl.addEventListener("click", (e) => {
+      if (this.isMaterializing) return;
+      if (e.target.closest("button") || e.target.closest("a")) return;
+      this.flipCard();
     });
 
     // 3. Reset tilt when pointer leaves window
@@ -572,15 +605,6 @@ class GothicTarotWheel {
     });
 
     // 4. Toolbar Buttons
-    const btnFlip = document.getElementById("btnTarotFlip");
-    if (btnFlip) {
-      btnFlip.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.flipCard();
-      });
-    }
-
     const btnWeave = document.getElementById("btnTarotWeave");
     if (btnWeave) {
       btnWeave.addEventListener("click", (e) => {
@@ -637,7 +661,12 @@ class GothicTarotWheel {
 
   // --- Card Action: 3D Double-Sided Flip ---
   flipCard() {
+    const now = performance.now();
+    if (now - this.lastFlipTime < 320) return; // Debounce rapid double-triggers
+    this.lastFlipTime = now;
+
     this.isFlipped = !this.isFlipped;
+    this.targetFlipAngle = this.isFlipped ? 180 : 0;
     this.playCardFlipSound();
     this.updateFlipButtonState();
 

@@ -185,11 +185,13 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  cursor: grab;
+  cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
   border-radius: 18px;
   outline: none;
   will-change: transform;
+  touch-action: manipulation;
 }
 
 .tarot-3d-card.is-dragging {
@@ -458,11 +460,13 @@
   letter-spacing: 1.5px;
   color: rgba(212, 175, 55, 0.7);
   text-transform: uppercase;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  pointer-events: none;
 }
 
 .tarot-3d-card:hover .tarot-flip-hint {
   color: #fff4d0;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 /* ==========================================================================
@@ -580,6 +584,7 @@
   color: var(--gold-antique);
   text-transform: uppercase;
   animation: backFooterGlow 2s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
 @keyframes backFooterGlow {
@@ -598,7 +603,8 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 12px;
   z-index: 50;
   white-space: nowrap;
 }
