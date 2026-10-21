@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=27.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=28.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=19.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -331,6 +331,7 @@
        Live 3D cosmos, constellations, armillary rings, & mouse orbit
        ══════════════════════════════════════════════════════════= -->
   <canvas id="stellarMapCanvas" class="stellar-map-canvas"></canvas>
+  <canvas id="rosePrismCanvas" class="rose-prism-canvas"></canvas>
 
   <!-- ═══════════════════════════════════════════════════════════
        CINEMATIC INTRO OVERLAY
@@ -512,6 +513,11 @@
           </button>
           <button id="btnOpenSettings" class="header-action-btn" title="Configure Reliquary, Gemma & Voice">
             <span>⚙️</span> Reliquary Settings
+          </button>
+
+          <!-- Gothic Rose Window Prismatic Stained-Glass Ambient Lighting -->
+          <button id="btnToggleRosePrism" class="header-action-btn stellar-hud-button" title="Gothic Rose Window Stained-Glass Ambient Light (Click to cycle cathedral palette)">
+            <span>🌹</span> <span id="rosePrismLabel">Rose Prism</span>
           </button>
 
           <!-- Prominently Visible Dedicated Real Sky Geolocation Button -->
@@ -1268,6 +1274,20 @@
           </div>
         </div>
 
+        <!-- Section 5: Gothic Rose Window Prismatic Lighting -->
+        <div class="settings-section">
+          <div class="settings-section-title"><span>🌹</span> Gothic Rose Window Lux Lucis</div>
+          <div class="settings-row" style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="font-size:13px;color:var(--text-bright);">Stained-Glass Ambient Refraction</span>
+              <span style="font-size:11px;color:var(--text-muted);">Cycle between Notre-Dame, Sainte-Chapelle, Chartres &amp; Alchemical hues</span>
+            </div>
+            <button type="button" id="btnToggleRosePrismSettings" class="btn-gothic" style="padding:6px 14px;font-size:12px;white-space:nowrap;">
+              🌹 Cycle Cathedral Palette
+            </button>
+          </div>
+        </div>
+
       </div>
       <div class="gothic-modal-footer">
         <button id="btnSaveSettings" class="btn-gothic-save">✠ Inscribe &amp; Seal Settings</button>
@@ -1278,13 +1298,14 @@
   <!-- Gothic Toast Notification -->
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
-  <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=27.0"></script>
+  <!-- Scripts — stellar-map, rose-prism, candle-sound & candle-intro must load before app.js -->
+  <script src="/static/js/stellar-map.js?v=28.0"></script>
+  <script src="/static/js/rose-prism.js?v=28.0"></script>
   <script src="/static/js/soundscape.js?v=19.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=19.0"></script>
-  <script src="/static/js/app.js?v=27.0"></script>
+  <script src="/static/js/app.js?v=28.0"></script>
 </body>
 </html>
