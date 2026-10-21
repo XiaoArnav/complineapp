@@ -574,12 +574,15 @@ class GothicTarotWheel {
 
     // B. Direct Native Click Support (Desktop / Laptop)
     const handleCardClick = (e) => {
-      if (this.isMaterializing) return;
-      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      if (e.target.closest && (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a"))) return;
       this.flipCard();
     };
 
     this.cardEl.addEventListener("click", handleCardClick);
+    if (this.frontFaceEl) this.frontFaceEl.addEventListener("click", handleCardClick);
+    if (this.backFaceEl) this.backFaceEl.addEventListener("click", handleCardClick);
+    const stageEl = document.getElementById("tarot3dStage");
+    if (stageEl) stageEl.addEventListener("click", handleCardClick);
 
     // C. 3D Parallax & Optional Drag-to-Tilt
     let isMouseDown = false;
@@ -624,8 +627,7 @@ class GothicTarotWheel {
     });
 
     this.cardEl.addEventListener("mousedown", (e) => {
-      if (this.isMaterializing) return;
-      if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
+      if (e.target.closest && (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a"))) return;
       isMouseDown = true;
       hasDraggedDistance = false;
       dragStartX = e.clientX;
@@ -634,12 +636,17 @@ class GothicTarotWheel {
       this.dragStartRotY = this.cardRotY;
     });
 
-    window.addEventListener("mouseup", () => {
+    window.addEventListener("mouseup", (e) => {
       if (!isMouseDown) return;
       isMouseDown = false;
       this.isDragging = false;
       if (this.cardEl) this.cardEl.classList.remove("is-dragging");
-      if (hasDraggedDistance) {
+      
+      const dist = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
+      if (dist < 18 && !hasDraggedDistance) {
+        // Direct click anywhere on the card!
+        this.flipCard();
+      } else if (hasDraggedDistance) {
         this.targetRotX = 0;
         this.targetRotY = 0;
       }
@@ -702,8 +709,14 @@ class GothicTarotWheel {
   // --- Card Action: 3D Double-Sided Flip ---
   flipCard() {
     const now = this._now();
-    if (now - this.lastFlipTime < 320) return; // Debounce rapid double-triggers
+    if (now - this.lastFlipTime < 220) return; // Debounce rapid double-triggers
     this.lastFlipTime = now;
+
+    if (this.isMaterializing) {
+      this.isMaterializing = false;
+      if (this.cardEl) this.cardEl.classList.remove("materializing");
+      this.startFloatingLoop();
+    }
 
     this.isFlipped = !this.isFlipped;
     this.targetFlipAngle = this.isFlipped ? 180 : 0;

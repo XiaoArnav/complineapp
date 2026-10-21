@@ -292,6 +292,22 @@
   pointer-events: none !important;
 }
 
+/* Explicit interactive cursor and clickability across entire card */
+.tarot-3d-stage,
+.tarot-3d-card,
+.tarot-3d-card *,
+.tarot-face-front,
+.tarot-face-front *,
+.tarot-face-back,
+.tarot-face-back * {
+  cursor: pointer !important;
+}
+
+.tarot-face-front *,
+.tarot-face-back * {
+  pointer-events: auto;
+}
+
 /* Holographic Foil Layer (Dynamic Rainbow Sheen) */
 .tarot-holo-foil {
   position: absolute;
@@ -306,7 +322,7 @@
     rgba(255, 215, 0, 0.1) 100%
   );
   mix-blend-mode: color-dodge;
-  pointer-events: none;
+  pointer-events: none !important;
   opacity: 0.65;
   z-index: 10;
 }
@@ -316,7 +332,7 @@
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 11;
   mix-blend-mode: overlay;
   transition: opacity 0.15s ease;

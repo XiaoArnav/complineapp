@@ -345,7 +345,12 @@ class StellarMap {
         if (window.getSelection) {
           window.getSelection().removeAllRanges();
         }
-        if (e.detail > 1) {
+        const isClickable = e.target.closest("button") || e.target.closest("a") ||
+                            e.target.closest(".tarot-3d-card") || e.target.closest(".tarot-3d-stage") ||
+                            e.target.closest("#tarotModal") || e.target.closest(".phonograph-card") ||
+                            e.target.closest(".rune-pill") || e.target.closest(".repertoire-card") ||
+                            e.target.closest(".rose-window-wrapper");
+        if (e.detail > 1 && !isClickable) {
           e.preventDefault();
         }
       }
@@ -353,7 +358,14 @@ class StellarMap {
 
     window.addEventListener("dblclick", (e) => {
       if (!isTextInput(e.target)) {
-        e.preventDefault();
+        const isClickable = e.target.closest("button") || e.target.closest("a") ||
+                            e.target.closest(".tarot-3d-card") || e.target.closest(".tarot-3d-stage") ||
+                            e.target.closest("#tarotModal") || e.target.closest(".phonograph-card") ||
+                            e.target.closest(".rune-pill") || e.target.closest(".repertoire-card") ||
+                            e.target.closest(".rose-window-wrapper");
+        if (!isClickable) {
+          e.preventDefault();
+        }
         if (window.getSelection) {
           window.getSelection().removeAllRanges();
         }
@@ -398,6 +410,9 @@ class StellarMap {
                el.closest("#phonographStage") || el.closest("#phonographStatusBadge") ||
                el.closest(".vinyl-record") || el.closest(".record-center-label") ||
                el.closest(".rose-window-wrapper") || el.closest(".rose-stained-window") ||
+               el.closest("#tarotModal") || el.closest(".tarot-modal-backdrop") ||
+               el.closest(".tarot-3d-stage") || el.closest(".tarot-3d-card") ||
+               el.closest(".tarot-face") ||
                el.closest(".reliquary-card") || el.closest(".tome-card");
       };
 

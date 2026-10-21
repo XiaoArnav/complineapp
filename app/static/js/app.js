@@ -77,7 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
       }
-      if (e.detail > 1) {
+      const isClickable = e.target.closest("button") || e.target.closest("a") ||
+                          e.target.closest(".tarot-3d-card") || e.target.closest(".tarot-3d-stage") ||
+                          e.target.closest(".phonograph-card") || e.target.closest(".rune-pill") ||
+                          e.target.closest(".repertoire-card") || e.target.closest(".rose-window-wrapper");
+      if (e.detail > 1 && !isClickable) {
         e.preventDefault();
       }
     }
@@ -85,7 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("dblclick", (e) => {
     if (!isTextInput(e.target)) {
-      e.preventDefault();
+      const isClickable = e.target.closest("button") || e.target.closest("a") ||
+                          e.target.closest(".tarot-3d-card") || e.target.closest(".tarot-3d-stage") ||
+                          e.target.closest(".phonograph-card") || e.target.closest(".rune-pill") ||
+                          e.target.closest(".repertoire-card") || e.target.closest(".rose-window-wrapper");
+      if (!isClickable) {
+        e.preventDefault();
+      }
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
       }
