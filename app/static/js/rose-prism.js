@@ -16,7 +16,7 @@ class RoseWindowPrism {
     this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
 
     this.isActive = true;
-    this.intensity = 0.85; // Master intensity [0.0 - 1.0]
+    this.intensity = 1.0; // Master intensity [0.0 - 1.0]
     this.currentPaletteIndex = 0;
 
     // Cathedral Stained-Glass Palettes (RGB triplets)
@@ -25,51 +25,51 @@ class RoseWindowPrism {
         id: "notre_dame",
         name: "Notre-Dame (Ruby & Cobalt)",
         colors: [
-          [220, 38, 70],   // Sacred Ruby
-          [32, 95, 215],   // Chartres Cobalt
-          [245, 185, 45],  // Altar Gold
-          [142, 45, 225],  // Amethyst
-          [16, 185, 129]   // Emerald Glass
+          [235, 35, 75],   // Sacred Ruby Crimson
+          [35, 115, 235],  // Chartres Cobalt Blue
+          [255, 195, 45],  // Altar Gold Amber
+          [155, 55, 240],  // Royal Amethyst Violet
+          [20, 205, 140]   // Emerald Glass
         ]
       },
       {
         id: "sainte_chapelle",
         name: "Sainte-Chapelle (Amethyst & Carmine)",
         colors: [
-          [147, 51, 234],  // Royal Violet
-          [225, 29, 72],   // Carmine Red
-          [251, 191, 36],  // Radiant Gold
-          [192, 132, 252], // Pale Amethyst
-          [244, 63, 94]    // Rose
+          [165, 60, 255],  // Royal Violet
+          [240, 30, 80],   // Carmine Rose
+          [255, 205, 50],  // Radiant Gold
+          [210, 145, 255], // Pale Amethyst
+          [255, 80, 110]   // Ruby Flare
         ]
       },
       {
         id: "chartres",
         name: "Chartres (Sapphire & Azure)",
         colors: [
-          [29, 78, 216],   // Deep Cobalt
-          [56, 189, 248],  // Celestial Azure
-          [226, 232, 240], // Moon Silver
-          [99, 102, 241],  // Twilight Indigo
-          [14, 165, 233]   // Cyan Glass
+          [35, 90, 245],   // Deep Cobalt Sapphire
+          [60, 200, 255],  // Celestial Azure
+          [240, 245, 255], // Moon Silver
+          [110, 115, 255], // Twilight Indigo
+          [20, 180, 250]   // Cyan Glass
         ]
       },
       {
         id: "alchemical",
         name: "Alchemical (Emerald & Citrine)",
         colors: [
-          [16, 185, 129],  // Emerald Hermes
-          [234, 179, 8],   // Sol Citrine
-          [220, 38, 38],   // Philosophic Ruby
-          [139, 92, 246],  // Quintessence Violet
-          [45, 212, 191]   // Aquamarine
+          [20, 205, 145],  // Emerald Hermes
+          [250, 195, 10],  // Sol Citrine
+          [235, 45, 45],   // Philosophic Ruby
+          [155, 105, 255], // Quintessence Violet
+          [55, 230, 210]   // Mystic Aquamarine
         ]
       }
     ];
 
     // Light Source Anchor
     this.sourceX = this.width / 2;
-    this.sourceY = 120;
+    this.sourceY = Math.max(90, this.height * 0.16);
 
     // Parallax Tilt
     this.mouseX = this.width / 2;
@@ -132,12 +132,25 @@ class RoseWindowPrism {
     const roseWheel = document.getElementById("roseWheel");
     if (roseWheel) {
       const rect = roseWheel.getBoundingClientRect();
-      this.sourceX = rect.left + rect.width / 2;
-      this.sourceY = rect.top + rect.height / 2;
-    } else {
-      this.sourceX = this.width / 2;
-      this.sourceY = Math.max(80, this.height * 0.14);
+      if (rect.width > 0 && rect.height > 0) {
+        this.sourceX = rect.left + rect.width / 2;
+        this.sourceY = rect.top + rect.height / 2;
+        this.applyWheelGlow();
+        return;
+      }
     }
+    this.sourceX = this.width / 2;
+    this.sourceY = Math.max(90, this.height * 0.16);
+    this.applyWheelGlow();
+  }
+
+  applyWheelGlow() {
+    const roseWheel = document.getElementById("roseWheel");
+    if (!roseWheel) return;
+    const current = this.palettes[this.currentPaletteIndex];
+    const c1 = current.colors[0];
+    const c2 = current.colors[1];
+    roseWheel.style.filter = `drop-shadow(0 0 28px rgba(${c1.join(",")}, 0.85)) drop-shadow(0 0 55px rgba(${c2.join(",")}, 0.6))`;
   }
 
   onMouseMove(e) {
@@ -150,7 +163,7 @@ class RoseWindowPrism {
 
   initRays() {
     this.rays = [];
-    const spread = Math.PI * 0.85; // Downward spread angle (~150 degrees)
+    const spread = Math.PI * 0.88; // Downward spread angle (~160 degrees)
     const baseAngle = Math.PI / 2; // Straight down
 
     for (let i = 0; i < this.numRays; i++) {
@@ -162,12 +175,12 @@ class RoseWindowPrism {
       this.rays.push({
         baseAngle,
         spreadOffset: angleFraction * spread,
-        beamWidth: 0.08 + Math.random() * 0.09, // Radians
-        length: Math.max(this.width, this.height) * (1.1 + Math.random() * 0.4),
+        beamWidth: 0.09 + Math.random() * 0.10, // Radians
+        length: Math.max(this.width, this.height) * (1.1 + Math.random() * 0.45),
         color,
         phase: Math.random() * Math.PI * 2,
         speed: 0.35 + Math.random() * 0.45,
-        alphaMax: 0.12 + Math.random() * 0.14
+        alphaMax: 0.35 + Math.random() * 0.25
       });
     }
   }
@@ -179,13 +192,13 @@ class RoseWindowPrism {
       this.particles.push({
         x: Math.random() * this.width,
         y: Math.random() * this.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: 0.3 + Math.random() * 0.6,
-        radius: 2 + Math.random() * 5.5,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: 0.35 + Math.random() * 0.75,
+        radius: 3.5 + Math.random() * 6.5,
         color: palette[i % palette.length],
         phase: Math.random() * Math.PI * 2,
         pulseSpeed: 0.8 + Math.random() * 1.4,
-        baseAlpha: 0.25 + Math.random() * 0.45
+        baseAlpha: 0.5 + Math.random() * 0.4
       });
     }
   }
@@ -202,6 +215,7 @@ class RoseWindowPrism {
       p.color = current.colors[i % current.colors.length];
     });
 
+    this.applyWheelGlow();
     this.triggerBurst(this.sourceX, this.sourceY);
     return current;
   }
@@ -265,16 +279,28 @@ class RoseWindowPrism {
     const sy = this.sourceY;
 
     // ─────────────────────────────────────────────────────────────
-    // 1. Central Rose Window Radial Chromatic Halo
+    // 0. Ambient Cathedral Stained-Glass Nave Wash
     // ─────────────────────────────────────────────────────────────
-    const haloRadius = 260 + Math.sin(time * 0.8) * 15;
-    const haloGrad = ctx.createRadialGradient(sx, sy, 10, sx, sy, haloRadius);
     const primaryColor = this.palettes[this.currentPaletteIndex].colors[0];
     const secondaryColor = this.palettes[this.currentPaletteIndex].colors[1];
+    const tertiaryColor = this.palettes[this.currentPaletteIndex].colors[2];
 
-    haloGrad.addColorStop(0, `rgba(${primaryColor.join(",")}, ${0.35 * this.intensity})`);
-    haloGrad.addColorStop(0.35, `rgba(${secondaryColor.join(",")}, ${0.18 * this.intensity})`);
-    haloGrad.addColorStop(0.7, `rgba(${primaryColor.join(",")}, ${0.06 * this.intensity})`);
+    const ambGrad = ctx.createRadialGradient(sx, sy + 250, 60, sx, sy + 350, Math.max(this.width, this.height) * 0.85);
+    ambGrad.addColorStop(0, `rgba(${primaryColor.join(",")}, ${0.18 * this.intensity})`);
+    ambGrad.addColorStop(0.35, `rgba(${secondaryColor.join(",")}, ${0.10 * this.intensity})`);
+    ambGrad.addColorStop(0.7, `rgba(${tertiaryColor.join(",")}, ${0.05 * this.intensity})`);
+    ambGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = ambGrad;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // ─────────────────────────────────────────────────────────────
+    // 1. Central Rose Window Radial Chromatic Halo
+    // ─────────────────────────────────────────────────────────────
+    const haloRadius = 380 + Math.sin(time * 0.8) * 35;
+    const haloGrad = ctx.createRadialGradient(sx, sy, 20, sx, sy, haloRadius);
+    haloGrad.addColorStop(0, `rgba(${primaryColor.join(",")}, ${0.65 * this.intensity})`);
+    haloGrad.addColorStop(0.25, `rgba(${secondaryColor.join(",")}, ${0.35 * this.intensity})`);
+    haloGrad.addColorStop(0.6, `rgba(${tertiaryColor.join(",")}, ${0.15 * this.intensity})`);
     haloGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
 
     ctx.fillStyle = haloGrad;
@@ -289,9 +315,9 @@ class RoseWindowPrism {
       const ray = this.rays[i];
 
       // Oscillate ray angle and breathing alpha
-      const sway = Math.sin(time * ray.speed + ray.phase) * 0.06;
-      const angle = ray.baseAngle + ray.spreadOffset + sway + (this.tiltX * 0.12);
-      const alphaBreath = (0.55 + 0.45 * Math.sin(time * ray.speed * 1.5 + ray.phase));
+      const sway = Math.sin(time * ray.speed + ray.phase) * 0.08;
+      const angle = ray.baseAngle + ray.spreadOffset + sway + (this.tiltX * 0.15);
+      const alphaBreath = (0.65 + 0.35 * Math.sin(time * ray.speed * 1.5 + ray.phase));
       const currentAlpha = ray.alphaMax * alphaBreath * this.intensity;
 
       const halfBeam = ray.beamWidth / 2;
@@ -304,11 +330,11 @@ class RoseWindowPrism {
       const x2 = sx + Math.cos(a2) * len;
       const y2 = sy + Math.sin(a2) * len;
 
-      const rayGrad = ctx.createRadialGradient(sx, sy, 20, sx, sy, len);
+      const rayGrad = ctx.createRadialGradient(sx, sy, 30, sx, sy, len);
       const rgb = ray.color;
-      rayGrad.addColorStop(0, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha * 1.5})`);
-      rayGrad.addColorStop(0.25, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha})`);
-      rayGrad.addColorStop(0.65, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha * 0.45})`);
+      rayGrad.addColorStop(0, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha * 2.2})`);
+      rayGrad.addColorStop(0.25, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha * 1.5})`);
+      rayGrad.addColorStop(0.65, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${currentAlpha * 0.6})`);
       rayGrad.addColorStop(1, `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0)`);
 
       ctx.fillStyle = rayGrad;
