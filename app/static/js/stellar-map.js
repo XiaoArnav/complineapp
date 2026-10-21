@@ -430,8 +430,6 @@ class StellarMap {
       document.body.classList.remove("is-orbiting");
       if (this.canvas) this.canvas.style.cursor = "grab";
     });
-      if (this.canvas) this.canvas.style.cursor = "grab";
-    });
 
     window.addEventListener("pointercancel", () => {
       this.isDragging = false;

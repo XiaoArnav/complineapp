@@ -732,7 +732,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. The Master Feature Button
     if (pinBtn) pinBtn.addEventListener("click", togglePinAction);
   }
-  }
 
   // --- 6. 📻 Tome Reading Bar Phonograph Button ---
   function toggleSoundscape() {

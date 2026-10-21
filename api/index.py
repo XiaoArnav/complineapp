@@ -32,13 +32,50 @@ class handler(BaseHTTPRequestHandler):
         self.send_cors_headers()
         self.end_headers()
 
-    def do_GET(self):
+    def _resolve_route(self):
+        """
+        Determines the requested route based on query parameter (?endpoint=...),
+        Vercel forwarding headers, and self.path.
+        Returns: ('status' | 'stream' | 'generate' | 'unknown', parsed, query)
+        """
         parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-        if path.startswith("/api"):
-            path = path[len("/api"):]
+        query = urllib.parse.parse_qs(parsed.query)
+        endpoint_param = query.get("endpoint", [""])[0].strip("/")
 
-        if path == "/status" or path == "":
+        candidates = [
+            endpoint_param,
+            self.headers.get("x-matched-path", ""),
+            self.headers.get("x-forwarded-uri", ""),
+            parsed.path
+        ]
+
+        for c in candidates:
+            if not c:
+                continue
+            c_clean = c.split("?")[0].strip("/")
+            if (
+                c_clean.endswith("generate/stream")
+                or c_clean == "generate/stream"
+                or c_clean.endswith("/stream")
+                or c_clean == "stream"
+            ):
+                return "stream", parsed, query
+            if c_clean.endswith("generate") or c_clean == "generate":
+                return "generate", parsed, query
+            if c_clean.endswith("status") or c_clean == "status":
+                return "status", parsed, query
+
+        # Fallback: Default to status for root, /api, or /api/index.py
+        norm = parsed.path.rstrip("/")
+        if norm in ("/api/index.py", "/index.py", "/api", "", "/"):
+            return "status", parsed, query
+
+        return "unknown", parsed, query
+
+    def do_GET(self):
+        route, parsed, query = self._resolve_route()
+
+        if route == "status":
             ollama_info = check_ollama_status()
             data = {
                 "app": "Compline: Gothic Wind-Down Companion",
@@ -49,8 +86,7 @@ class handler(BaseHTTPRequestHandler):
             }
             self.send_json(data)
 
-        elif path == "/generate/stream":
-            query = urllib.parse.parse_qs(parsed.query)
+        elif route == "stream":
             prompt = query.get("prompt", ["sloth in cathedral"])[0]
             model = query.get("model", [None])[0]
             force_offline = query.get("force_offline", ["false"])[0].lower() == "true"
@@ -71,8 +107,7 @@ class handler(BaseHTTPRequestHandler):
             except (BrokenPipeError, ConnectionResetError):
                 pass
 
-        elif path == "/generate":
-            query = urllib.parse.parse_qs(parsed.query)
+        elif route == "generate":
             prompt = query.get("prompt", ["sloth in cathedral"])[0]
             model = query.get("model", [None])[0]
             force_offline = query.get("force_offline", ["false"])[0].lower() == "true"
@@ -84,10 +119,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_json({"error": "Unknown API endpoint", "path": parsed.path}, status_code=404)
 
     def do_POST(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-        if path.startswith("/api"):
-            path = path[len("/api"):]
+        route, parsed, _ = self._resolve_route()
 
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
@@ -96,7 +128,7 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             req_data = {}
 
-        if path == "/generate/stream":
+        if route == "stream":
             prompt = req_data.get("prompt", "sloth in cathedral")
             model = req_data.get("model", None)
             force_offline = req_data.get("force_offline", False)
@@ -117,7 +149,7 @@ class handler(BaseHTTPRequestHandler):
             except (BrokenPipeError, ConnectionResetError):
                 pass
 
-        elif path == "/generate":
+        elif route == "generate":
             prompt = req_data.get("prompt", "sloth in cathedral")
             model = req_data.get("model", None)
             force_offline = req_data.get("force_offline", False)
@@ -125,7 +157,7 @@ class handler(BaseHTTPRequestHandler):
             result = generate_gothic_story(prompt=prompt, preferred_model=model, force_offline=force_offline)
             self.send_json(result)
 
-        elif path == "/status":
+        elif route == "status":
             ollama_info = check_ollama_status()
             data = {
                 "app": "Compline: Gothic Wind-Down Companion",
