@@ -80,7 +80,7 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: radial-gradient(circle at center, rgba(22, 12, 34, 0.88) 0%, rgba(4, 2, 7, 0.96) 80%);
+  background: radial-gradient(circle at center, rgba(14, 8, 24, 0.92) 0%, rgba(3, 1, 6, 0.98) 85%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -110,8 +110,8 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(146, 43, 179, 0.25) 0%,
-    rgba(212, 175, 55, 0.15) 35%,
+    rgba(146, 43, 179, 0.22) 0%,
+    rgba(212, 175, 55, 0.12) 35%,
     rgba(26, 10, 40, 0) 70%
   );
   filter: blur(40px);
@@ -125,28 +125,20 @@
   100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.95; }
 }
 
-/* Stardust Sparks Around Portal */
-.tarot-stardust-particles {
+/* Deep Space Live Interactive Cosmos Canvas */
+.tarot-cosmos-canvas {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  background-image: 
-    radial-gradient(2px 2px at 20% 30%, #ffd700, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 40% 70%, #ffffff, rgba(0,0,0,0)),
-    radial-gradient(1.5px 1.5px at 60% 25%, #da70d6, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 80% 65%, #ffd700, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 30% 85%, #63b3ed, rgba(0,0,0,0)),
-    radial-gradient(2.5px 2.5px at 70% 35%, #fff8dc, rgba(0,0,0,0));
-  background-repeat: repeat;
-  background-size: 200px 200px;
-  opacity: 0.45;
-  animation: stardustDrift 20s linear infinite;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
   z-index: 2;
+  cursor: crosshair;
 }
 
-@keyframes stardustDrift {
-  from { transform: translateY(0); }
-  to { transform: translateY(-200px); }
+/* Stardust Sparks Around Portal (Superseded by Cosmos Canvas) */
+.tarot-stardust-particles {
+  display: none;
 }
 
 /* 3D Perspective Stage */

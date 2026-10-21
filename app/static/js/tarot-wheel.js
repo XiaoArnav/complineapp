@@ -432,6 +432,7 @@ class GothicTarotWheel {
 
     this.modalEl.classList.add("active");
     this.modalEl.setAttribute("aria-hidden", "false");
+    if (window.tarotCosmos) window.tarotCosmos.start();
 
     // After entry finishes, start live floating physics loop
     setTimeout(() => {
@@ -747,6 +748,7 @@ class GothicTarotWheel {
   closeModal() {
     if (!this.modalEl) return;
     this.stopFloatingLoop();
+    if (window.tarotCosmos) window.tarotCosmos.stop();
     this.modalEl.classList.remove("active");
     this.modalEl.setAttribute("aria-hidden", "true");
     if (this.cardEl) {
