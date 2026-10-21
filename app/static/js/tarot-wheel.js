@@ -646,15 +646,6 @@ class GothicTarotWheel {
       });
     }
 
-    const btnCommune = document.getElementById("btnTarotCommune");
-    if (btnCommune) {
-      btnCommune.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.communeWithCard();
-      });
-    }
-
     const btnDismiss = document.getElementById("btnTarotDismiss");
     if (btnDismiss) {
       btnDismiss.addEventListener("click", (e) => {
@@ -714,16 +705,10 @@ class GothicTarotWheel {
     this.playCardFlipSound();
     this.updateFlipButtonState();
 
-    // When flipping to front for the first time, celebrate with harmonic chime & aura flash!
+    // The first time the person flips the card, commune gets played on that click; after that it will not be played on that card
     if (!this.isFlipped && !this.hasBeenRevealed) {
       this.hasBeenRevealed = true;
-      this.playCommuneChime(this.currentCard ? this.currentCard.frequency : 432);
-
-      if (this.artworkChamberEl) {
-        this.artworkChamberEl.classList.remove("communing");
-        void this.artworkChamberEl.offsetWidth;
-        this.artworkChamberEl.classList.add("communing");
-      }
+      this.communeWithCard();
     }
   }
 
