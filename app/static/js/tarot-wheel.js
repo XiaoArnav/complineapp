@@ -154,8 +154,17 @@ class GothicTarotWheel {
     if (this.wrapperEl) {
       this.wrapperEl.addEventListener("click", () => this.spin());
     }
+    if (this.wheelEl) {
+      this.wheelEl.addEventListener("click", () => this.spin());
+    }
 
     this.bind3DInteractivity();
+  }
+
+  _now() {
+    return (typeof window !== "undefined" && window.performance && window.performance.now)
+      ? window.performance.now()
+      : Date.now();
   }
 
   // --- Web Audio Mechanical & Celestial Sound Engine ---
@@ -465,7 +474,7 @@ class GothicTarotWheel {
       }
 
       // Idle bobbing & breathing sine wave in anti-gravity
-      const time = performance.now() * 0.0016;
+      const time = this._now() * 0.0016;
       const floatY = Math.sin(time) * 9;
       const floatRotZ = Math.cos(time * 0.7) * 1.5;
 
@@ -692,7 +701,7 @@ class GothicTarotWheel {
 
   // --- Card Action: 3D Double-Sided Flip ---
   flipCard() {
-    const now = performance.now();
+    const now = this._now();
     if (now - this.lastFlipTime < 320) return; // Debounce rapid double-triggers
     this.lastFlipTime = now;
 
@@ -764,7 +773,15 @@ class GothicTarotWheel {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  window.tarotWheel = new GothicTarotWheel();
-  window.tarotWheel.init();
-});
+function initTarotWheel() {
+  if (!window.tarotWheel) {
+    window.tarotWheel = new GothicTarotWheel();
+    window.tarotWheel.init();
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTarotWheel);
+} else {
+  initTarotWheel();
+}

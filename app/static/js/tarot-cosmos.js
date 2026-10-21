@@ -41,11 +41,17 @@ class TarotCosmos {
     this.exoplanet = null;
 
     // Meteor shower schedule timer
-    this.nextMeteorTime = performance.now() + 400;
+    this.nextMeteorTime = this._now() + 400;
 
     if (this.canvas) {
       this.init();
     }
+  }
+
+  _now() {
+    return (typeof window !== "undefined" && window.performance && window.performance.now)
+      ? window.performance.now()
+      : Date.now();
   }
 
   init() {
@@ -401,7 +407,7 @@ class TarotCosmos {
   // UPDATE PHYSICS
   // ─────────────────────────────────────────────────────────────
   update() {
-    const now = performance.now();
+    const now = this._now();
 
     // Smooth cursor interpolation (lerp)
     this.mouseX += (this.targetMouseX - this.mouseX) * 0.08;
@@ -594,7 +600,7 @@ class TarotCosmos {
 
   drawStars(ctx, px, py) {
     ctx.save();
-    const time = performance.now();
+    const time = this._now();
 
     for (let i = 0; i < this.stars.length; i++) {
       const s = this.stars[i];
@@ -852,7 +858,14 @@ class TarotCosmos {
   }
 }
 
-// Auto-instantiate globally on DOM load
-window.addEventListener("DOMContentLoaded", () => {
-  window.tarotCosmos = new TarotCosmos("tarotCosmosCanvas");
-});
+function initTarotCosmos() {
+  if (!window.tarotCosmos) {
+    window.tarotCosmos = new TarotCosmos("tarotCosmosCanvas");
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTarotCosmos);
+} else {
+  initTarotCosmos();
+}
