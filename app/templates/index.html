@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=4.1">
-  <link rel="stylesheet" href="/static/css/candle-intro.css?v=4.1">
-  <link rel="stylesheet" href="/static/css/tarot.css?v=4.1">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=5.0">
+  <link rel="stylesheet" href="/static/css/candle-intro.css?v=5.0">
+  <link rel="stylesheet" href="/static/css/tarot.css?v=5.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
 
   <!-- Universal Hard Text Selection Lock & Critical Repertoire Switcher Styles -->
@@ -808,23 +808,115 @@
     </div><!-- /cathedral-container -->
   </div><!-- /mainContent -->
 
-  <!-- Gothic Tarot Card Modal (Revealed by Rose Wheel) -->
-  <div id="tarotModal" class="tarot-modal-backdrop">
-    <div class="tarot-card-stage">
-      <div class="gothic-tarot-card">
-        <div id="tarotNumeral" class="tarot-numeral">Arcana 0</div>
-        <div id="tarotIcon" class="tarot-card-artwork">🦥</div>
-        <h3 id="tarotTitle" class="tarot-title">The Cathedral Sloth</h3>
-        <p id="tarotSubtitle" class="tarot-subtitle">The Patron of Stillness</p>
-        <p id="tarotMeaning" class="tarot-meaning">"The greatest wisdom is the courage to do nothing..."</p>
-        <div id="tarotBlessing" class="tarot-blessing">✨ Sleep Blessing: Freedom from haste.</div>
-        <div class="tarot-actions-row">
-          <button id="btnTarotWeave" class="btn-tarot-weave">📖 Weave Tale from this Card</button>
-          <button id="btnTarotDismiss" class="btn-tarot-dismiss">Dismiss</button>
-        </div>
+  <!-- Live 3D Floating Tarot Card Sanctuary (Materializes from Rota Fortunae) -->
+  <div id="tarotModal" class="tarot-modal-backdrop" aria-hidden="true" role="dialog" aria-label="Gothic Slumber Tarot Destiny">
+    <!-- Celestial Portal Aura & Stardust Ring behind floating card -->
+    <div class="tarot-portal-aura" id="tarotPortalAura"></div>
+    <div class="tarot-stardust-particles" id="tarotStardust"></div>
+
+    <!-- 3D Perspective Stage -->
+    <div class="tarot-3d-stage" id="tarot3dStage">
+      <!-- Floating Shadow beneath card -->
+      <div class="tarot-card-shadow" id="tarotCardShadow"></div>
+
+      <!-- The 3D Card Container (Levitating & Rotating in 3D space) -->
+      <div class="tarot-3d-card" id="tarot3dCard" tabindex="0" role="region" aria-label="3D Tarot Card. Drag to tilt, click to flip.">
+        
+        <!-- CARD FRONT FACE -->
+        <div class="tarot-face tarot-face-front" id="tarotFaceFront">
+          <!-- Holographic Foil & Specular Light Reflection Layer -->
+          <div class="tarot-holo-foil"></div>
+          <div class="tarot-specular-glare" id="tarotGlare"></div>
+
+          <!-- Ornate Gold Leaf Border & Gothic Tracery Frame -->
+          <div class="tarot-card-frame">
+            <div class="tarot-corner c-tl">✦</div>
+            <div class="tarot-corner c-tr">✦</div>
+            <div class="tarot-corner c-bl">✦</div>
+            <div class="tarot-corner c-br">✦</div>
+
+            <!-- Top Header Banner -->
+            <div class="tarot-card-header">
+              <span class="tarot-element-badge" id="tarotElement">EARTH</span>
+              <span class="tarot-numeral" id="tarotNumeral">ARCANUM XII</span>
+              <span class="tarot-suit-badge" id="tarotSuit">PENTACLES</span>
+            </div>
+
+            <!-- Stained Glass Gothic Arch Artwork Medallion -->
+            <div class="tarot-artwork-chamber" id="tarotArtworkChamber">
+              <div class="tarot-artwork-aura" id="tarotArtworkAura"></div>
+              <div class="tarot-artwork-icon" id="tarotIcon">🦥</div>
+            </div>
+
+            <!-- Card Titles -->
+            <div class="tarot-card-identity">
+              <h3 class="tarot-title" id="tarotTitle">The Cathedral Sloth</h3>
+              <p class="tarot-subtitle" id="tarotSubtitle">Patron of Sacred Stillness</p>
+            </div>
+
+            <!-- Prophecy & Meaning -->
+            <div class="tarot-parchment-scroll">
+              <p class="tarot-meaning" id="tarotMeaning">
+                "The greatest wisdom is the courage to do nothing. Hang from the high vaulted rafters of your mind and let the heavy world turn below without you."
+              </p>
+            </div>
+
+            <!-- Nocturnal Sleep Blessing Pill -->
+            <div class="tarot-blessing" id="tarotBlessing">
+              <span class="blessing-sparkle">✨</span> Freedom from all haste and unfinished chores.
+            </div>
+
+            <!-- Bottom Interactive Badge / Flip Hint -->
+            <div class="tarot-card-footer">
+              <span class="tarot-flip-hint">⟲ Click Card to Flip in 3D ⟳</span>
+            </div>
+          </div><!-- /tarot-card-frame -->
+        </div><!-- /tarot-face-front -->
+
+        <!-- CARD BACK FACE (Authentic Gothic Tarot Card Back) -->
+        <div class="tarot-face tarot-face-back" id="tarotFaceBack">
+          <div class="tarot-holo-foil"></div>
+          <div class="tarot-specular-glare" id="tarotBackGlare"></div>
+          
+          <div class="tarot-back-frame">
+            <div class="tarot-back-corners">
+              <span>✠</span><span>✠</span><span>✠</span><span>✠</span>
+            </div>
+            <div class="tarot-back-ornament">
+              <div class="tarot-back-rose-window">
+                <div class="rose-spokes"></div>
+                <div class="rose-center-eye">👁</div>
+              </div>
+              <div class="tarot-back-text">COMPLINE</div>
+              <div class="tarot-back-sub">SLUMBER TAROT DECK</div>
+              <div class="tarot-back-runes">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ</div>
+            </div>
+            <div class="tarot-back-footer">
+              <span>⟲ Click to Reveal Prophecy ⟳</span>
+            </div>
+          </div>
+        </div><!-- /tarot-face-back -->
+
+      </div><!-- /tarot-3d-card -->
+
+      <!-- Interactive Controls Toolbar Floating Around Card -->
+      <div class="tarot-3d-toolbar">
+        <button type="button" class="tarot-tool-btn" id="btnTarotFlip" title="Flip Card (Space / F)" aria-label="Flip Card">
+          <span class="tool-icon">🔄</span> Flip Card
+        </button>
+        <button type="button" class="tarot-tool-btn highlight" id="btnTarotWeave" title="Weave into Scriptorium Tale (Enter / W)" aria-label="Weave Tale">
+          <span class="tool-icon">📖</span> Inscribe as Fate
+        </button>
+        <button type="button" class="tarot-tool-btn" id="btnTarotCommune" title="Commune &amp; Sound Blessing Chime (C)" aria-label="Commune with Card">
+          <span class="tool-icon">🔮</span> Commune
+        </button>
+        <button type="button" class="tarot-tool-btn dismiss" id="btnTarotDismiss" title="Return to Celestial Deck (Esc)" aria-label="Dismiss Card">
+          <span class="tool-icon">✕</span> Return to Stars
+        </button>
       </div>
-    </div>
-  </div>
+
+    </div><!-- /tarot-3d-stage -->
+  </div><!-- /tarotModal -->
 
   <!-- ═══════════════════════════════════════════════════════════
        THE SCRIPTORIUM GRIMOIRE MODAL (Saved Chapters)
@@ -920,11 +1012,11 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=4.1"></script>
-  <script src="/static/js/soundscape.js?v=4.1"></script>
-  <script src="/static/js/candle-sound.js?v=4.1"></script>
-  <script src="/static/js/candle-intro.js?v=4.1"></script>
-  <script src="/static/js/tarot-wheel.js?v=4.1"></script>
-  <script src="/static/js/app.js?v=4.1"></script>
+  <script src="/static/js/stellar-map.js?v=5.0"></script>
+  <script src="/static/js/soundscape.js?v=5.0"></script>
+  <script src="/static/js/candle-sound.js?v=5.0"></script>
+  <script src="/static/js/candle-intro.js?v=5.0"></script>
+  <script src="/static/js/tarot-wheel.js?v=5.0"></script>
+  <script src="/static/js/app.js?v=5.0"></script>
 </body>
 </html>
