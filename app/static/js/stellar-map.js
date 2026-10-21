@@ -305,43 +305,60 @@ class StellarMap {
       }
     });
 
-    // Prevent double-click, drag, and selectstart text selection anywhere on the page
-    window.addEventListener("mousedown", (e) => {
-      if (e.detail > 1) {
-        const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-        if (tag !== "input" && tag !== "textarea") {
-          e.preventDefault();
-          if (window.getSelection) {
-            window.getSelection().removeAllRanges();
-          }
+    // Universal Airtight Text Selection Locker
+    const isTextInput = (el) => {
+      if (!el) return false;
+      const tag = (el.tagName || "").toLowerCase();
+      return tag === "input" || tag === "textarea" || el.isContentEditable;
+    };
+
+    // 1. Prevent selectstart everywhere except text inputs (capture phase)
+    document.addEventListener("selectstart", (e) => {
+      if (!isTextInput(e.target)) {
+        e.preventDefault();
+        if (window.getSelection) window.getSelection().removeAllRanges();
+        return false;
+      }
+    }, true);
+
+    // 2. Prevent dragstart text dragging everywhere except inputs
+    document.addEventListener("dragstart", (e) => {
+      if (!isTextInput(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    }, true);
+
+    // 3. Selection Cleaner: Immediately wipe any non-input selection range
+    document.addEventListener("selectionchange", () => {
+      if (!isTextInput(document.activeElement)) {
+        const sel = window.getSelection ? window.getSelection() : null;
+        if (sel && !sel.isCollapsed) {
+          sel.removeAllRanges();
         }
       }
     });
 
+    // 4. Prevent double-click and multi-click text selection
+    window.addEventListener("mousedown", (e) => {
+      if (!isTextInput(e.target)) {
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+        }
+        if (e.detail > 1) {
+          e.preventDefault();
+        }
+      }
+    }, true);
+
     window.addEventListener("dblclick", (e) => {
-      const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-      if (tag !== "input" && tag !== "textarea") {
+      if (!isTextInput(e.target)) {
         e.preventDefault();
         if (window.getSelection) {
           window.getSelection().removeAllRanges();
         }
       }
-    });
-
-    window.addEventListener("selectstart", (e) => {
-      const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-      if (tag !== "input" && tag !== "textarea") {
-        e.preventDefault();
-        return false;
-      }
-    });
-
-    window.addEventListener("dragstart", (e) => {
-      const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-      if (tag !== "input" && tag !== "textarea") {
-        e.preventDefault();
-      }
-    });
+    }, true);
 
     // Window-level Mouse Movement (tracks cursor everywhere on page)
     window.addEventListener("pointermove", (e) => {
@@ -366,21 +383,30 @@ class StellarMap {
       this.lastPointerY = e.clientY;
     }, { passive: true });
 
-    // Drag start on document background or overlay
+    // Drag start on document background, cards, or parchment
     window.addEventListener("pointerdown", (e) => {
-      // Don't intercept clicks inside buttons, inputs, links, or modal dialogs
-      const tag = e.target.tagName.toLowerCase();
-      if (["button", "input", "select", "a", "textarea"].includes(tag) ||
-          e.target.closest("button") || e.target.closest(".reliquary-card") ||
-          e.target.closest(".tome-card") || e.target.closest(".gothic-modal-card")) {
+      const isInteractive = (el) => {
+        if (!el) return false;
+        const tag = (el.tagName || "").toLowerCase();
+        return ["button", "input", "select", "a", "textarea", "label"].includes(tag) ||
+               el.closest("button") || el.closest("a") || el.closest("input") ||
+               el.closest(".gothic-modal-card") || el.closest(".track-stepper-btn") ||
+               el.closest(".repertoire-card") || el.closest("#turntablePlatter") ||
+               el.closest("#toneArmAssembly") || el.closest("#btnPinToggle") ||
+               el.closest("#candleShrine") || el.closest(".rune-pill");
+      };
+
+      if (window.getSelection) {
+        window.getSelection().removeAllRanges();
+      }
+
+      // If clicking a genuine interactive control or modal, let it handle the event
+      if (isInteractive(e.target)) {
         return;
       }
 
       this.isDragging = true;
       document.body.classList.add("is-orbiting");
-      if (window.getSelection) {
-        window.getSelection().removeAllRanges();
-      }
       this.dragStartX = e.clientX;
       this.dragStartY = e.clientY;
       this.lastPointerX = e.clientX;
@@ -392,12 +418,18 @@ class StellarMap {
       if (this.isDragging) {
         const dist = Math.hypot(e.clientX - this.dragStartX, e.clientY - this.dragStartY);
         if (dist < 6) {
-          // It was a click! Trigger gravitational ripple
-          this.triggerGravitationalPulse(e.clientX, e.clientY);
+          // It was a click! Only trigger gravitational pulse if on background
+          if (!e.target.closest(".tome-card") &&
+              !e.target.closest(".reliquary-card") &&
+              !e.target.closest(".cathedral-header")) {
+            this.triggerGravitationalPulse(e.clientX, e.clientY);
+          }
         }
       }
       this.isDragging = false;
       document.body.classList.remove("is-orbiting");
+      if (this.canvas) this.canvas.style.cursor = "grab";
+    });
       if (this.canvas) this.canvas.style.cursor = "grab";
     });
 

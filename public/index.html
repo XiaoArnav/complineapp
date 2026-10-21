@@ -15,13 +15,66 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=4.0">
-  <link rel="stylesheet" href="/static/css/candle-intro.css?v=4.0">
-  <link rel="stylesheet" href="/static/css/tarot.css?v=4.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=4.1">
+  <link rel="stylesheet" href="/static/css/candle-intro.css?v=4.1">
+  <link rel="stylesheet" href="/static/css/tarot.css?v=4.1">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
 
-  <!-- Critical Repertoire Switcher Styles to Guarantee Immediate Ornate Gothic Render -->
+  <!-- Universal Hard Text Selection Lock & Critical Repertoire Switcher Styles -->
   <style>
+    /* ═══════════════════════════════════════════════════════════
+       UNIVERSAL AIRTIGHT TEXT SELECTION & HIGHLIGHT LOCK
+       Completely locks text across all browsers, engines, & OS
+       ═══════════════════════════════════════════════════════════ */
+    *, *::before, *::after,
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center, dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend, table, caption,
+    tbody, tfoot, thead, tr, th, td, article, aside,
+    canvas, details, embed, figure, figcaption, footer,
+    header, hgroup, menu, nav, output, ruby, section,
+    summary, time, mark, audio, video, button, svg {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+      -webkit-user-drag: none !important;
+    }
+
+    /* Permit text selection EXCLUSIVELY in interactive input fields */
+    input[type="text"], input[type="search"], input:not([type]), textarea {
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
+    }
+
+    /* Neutralize all browser selection highlight boxes to 100% transparent */
+    ::selection {
+      background: transparent !important;
+      color: inherit !important;
+      text-shadow: none !important;
+    }
+    ::-moz-selection {
+      background: transparent !important;
+      color: inherit !important;
+      text-shadow: none !important;
+    }
+    ::-webkit-selection {
+      background: transparent !important;
+      color: inherit !important;
+      text-shadow: none !important;
+    }
+
+    input::selection, textarea::selection {
+      background: rgba(212, 175, 55, 0.45) !important;
+      color: #ffffff !important;
+    }
     .sacred-repertoire-box {
       background: linear-gradient(180deg, rgba(22, 14, 32, 0.95) 0%, rgba(13, 8, 19, 0.98) 100%);
       border: 1px solid rgba(212, 175, 55, 0.28);
@@ -246,7 +299,7 @@
     }
   </style>
 </head>
-<body>
+<body onselectstart="if(!['input','textarea'].includes(event.target.tagName?.toLowerCase())) return false;" ondragstart="if(!['input','textarea'].includes(event.target.tagName?.toLowerCase())) return false;" unselectable="on">
 
   <!-- ═══════════════════════════════════════════════════════════
        3D INTERACTIVE CELESTIAL STELLAR MAP
@@ -867,11 +920,11 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=4.0"></script>
-  <script src="/static/js/soundscape.js?v=4.0"></script>
-  <script src="/static/js/candle-sound.js?v=4.0"></script>
-  <script src="/static/js/candle-intro.js?v=4.0"></script>
-  <script src="/static/js/tarot-wheel.js?v=4.0"></script>
-  <script src="/static/js/app.js?v=4.0"></script>
+  <script src="/static/js/stellar-map.js?v=4.1"></script>
+  <script src="/static/js/soundscape.js?v=4.1"></script>
+  <script src="/static/js/candle-sound.js?v=4.1"></script>
+  <script src="/static/js/candle-intro.js?v=4.1"></script>
+  <script src="/static/js/tarot-wheel.js?v=4.1"></script>
+  <script src="/static/js/app.js?v=4.1"></script>
 </body>
 </html>

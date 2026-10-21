@@ -37,36 +37,60 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("touchstart", unlockAudioContexts, { passive: true, once: true });
   document.addEventListener("click", unlockAudioContexts, { once: true });
 
-  // Prevent double-click text selection anywhere outside inputs
-  document.addEventListener("mousedown", (e) => {
-    if (e.detail > 1) {
-      const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-      if (tag !== "input" && tag !== "textarea") {
-        e.preventDefault();
-        if (window.getSelection) {
-          window.getSelection().removeAllRanges();
-        }
+  // Universal Airtight Text Selection Locker & Selection Cleaner
+  const isTextInput = (el) => {
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || el.isContentEditable;
+  };
+
+  // 1. Prevent selectstart on capture phase everywhere outside inputs
+  document.addEventListener("selectstart", (e) => {
+    if (!isTextInput(e.target)) {
+      e.preventDefault();
+      if (window.getSelection) window.getSelection().removeAllRanges();
+      return false;
+    }
+  }, true);
+
+  // 2. Prevent dragstart text selection
+  document.addEventListener("dragstart", (e) => {
+    if (!isTextInput(e.target)) {
+      e.preventDefault();
+      return false;
+    }
+  }, true);
+
+  // 3. Selection Cleaner: Immediately wipe any non-input selection range
+  document.addEventListener("selectionchange", () => {
+    if (!isTextInput(document.activeElement)) {
+      const sel = window.getSelection ? window.getSelection() : null;
+      if (sel && !sel.isCollapsed) {
+        sel.removeAllRanges();
       }
     }
   });
 
+  // 4. Prevent double-click & triple-click text selection anywhere outside inputs
+  document.addEventListener("mousedown", (e) => {
+    if (!isTextInput(e.target)) {
+      if (window.getSelection) {
+        window.getSelection().removeAllRanges();
+      }
+      if (e.detail > 1) {
+        e.preventDefault();
+      }
+    }
+  }, true);
+
   document.addEventListener("dblclick", (e) => {
-    const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-    if (tag !== "input" && tag !== "textarea") {
+    if (!isTextInput(e.target)) {
       e.preventDefault();
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
       }
     }
-  });
-
-  document.addEventListener("selectstart", (e) => {
-    const tag = e.target.tagName ? e.target.tagName.toLowerCase() : "";
-    if (tag !== "input" && tag !== "textarea") {
-      e.preventDefault();
-      return false;
-    }
-  });
+  }, true);
 
   // Settings Elements
   const btnOpenSettings = document.getElementById("btnOpenSettings");

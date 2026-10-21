@@ -33,11 +33,19 @@
   --border-radius-arch: 140px 140px 12px 12px;
 }
 
-/* Reset & Universal Selection Lock */
+/* Reset & Universal Airtight Selection Lock */
 *, *::before, *::after,
-html, body,
-h1, h2, h3, h4, h5, h6,
-p, span, div, a, button, section, header, footer, aside, main {
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption,
+tbody, tfoot, thead, tr, th, td, article, aside,
+canvas, details, embed, figure, figcaption, footer,
+header, hgroup, menu, nav, output, ruby, section,
+summary, time, mark, audio, video, button, svg {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -48,9 +56,11 @@ p, span, div, a, button, section, header, footer, aside, main {
   -moz-user-select: none !important;
   -ms-user-select: none !important;
   user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
 }
 
-input, textarea, [contenteditable="true"] {
+input[type="text"], input[type="search"], input:not([type]), textarea, [contenteditable="true"] {
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
   -ms-user-select: text !important;
@@ -61,11 +71,19 @@ input, textarea, [contenteditable="true"] {
 ::selection {
   background: transparent !important;
   color: inherit !important;
+  text-shadow: none !important;
 }
 
 ::-moz-selection {
   background: transparent !important;
   color: inherit !important;
+  text-shadow: none !important;
+}
+
+::-webkit-selection {
+  background: transparent !important;
+  color: inherit !important;
+  text-shadow: none !important;
 }
 
 input::selection, textarea::selection {
