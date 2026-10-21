@@ -208,16 +208,13 @@
   0% {
     opacity: 0;
     transform: translate3d(0, 140px, -800px) rotateX(60deg) rotateY(180deg) scale(0.08);
-    filter: blur(16px);
   }
   50% {
     opacity: 0.9;
-    filter: blur(2px);
   }
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) scale(1);
-    filter: blur(0px);
   }
 }
 
@@ -255,19 +252,27 @@
 /* Dynamic State-Based Stacking & Hit Testing */
 .tarot-3d-card.is-facedown .tarot-face-back {
   z-index: 20;
-  pointer-events: auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 .tarot-3d-card.is-facedown .tarot-face-front {
   z-index: 1;
-  pointer-events: none;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 .tarot-3d-card.is-faceup .tarot-face-front {
   z-index: 20;
-  pointer-events: auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 .tarot-3d-card.is-faceup .tarot-face-back {
   z-index: 1;
-  pointer-events: none;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Holographic Foil Layer (Dynamic Rainbow Sheen) */

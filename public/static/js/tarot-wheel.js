@@ -553,6 +553,7 @@ class GothicTarotWheel {
       if (this.isMaterializing) return;
       if (e.target.closest(".tarot-3d-toolbar") || e.target.closest("button") || e.target.closest("a")) return;
       if (!touchMoved) {
+        if (e.cancelable) e.preventDefault();
         this.flipCard();
       }
     };
@@ -560,12 +561,6 @@ class GothicTarotWheel {
     this.cardEl.addEventListener("touchstart", handleTouchStart, { passive: true });
     this.cardEl.addEventListener("touchmove", handleTouchMove, { passive: true });
     this.cardEl.addEventListener("touchend", handleTouchEnd);
-
-    if (this.stageEl) {
-      this.stageEl.addEventListener("touchstart", handleTouchStart, { passive: true });
-      this.stageEl.addEventListener("touchmove", handleTouchMove, { passive: true });
-      this.stageEl.addEventListener("touchend", handleTouchEnd);
-    }
 
     // B. Direct Native Click Support (Desktop / Laptop)
     const handleCardClick = (e) => {
@@ -575,9 +570,6 @@ class GothicTarotWheel {
     };
 
     this.cardEl.addEventListener("click", handleCardClick);
-    if (this.stageEl) {
-      this.stageEl.addEventListener("click", handleCardClick);
-    }
 
     // C. 3D Parallax & Optional Drag-to-Tilt
     let isMouseDown = false;
@@ -700,22 +692,11 @@ class GothicTarotWheel {
   // --- Card Action: 3D Double-Sided Flip ---
   flipCard() {
     const now = performance.now();
-    if (now - this.lastFlipTime < 240) return; // Debounce rapid double-triggers
+    if (now - this.lastFlipTime < 320) return; // Debounce rapid double-triggers
     this.lastFlipTime = now;
 
     this.isFlipped = !this.isFlipped;
     this.targetFlipAngle = this.isFlipped ? 180 : 0;
-
-    // Toggle active face class for bulletproof CSS z-index and pointer-events
-    if (this.cardEl) {
-      if (this.isFlipped) {
-        this.cardEl.classList.add("is-facedown");
-        this.cardEl.classList.remove("is-faceup");
-      } else {
-        this.cardEl.classList.add("is-faceup");
-        this.cardEl.classList.remove("is-facedown");
-      }
-    }
 
     this.playCardFlipSound();
     this.updateFlipButtonState();
