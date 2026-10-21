@@ -803,26 +803,47 @@ class StellarMap {
   }
 
   renderStarTooltip(ctx, star) {
-    const x = star.px + 14;
-    const y = star.py - 12;
-
     const title = `✠ ${star.name.toUpperCase()}`;
     const subtitle = `${star.constell}${star.label ? " • " + star.label : ""}`;
     const raHours = (star.ra * (12 / Math.PI)).toFixed(1);
     const decDeg = (star.dec * (180 / Math.PI)).toFixed(0);
     const meta = `RA ${raHours}h • DEC ${decDeg > 0 ? "+" : ""}${decDeg}° • Mag ${star.mag}`;
 
-    ctx.font = "bold 11px 'Cinzel Decorative', 'MedievalSharp', serif";
+    const fontTitle = "bold 11px 'Cinzel Decorative', 'MedievalSharp', serif";
+    const fontSubtitle = "italic 11px 'Cormorant Garamond', Georgia, serif";
+    const fontMeta = "9.5px monospace, Courier, sans-serif";
+
+    ctx.font = fontTitle;
     const w1 = ctx.measureText(title).width;
-    ctx.font = "italic 10px 'Cormorant Garamond', Georgia, serif";
+    ctx.font = fontSubtitle;
     const w2 = ctx.measureText(subtitle).width;
+    ctx.font = fontMeta;
     const w3 = ctx.measureText(meta).width;
-    const boxW = Math.max(w1, w2, w3) + 22;
-    const boxH = 54;
+
+    const padX = 14;
+    const boxW = Math.ceil(Math.max(w1, w2, w3)) + padX * 2;
+    const boxH = 56;
+
+    let x = star.px + 14;
+    let y = star.py - 12;
+
+    // Viewport collision avoidance
+    if (x + boxW > this.width - 12) {
+      x = star.px - boxW - 14;
+    }
+    if (x < 12) {
+      x = 12;
+    }
+    if (y + boxH - 14 > this.height - 12) {
+      y = this.height - boxH - 12 + 14;
+    }
+    if (y - 14 < 12) {
+      y = 26;
+    }
 
     // Tooltip Card
-    ctx.fillStyle = "rgba(14, 9, 22, 0.92)";
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.65)";
+    ctx.fillStyle = "rgba(14, 9, 22, 0.94)";
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.75)";
     ctx.lineWidth = 1.0;
     ctx.beginPath();
     if (ctx.roundRect) {
@@ -835,16 +856,16 @@ class StellarMap {
 
     // Text Lines
     ctx.fillStyle = "#ffd56b";
-    ctx.font = "bold 11px 'Cinzel Decorative', 'MedievalSharp', serif";
-    ctx.fillText(title, x + 10, y + 2);
+    ctx.font = fontTitle;
+    ctx.fillText(title, x + padX, y + 2);
 
     ctx.fillStyle = "#e0d5c1";
-    ctx.font = "italic 11px 'Cormorant Garamond', Georgia, serif";
-    ctx.fillText(subtitle, x + 10, y + 18);
+    ctx.font = fontSubtitle;
+    ctx.fillText(subtitle, x + padX, y + 18);
 
     ctx.fillStyle = "#9fb6d0";
-    ctx.font = "9.5px monospace";
-    ctx.fillText(meta, x + 10, y + 32);
+    ctx.font = fontMeta;
+    ctx.fillText(meta, x + padX, y + 33);
   }
 
   updateHUDReadout() {
