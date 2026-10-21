@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=26.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=27.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=19.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -525,31 +525,35 @@
               <span>🧭 Astrolabe</span> <span id="stellarCoordsLabel" class="stellar-hud-coords">✦ RA 19h 50m • DEC +28°</span>
             </button>
             <div id="stellarPopover" class="stellar-controls-popover">
-              <div style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;letter-spacing:1.5px;display:flex;align-items:center;justify-content:space-between;">
-                <span>✠ CELESTIAL ASTROLABE</span>
-                <span style="font-size:10px;color:#a0d8ef;font-family:monospace;">89 FIGURES • 7 PLANETS</span>
+              <div class="astrolabe-pop-header">
+                <div class="astrolabe-pop-title">
+                  <span class="pop-cross">✠</span>
+                  <span>CELESTIAL ASTROLABE</span>
+                </div>
+                <span class="astrolabe-pop-badge">89 FIGURES • 7 PLANETS</span>
               </div>
 
-              <!-- Featured Real-Time Observer Sky & Geolocation Alignment -->
-              <div class="real-sky-featured-card" style="margin-top: 8px; margin-bottom: 8px;">
-                <div style="font-family:var(--font-display);font-size:11px;color:var(--gold-bright);letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;">
-                  <span>🌌 REAL OBSERVER SKY</span>
-                  <span id="realSkyStatusPill" style="font-size:9.5px;color:#a0d8ef;font-family:monospace;">GPS / TIMEZONE</span>
-                </div>
-                <div style="font-size:10px;color:#cfbe9f;line-height:1.35;margin-top:3px;">
-                  Calculates Local Sidereal Time &amp; Latitude to align the 3D astrolabe with the exact stars visible overhead tonight.
-                </div>
-                <button id="btnAlignTonightSky" class="btn-gothic" style="padding:7px 10px;font-size:11px;margin-top:6px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(180deg,#381c54 0%,#200d32 100%);border-color:#ffd56b;">
-                  <span>🧭</span> Align to Overhead Sky (Zenith)
+              <!-- Hero Tonight's Real Sky Alignment -->
+              <div class="astrolabe-hero-card">
+                <button type="button" id="btnAlignTonightSky" class="astrolabe-hero-btn" title="Align to Tonight's Real Sky Overhead (GPS / Geolocation)">
+                  <div class="hero-icon-orbit">🌌</div>
+                  <div class="hero-info">
+                    <div class="hero-main-row">
+                      <span class="hero-headline">TONIGHT'S REAL SKY</span>
+                      <span id="realSkyStatusPill" class="hero-status-pill">GPS / TIMEZONE</span>
+                    </div>
+                    <span class="hero-subline">Align overhead Zenith to your real coordinates</span>
+                  </div>
+                  <span class="hero-chevron">🧭</span>
                 </button>
               </div>
 
               <!-- Constellation Finder & Quick-Glide -->
-              <div class="stellar-finder-section">
-                <div class="stellar-finder-label">
+              <div class="astrolabe-glide-card">
+                <div class="glide-header">
                   <span>🔭</span> CELESTIAL QUICK-GLIDE
                 </div>
-                <select id="selectConstellation" class="stellar-finder-select">
+                <select id="selectConstellation" class="astrolabe-select">
                   <option value="">✦ Select a Constellation or Planet...</option>
                   <optgroup label="── The 7 Classical Wandering Planets ──">
                     <option value="planet_Sol">☉ Sol (The Sun)</option>
@@ -687,54 +691,65 @@
                   </optgroup>
                 </select>
 
-                <div style="font-size:10px;color:#c0b293;margin-top:2px;letter-spacing:0.5px;">ZODIAC QUICK-GLIDE:</div>
-                <div class="zodiac-quick-grid">
-                  <button type="button" class="zodiac-chip" data-constell="Aries" title="Aries (The Ram)">♈</button>
-                  <button type="button" class="zodiac-chip" data-constell="Taurus" title="Taurus (The Bull)">♉</button>
-                  <button type="button" class="zodiac-chip" data-constell="Gemini" title="Gemini (The Twins)">♊</button>
-                  <button type="button" class="zodiac-chip" data-constell="Cancer" title="Cancer (The Crab)">♋</button>
-                  <button type="button" class="zodiac-chip" data-constell="Leo" title="Leo (The Lion)">♌</button>
-                  <button type="button" class="zodiac-chip" data-constell="Virgo" title="Virgo (The Virgin)">♍</button>
-                  <button type="button" class="zodiac-chip" data-constell="Libra" title="Libra (The Scales)">♎</button>
-                  <button type="button" class="zodiac-chip" data-constell="Scorpius" title="Scorpius (The Scorpion)">♏</button>
-                  <button type="button" class="zodiac-chip" data-constell="Sagittarius" title="Sagittarius (The Archer / Teapot)">♐</button>
-                  <button type="button" class="zodiac-chip" data-constell="Capricornus" title="Capricornus (The Sea Goat)">♑</button>
-                  <button type="button" class="zodiac-chip" data-constell="Aquarius" title="Aquarius (The Water Bearer)">♒</button>
-                  <button type="button" class="zodiac-chip" data-constell="Pisces" title="Pisces (The Fishes)">♓</button>
+                <div class="quick-tokens-block">
+                  <div class="quick-tokens-label">Zodiac Constellations (12 Signs):</div>
+                  <div class="zodiac-tokens-grid">
+                    <button type="button" class="zodiac-chip" data-constell="Aries" title="Aries (The Ram)">♈</button>
+                    <button type="button" class="zodiac-chip" data-constell="Taurus" title="Taurus (The Bull)">♉</button>
+                    <button type="button" class="zodiac-chip" data-constell="Gemini" title="Gemini (The Twins)">♊</button>
+                    <button type="button" class="zodiac-chip" data-constell="Cancer" title="Cancer (The Crab)">♋</button>
+                    <button type="button" class="zodiac-chip" data-constell="Leo" title="Leo (The Lion)">♌</button>
+                    <button type="button" class="zodiac-chip" data-constell="Virgo" title="Virgo (The Virgin)">♍</button>
+                    <button type="button" class="zodiac-chip" data-constell="Libra" title="Libra (The Scales)">♎</button>
+                    <button type="button" class="zodiac-chip" data-constell="Scorpius" title="Scorpius (The Scorpion)">♏</button>
+                    <button type="button" class="zodiac-chip" data-constell="Sagittarius" title="Sagittarius (The Archer / Teapot)">♐</button>
+                    <button type="button" class="zodiac-chip" data-constell="Capricornus" title="Capricornus (The Sea Goat)">♑</button>
+                    <button type="button" class="zodiac-chip" data-constell="Aquarius" title="Aquarius (The Water Bearer)">♒</button>
+                    <button type="button" class="zodiac-chip" data-constell="Pisces" title="Pisces (The Fishes)">♓</button>
+                  </div>
                 </div>
 
-                <div style="font-size:10px;color:#c0b293;margin-top:4px;letter-spacing:0.5px;">THE 7 CLASSICAL PLANETS:</div>
-                <div class="planet-quick-row">
-                  <button type="button" class="planet-chip" data-planet="Sol" title="Sol (The Sun)">☉ Sol</button>
-                  <button type="button" class="planet-chip" data-planet="Luna" title="Luna (The Moon)">☽ Luna</button>
-                  <button type="button" class="planet-chip" data-planet="Venus" title="Venus (Morning Star)">♀ Venus</button>
-                  <button type="button" class="planet-chip" data-planet="Jupiter" title="Jupiter (The King)">♃ Jove</button>
-                  <button type="button" class="planet-chip" data-planet="Mars" title="Mars (The Red Wanderer)">♂ Mars</button>
-                  <button type="button" class="planet-chip" data-planet="Saturn" title="Saturn (The Timekeeper)">♄ Saturn</button>
-                  <button type="button" class="planet-chip" data-planet="Mercury" title="Mercury (The Quicksilver)">☿ Mercury</button>
+                <div class="quick-tokens-block">
+                  <div class="quick-tokens-label">7 Classical Wandering Planets:</div>
+                  <div class="planet-tokens-grid">
+                    <button type="button" class="planet-chip" data-planet="Sol" title="Sol (The Sun)">☉ Sol</button>
+                    <button type="button" class="planet-chip" data-planet="Luna" title="Luna (The Moon)">☽ Luna</button>
+                    <button type="button" class="planet-chip" data-planet="Venus" title="Venus (Morning Star)">♀ Venus</button>
+                    <button type="button" class="planet-chip" data-planet="Mars" title="Mars (The Red Wanderer)">♂ Mars</button>
+                    <button type="button" class="planet-chip" data-planet="Jupiter" title="Jupiter (The Great Benefic)">♃ Jove</button>
+                    <button type="button" class="planet-chip" data-planet="Saturn" title="Saturn (The Timekeeper)">♄ Saturn</button>
+                    <button type="button" class="planet-chip" data-planet="Mercury" title="Mercury (The Quicksilver)">☿ Mercury</button>
+                  </div>
                 </div>
               </div>
 
-              <div style="border-top:1px solid rgba(212,175,55,0.18);margin:2px 0;"></div>
+              <!-- Celestial Layers 2x2 Toggle Grid -->
+              <div class="astrolabe-layer-grid">
+                <label class="astrolabe-toggle-chip" for="chkPlanets" title="Toggle 7 Classical Wandering Planets">
+                  <input type="checkbox" id="chkPlanets" checked>
+                  <span class="chip-dot"></span>
+                  <span class="chip-label">Planets (7)</span>
+                </label>
+                <label class="astrolabe-toggle-chip" for="chkConstellations" title="Toggle 89 Constellation Figures">
+                  <input type="checkbox" id="chkConstellations" checked>
+                  <span class="chip-dot"></span>
+                  <span class="chip-label">Figures (89)</span>
+                </label>
+                <label class="astrolabe-toggle-chip" for="chkAstrolabeRings" title="Toggle Celestial Astrolabe Coordinate Rings">
+                  <input type="checkbox" id="chkAstrolabeRings" checked>
+                  <span class="chip-dot"></span>
+                  <span class="chip-label">Astrolabe Rings</span>
+                </label>
+                <label class="astrolabe-toggle-chip" for="chkAutoDrift" title="Toggle Real-Time Diurnal Drift">
+                  <input type="checkbox" id="chkAutoDrift" checked>
+                  <span class="chip-dot"></span>
+                  <span class="chip-label">Diurnal Drift</span>
+                </label>
+              </div>
 
-              <div class="stellar-control-row">
-                <span class="stellar-control-label">Classical Planets (7)</span>
-                <input type="checkbox" id="chkPlanets" checked>
-              </div>
-              <div class="stellar-control-row">
-                <span class="stellar-control-label">Constellations</span>
-                <input type="checkbox" id="chkConstellations" checked>
-              </div>
-              <div class="stellar-control-row">
-                <span class="stellar-control-label">Astrolabe Rings</span>
-                <input type="checkbox" id="chkAstrolabeRings" checked>
-              </div>
-              <div class="stellar-control-row">
-                <span class="stellar-control-label">Diurnal Auto-Drift</span>
-                <input type="checkbox" id="chkAutoDrift" checked>
-              </div>
-              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:4px;width:100%;">
-                ⭐ Reset to Polaris (North Star)
+              <!-- Minimal Reset Action -->
+              <button type="button" id="btnResetPolaris" class="astrolabe-reset-btn" title="Reset celestial camera to Polaris (North Star)">
+                <span>⭐</span> <span>Reset View to Polaris</span>
               </button>
             </div>
           </div>
@@ -1264,12 +1279,12 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=26.0"></script>
+  <script src="/static/js/stellar-map.js?v=27.0"></script>
   <script src="/static/js/soundscape.js?v=19.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=19.0"></script>
-  <script src="/static/js/app.js?v=26.0"></script>
+  <script src="/static/js/app.js?v=27.0"></script>
 </body>
 </html>
