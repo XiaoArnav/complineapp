@@ -972,51 +972,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Celestial View Aligned with Polaris ✠");
       });
     }
-
-    // --- 9.5. Gothic Rose Window Prismatic Stained-Glass Lighting ---
-    const btnToggleRosePrism = document.getElementById("btnToggleRosePrism");
-    const rosePrismLabel = document.getElementById("rosePrismLabel");
-    const btnToggleRosePrismSettings = document.getElementById("btnToggleRosePrismSettings");
-
-    const onCycleRosePrism = () => {
-      let pal = null;
-      if (window.stellarMap && window.stellarMap.cycleRosePrismPalette) {
-        pal = window.stellarMap.cycleRosePrismPalette();
-      }
-      if (window.rosePrism && window.rosePrism.cyclePalette) {
-        pal = window.rosePrism.cyclePalette();
-      }
-      if (pal) {
-        if (rosePrismLabel) {
-          const shortName = pal.name.split(" ")[0];
-          rosePrismLabel.textContent = `Prism (${shortName})`;
-        }
-        showToast(`Rose Window Lux: ${pal.name} ✠`);
-      }
-    };
-
-    if (btnToggleRosePrism) {
-      btnToggleRosePrism.addEventListener("click", onCycleRosePrism);
-    }
-    if (btnToggleRosePrismSettings) {
-      btnToggleRosePrismSettings.addEventListener("click", () => {
-        onCycleRosePrism();
-        const settingsModal = document.getElementById("settingsModal");
-        if (settingsModal) settingsModal.classList.remove("active");
-      });
-    }
-
-    const roseWheel = document.getElementById("roseWheel");
-    if (roseWheel) {
-      roseWheel.addEventListener("click", () => {
-        if (window.stellarMap && window.stellarMap.cycleRosePrismPalette) {
-          window.stellarMap.cycleRosePrismPalette();
-        }
-        if (window.rosePrism) {
-          window.rosePrism.triggerBurst();
-        }
-      });
-    }
   }
 
   // --- 10. Initial Phonograph & Story Load ---
