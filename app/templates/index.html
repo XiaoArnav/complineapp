@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=24.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=25.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=19.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -714,7 +714,10 @@
                 <span class="stellar-control-label">Diurnal Auto-Drift</span>
                 <input type="checkbox" id="chkAutoDrift" checked>
               </div>
-              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:2px;width:100%;">
+              <button id="btnAlignTonightSky" class="btn-gothic" style="padding:7px 10px;font-size:11px;margin-top:4px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(180deg,#2b1640 0%,#1a0c28 100%);border-color:#ffd56b;">
+                <span>🌌</span> Align to Tonight's Real Sky (Zenith)
+              </button>
+              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:4px;width:100%;">
                 ⭐ Reset to Polaris (North Star)
               </button>
             </div>
@@ -1231,12 +1234,12 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=24.0"></script>
+  <script src="/static/js/stellar-map.js?v=25.0"></script>
   <script src="/static/js/soundscape.js?v=19.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=19.0"></script>
-  <script src="/static/js/app.js?v=24.0"></script>
+  <script src="/static/js/app.js?v=25.0"></script>
 </body>
 </html>

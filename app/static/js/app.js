@@ -908,6 +908,36 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    const btnAlignTonightSky = document.getElementById("btnAlignTonightSky");
+    if (btnAlignTonightSky) {
+      btnAlignTonightSky.addEventListener("click", () => {
+        if (!window.stellarMap) return;
+
+        const performAlign = (lat, lon) => {
+          const res = window.stellarMap.alignToTonightSky(lat, lon);
+          if (res) {
+            const latStr = `${res.latDeg >= 0 ? "+" : ""}${res.latDeg.toFixed(1)}°`;
+            showToast(`Astrolabe Aligned to Tonight's Real Sky Overhead (Lat ${latStr}) ✠`);
+          }
+        };
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              performAlign(pos.coords.latitude, pos.coords.longitude);
+            },
+            () => {
+              // Graceful fallback to timezone-derived coordinates
+              performAlign(null, null);
+            },
+            { timeout: 3500 }
+          );
+        } else {
+          performAlign(null, null);
+        }
+      });
+    }
+
     if (btnResetPolaris) {
       btnResetPolaris.addEventListener("click", () => {
         if (window.stellarMap) window.stellarMap.resetToPolaris();

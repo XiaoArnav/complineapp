@@ -59,6 +59,10 @@ class StellarMap {
     this.planets = [];
     this.hoveredPlanet = null;
 
+    // Real Sky Mode (Local Sidereal Time & Latitude Alignment)
+    this.realSkyMode = false;
+    this.realSkyData = null;
+
     // Effects & Pulses
     this.pulses = [];
     this.bloomAlpha = 0;
@@ -929,6 +933,69 @@ class StellarMap {
     return true;
   }
 
+  alignToTonightSky(latDeg = null, lonDeg = null) {
+    const now = new Date();
+
+    // If coordinates not provided, estimate from browser timezone offset
+    if (latDeg === null || lonDeg === null) {
+      const tzMinutes = now.getTimezoneOffset(); // minutes behind UTC
+      lonDeg = -tzMinutes / 4.0;                 // 1 degree = 4 minutes
+      latDeg = 28.6;                             // Default temperate latitude
+    }
+
+    // 1. Calculate Julian Date and days since J2000.0 epoch
+    const jd = (now.getTime() / 86400000.0) + 2440587.5;
+    const d = jd - 2451545.0;
+
+    // 2. Greenwich Mean Sidereal Time (GMST) in hours
+    let gmst = (18.697374558 + 24.06570982441908 * d) % 24.0;
+    if (gmst < 0) gmst += 24.0;
+
+    // 3. Local Sidereal Time (LST) in hours
+    let lst = (gmst + lonDeg / 15.0) % 24.0;
+    if (lst < 0) lst += 24.0;
+
+    // 4. Convert LST and Latitude to radians
+    const lstRad = lst * (Math.PI / 12.0);
+    const latRad = Math.max(-1.38, Math.min(1.38, latDeg * (Math.PI / 180.0)));
+
+    // 5. Compute camera Euler orientation to place the Zenith (overhead) dead-center
+    const desiredRotX = latRad;
+    const desiredRotY = Math.PI / 2 - lstRad;
+
+    // Geodesic shortest path on Y axis
+    const currentYNorm = ((this.rotY % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    let diffY = (desiredRotY - currentYNorm) % (Math.PI * 2);
+    if (diffY > Math.PI) diffY -= Math.PI * 2;
+    if (diffY < -Math.PI) diffY += Math.PI * 2;
+
+    this.targetRotY = this.rotY + diffY;
+    this.targetRotX = desiredRotX;
+    this.targetFocal = Math.max(480, Math.min(740, Math.min(this.width, this.height) * 0.75));
+
+    // Save Zenith marker data
+    this.realSkyMode = true;
+    this.realSkyData = {
+      latDeg,
+      lonDeg,
+      latRad,
+      lstRad,
+      lstHours: lst,
+      lstFormatted: `${Math.floor(lst)}h ${Math.floor((lst % 1) * 60)}m`
+    };
+
+    // Briefly pause drift so user can inspect their overhead sky
+    const prevAutoDrift = this.autoDrift;
+    this.autoDrift = false;
+    setTimeout(() => { this.autoDrift = prevAutoDrift; }, 5000);
+
+    // Pulse & bloom
+    this.triggerGravitationalPulse(this.width / 2, this.height / 2);
+    this.bloomAlpha = 0.55;
+
+    return this.realSkyData;
+  }
+
   toggleConstellations() {
     this.showConstellations = !this.showConstellations;
     return this.showConstellations;
@@ -1108,6 +1175,11 @@ class StellarMap {
     // 7.5 Render Classical Wandering Planets
     if (this.showPlanets) {
       this.renderPlanets(ctx);
+    }
+
+    // 7.8 Render Real Sky Zenith Reticle (if active)
+    if (this.realSkyMode) {
+      this.renderRealSkyZenith(ctx, cx, cy, cosX, sinX, cosY, sinY);
     }
 
     // 8. Render Gravitational Shockwave Ripples
@@ -1530,6 +1602,58 @@ class StellarMap {
     ctx.fillStyle = "#9fb6d0";
     ctx.font = fontMeta;
     ctx.fillText(meta, x + padX, y + 33);
+  }
+
+  renderRealSkyZenith(ctx, cx, cy, cosX, sinX, cosY, sinY) {
+    if (!this.realSkyMode || !this.realSkyData) return;
+
+    const { latRad, lstRad, latDeg, lstFormatted } = this.realSkyData;
+    const R = this.R || 880;
+
+    // 3D Cartesian coordinates of Zenith on the sphere
+    const cosLat = Math.cos(latRad);
+    const zx = R * cosLat * Math.cos(lstRad);
+    const zy = R * Math.sin(latRad);
+    const zz = R * cosLat * Math.sin(lstRad);
+
+    const p = this.project(zx, zy, zz, cx, cy, cosX, sinX, cosY, sinY);
+    if (!p.visible) return;
+
+    const alpha = Math.max(0.35, Math.min(0.95, (1200 - p.z) / 1400));
+    ctx.save();
+
+    // 1. Golden Celestial Zenith Reticle
+    ctx.strokeStyle = `rgba(255, 220, 110, ${alpha})`;
+    ctx.lineWidth = 1.2;
+
+    const arm = 14;
+    ctx.beginPath();
+    ctx.moveTo(p.px - arm, p.py); ctx.lineTo(p.px + arm, p.py);
+    ctx.moveTo(p.px, p.py - arm); ctx.lineTo(p.px, p.py + arm);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(p.px, p.py, 6, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Pulsing outer ring
+    const now = performance.now() * 0.002;
+    const pulseR = 18 + Math.sin(now * 3) * 3;
+    ctx.strokeStyle = `rgba(212, 175, 55, ${alpha * 0.55})`;
+    ctx.beginPath();
+    ctx.arc(p.px, p.py, pulseR, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 2. Gothic Zenith Tag
+    ctx.font = "bold 10px 'Cinzel Decorative', 'MedievalSharp', serif";
+    ctx.fillStyle = `rgba(255, 235, 140, ${alpha})`;
+    ctx.fillText("⊕ ZENITH (OVERHEAD)", p.px + 20, p.py - 6);
+
+    ctx.font = "italic 9.5px 'Cormorant Garamond', Georgia, serif";
+    ctx.fillStyle = `rgba(200, 225, 255, ${alpha * 0.88})`;
+    ctx.fillText(`Lat ${latDeg >= 0 ? "+" : ""}${latDeg.toFixed(1)}° • LST ${lstFormatted}`, p.px + 20, p.py + 7);
+
+    ctx.restore();
   }
 
   renderConstellationBanner(ctx) {
