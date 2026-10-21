@@ -394,6 +394,7 @@ class GothicTarotWheel {
     if (this.cardEl) {
       this.cardEl.classList.add("is-facedown");
       this.cardEl.classList.remove("is-faceup");
+      this.cardEl.style.transform = "translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)";
     }
 
     // Update button text to "Reveal Prophecy" if button present
@@ -436,6 +437,7 @@ class GothicTarotWheel {
     setTimeout(() => {
       this.isMaterializing = false;
       this.cardEl.classList.remove("materializing");
+      this.cardEl.style.transform = "translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)";
       this.startFloatingLoop();
     }, 1100);
   }
@@ -483,6 +485,19 @@ class GothicTarotWheel {
 
       if (this.cardEl) {
         this.cardEl.style.transform = `translate3d(0, ${floatY}px, 0) rotateX(${this.cardRotX.toFixed(2)}deg) rotateY(${finalRotY.toFixed(2)}deg) rotateZ(${floatRotZ.toFixed(2)}deg)`;
+
+        // Seamless face visibility and hit testing at 90deg horizon
+        if (this.flipAngle > 90) {
+          if (!this.cardEl.classList.contains("is-facedown")) {
+            this.cardEl.classList.add("is-facedown");
+            this.cardEl.classList.remove("is-faceup");
+          }
+        } else {
+          if (!this.cardEl.classList.contains("is-faceup")) {
+            this.cardEl.classList.add("is-faceup");
+            this.cardEl.classList.remove("is-facedown");
+          }
+        }
       }
 
       // Shadow reacts to height and tilt
@@ -753,6 +768,16 @@ class GothicTarotWheel {
     this.stopFloatingLoop();
     this.modalEl.classList.remove("active");
     this.modalEl.setAttribute("aria-hidden", "true");
+    if (this.cardEl) {
+      this.cardEl.classList.remove("materializing");
+      this.cardEl.classList.remove("is-faceup");
+      this.cardEl.classList.add("is-facedown");
+      this.cardEl.style.transform = "translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)";
+    }
+    this.isFlipped = true;
+    this.flipAngle = 180;
+    this.targetFlipAngle = 180;
+    this.hasBeenRevealed = false;
   }
 }
 

@@ -192,6 +192,7 @@
   outline: none;
   will-change: transform;
   touch-action: manipulation;
+  transform: rotateY(180deg);
 }
 
 .tarot-3d-card.is-dragging {
@@ -206,7 +207,7 @@
 @keyframes tarotMaterializeFromVoid {
   0% {
     opacity: 0;
-    transform: translate3d(0, 140px, -800px) rotateX(60deg) rotateY(0deg) scale(0.08);
+    transform: translate3d(0, 140px, -800px) rotateX(60deg) rotateY(180deg) scale(0.08);
     filter: blur(16px);
   }
   50% {
