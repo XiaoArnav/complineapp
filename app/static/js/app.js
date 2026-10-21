@@ -869,6 +869,27 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+    document.querySelectorAll(".planet-chip").forEach(chip => {
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const planet = chip.getAttribute("data-planet");
+        if (planet && window.stellarMap) {
+          if (selectConstellation) selectConstellation.value = `planet_${planet}`;
+          const ok = window.stellarMap.glideToConstellation(`planet_${planet}`);
+          if (ok) {
+            showToast(`Astrolabe Gliding to Planet ${planet} ✠`);
+          }
+        }
+      });
+    });
+
+    const chkPlanets = document.getElementById("chkPlanets");
+    if (chkPlanets) {
+      chkPlanets.addEventListener("change", () => {
+        if (window.stellarMap) window.stellarMap.showPlanets = chkPlanets.checked;
+      });
+    }
+
     if (chkConstellations) {
       chkConstellations.addEventListener("change", () => {
         if (window.stellarMap) window.stellarMap.showConstellations = chkConstellations.checked;

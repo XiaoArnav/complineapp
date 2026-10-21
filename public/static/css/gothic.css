@@ -2230,3 +2230,37 @@ body {
   color: var(--gold-antique);
   letter-spacing: 1px;
 }
+
+.planet-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.planet-chip {
+  background: #170d22;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 5px;
+  color: #ffd875;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  padding: 4px 7px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.planet-chip:hover {
+  background: #39174e;
+  border-color: #ffea99;
+  color: #fff9e6;
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.planet-chip:active {
+  transform: scale(0.96);
+}

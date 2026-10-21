@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=23.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=24.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=19.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -522,16 +522,25 @@
             <div id="stellarPopover" class="stellar-controls-popover">
               <div style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;letter-spacing:1.5px;display:flex;align-items:center;justify-content:space-between;">
                 <span>✠ CELESTIAL ASTROLABE</span>
-                <span style="font-size:10px;color:#a0d8ef;font-family:monospace;">89 FIGURES</span>
+                <span style="font-size:10px;color:#a0d8ef;font-family:monospace;">89 FIGURES • 7 PLANETS</span>
               </div>
 
               <!-- Constellation Finder & Quick-Glide -->
               <div class="stellar-finder-section">
                 <div class="stellar-finder-label">
-                  <span>🔭</span> CONSTELLATION QUICK-GLIDE
+                  <span>🔭</span> CELESTIAL QUICK-GLIDE
                 </div>
                 <select id="selectConstellation" class="stellar-finder-select">
-                  <option value="">✦ Select a Constellation...</option>
+                  <option value="">✦ Select a Constellation or Planet...</option>
+                  <optgroup label="── The 7 Classical Wandering Planets ──">
+                    <option value="planet_Sol">☉ Sol (The Sun)</option>
+                    <option value="planet_Luna">☽ Luna (The Moon)</option>
+                    <option value="planet_Venus">♀ Venus (Morning & Evening Star)</option>
+                    <option value="planet_Jupiter">♃ Jupiter (The Great Benefic)</option>
+                    <option value="planet_Mars">♂ Mars (The Red Wanderer)</option>
+                    <option value="planet_Saturn">♄ Saturn (The Timekeeper)</option>
+                    <option value="planet_Mercury">☿ Mercury (The Quicksilver)</option>
+                  </optgroup>
                   <optgroup label="── Zodiac Constellations (12 Signs) ──">
                     <option value="Aries">♈ Aries (The Ram)</option>
                     <option value="Taurus">♉ Taurus (The Bull)</option>
@@ -674,10 +683,25 @@
                   <button type="button" class="zodiac-chip" data-constell="Aquarius" title="Aquarius (The Water Bearer)">♒</button>
                   <button type="button" class="zodiac-chip" data-constell="Pisces" title="Pisces (The Fishes)">♓</button>
                 </div>
+
+                <div style="font-size:10px;color:#c0b293;margin-top:4px;letter-spacing:0.5px;">THE 7 CLASSICAL PLANETS:</div>
+                <div class="planet-quick-row">
+                  <button type="button" class="planet-chip" data-planet="Sol" title="Sol (The Sun)">☉ Sol</button>
+                  <button type="button" class="planet-chip" data-planet="Luna" title="Luna (The Moon)">☽ Luna</button>
+                  <button type="button" class="planet-chip" data-planet="Venus" title="Venus (Morning Star)">♀ Venus</button>
+                  <button type="button" class="planet-chip" data-planet="Jupiter" title="Jupiter (The King)">♃ Jove</button>
+                  <button type="button" class="planet-chip" data-planet="Mars" title="Mars (The Red Wanderer)">♂ Mars</button>
+                  <button type="button" class="planet-chip" data-planet="Saturn" title="Saturn (The Timekeeper)">♄ Saturn</button>
+                  <button type="button" class="planet-chip" data-planet="Mercury" title="Mercury (The Quicksilver)">☿ Mercury</button>
+                </div>
               </div>
 
               <div style="border-top:1px solid rgba(212,175,55,0.18);margin:2px 0;"></div>
 
+              <div class="stellar-control-row">
+                <span class="stellar-control-label">Classical Planets (7)</span>
+                <input type="checkbox" id="chkPlanets" checked>
+              </div>
               <div class="stellar-control-row">
                 <span class="stellar-control-label">Constellations</span>
                 <input type="checkbox" id="chkConstellations" checked>
@@ -1207,12 +1231,12 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=23.0"></script>
+  <script src="/static/js/stellar-map.js?v=24.0"></script>
   <script src="/static/js/soundscape.js?v=19.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=19.0"></script>
-  <script src="/static/js/app.js?v=23.0"></script>
+  <script src="/static/js/app.js?v=24.0"></script>
 </body>
 </html>

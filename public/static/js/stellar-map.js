@@ -54,6 +54,11 @@ class StellarMap {
     this.showAstrolabeRings = true;
     this.showStarNames = true;
 
+    // The 7 Classical Wandering Planets (Planetes Asteres)
+    this.showPlanets = true;
+    this.planets = [];
+    this.hoveredPlanet = null;
+
     // Effects & Pulses
     this.pulses = [];
     this.bloomAlpha = 0;
@@ -460,6 +465,98 @@ class StellarMap {
       // 4. Arctic Circle Ring (Dec = +66.5 deg)
       this.generateRingPoints(R * 0.98 * Math.cos(1.16), 0, 0, R * 0.98 * Math.sin(1.16), "#ffd700", 0.20, "Arctic Circle")
     ];
+
+    // E. The 7 Classical Wandering Planets (Planetes Asteres) along the Ecliptic
+    this.planets = [
+      {
+        name: "Sol",
+        glyph: "☉",
+        title: "Sol Invictus • Father of Light",
+        lon: 0.82,
+        speed: 0.0003,
+        color: "#fff375",
+        haloColor: "rgba(255, 220, 90, 0.45)",
+        mag: -26.7,
+        baseR: 5.2,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Luna",
+        glyph: "☽",
+        title: "Cynthia • Queen of Dreams & Tides",
+        lon: 1.45,
+        speed: 0.0014,
+        color: "#f0f8ff",
+        haloColor: "rgba(200, 230, 255, 0.4)",
+        mag: -12.6,
+        baseR: 4.4,
+        isMoon: true,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Mercury",
+        glyph: "☿",
+        title: "Stilbon • The Quicksilver Messenger",
+        lon: 0.65,
+        speed: 0.0007,
+        color: "#d4e6ff",
+        haloColor: "rgba(180, 215, 255, 0.35)",
+        mag: -0.4,
+        baseR: 2.8,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Venus",
+        glyph: "♀",
+        title: "Lucifer / Vesper • Morning & Evening Star",
+        lon: 1.15,
+        speed: 0.00045,
+        color: "#ffffff",
+        haloColor: "rgba(220, 245, 255, 0.55)",
+        mag: -4.4,
+        baseR: 4.0,
+        isBrilliant: true,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Mars",
+        glyph: "♂",
+        title: "Pyroeis • The Red Wanderer",
+        lon: 3.75,
+        speed: 0.00022,
+        color: "#ff5436",
+        haloColor: "rgba(255, 90, 60, 0.45)",
+        mag: -1.9,
+        baseR: 3.4,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Jupiter",
+        glyph: "♃",
+        title: "Phaethon • The Great Benefic King",
+        lon: 2.38,
+        speed: 0.0001,
+        color: "#ffe082",
+        haloColor: "rgba(255, 215, 110, 0.45)",
+        mag: -2.7,
+        baseR: 4.6,
+        isBanded: true,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      },
+      {
+        name: "Saturn",
+        glyph: "♄",
+        title: "Phainon • Chronos & The Timekeeper",
+        lon: 5.42,
+        speed: 0.00005,
+        color: "#ffd27a",
+        haloColor: "rgba(240, 200, 120, 0.4)",
+        mag: 0.2,
+        baseR: 3.8,
+        hasRing: true,
+        x: 0, y: 0, z: 0, px: 0, py: 0, pz: 0, scale: 0, visible: false
+      }
+    ];
   }
 
   generateRingPoints(radius, tiltX, tiltY, offsetY, strokeColor, alpha, label) {
@@ -735,6 +832,41 @@ class StellarMap {
   glideToConstellation(constellName, targetZoom = null) {
     if (!constellName) return false;
 
+    // Check if target is one of the 7 Classical Wandering Planets
+    const planetKey = constellName.replace(/^planet_/, "").toLowerCase();
+    const targetPlanet = this.planets ? this.planets.find(p => p.name.toLowerCase() === planetKey) : null;
+
+    if (targetPlanet) {
+      const R = this.R || 880;
+      const dec = Math.asin(Math.max(-1, Math.min(1, targetPlanet.y / R)));
+      let ra = Math.atan2(targetPlanet.z, targetPlanet.x);
+      if (ra < 0) ra += Math.PI * 2;
+
+      const desiredRotX = Math.max(-1.38, Math.min(1.38, dec));
+      const desiredRotY = Math.PI / 2 - ra;
+
+      const currentYNorm = ((this.rotY % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      let diffY = (desiredRotY - currentYNorm) % (Math.PI * 2);
+      if (diffY > Math.PI) diffY -= Math.PI * 2;
+      if (diffY < -Math.PI) diffY += Math.PI * 2;
+
+      this.targetRotY = this.rotY + diffY;
+      this.targetRotX = desiredRotX;
+      this.targetFocal = Math.max(560, Math.min(840, Math.min(this.width, this.height) * 0.85));
+
+      this.activeConstellation = null;
+      this.constellationFocusWeight = 0;
+      this.hoveredPlanet = targetPlanet;
+
+      const prevAutoDrift = this.autoDrift;
+      this.autoDrift = false;
+      setTimeout(() => { this.autoDrift = prevAutoDrift; }, 4500);
+
+      this.triggerGravitationalPulse(this.width / 2, this.height / 2);
+      this.bloomAlpha = 0.55;
+      return true;
+    }
+
     // Collect all major stars in this constellation
     const matchingStars = this.stars.filter(
       s => s.isMajor && s.constell && s.constell.toLowerCase() === constellName.toLowerCase()
@@ -885,12 +1017,47 @@ class StellarMap {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // 3. Project All Stars into Screen Space
+    // 3. Project All Stars & Planets into Screen Space
     let closestMajor = null;
+    let closestPlanet = null;
     let closestDist = 32;
 
     const pointer = { x: this.pointerX, y: this.pointerY };
 
+    // Update & project the 7 Classical Wandering Planets along the Ecliptic
+    const R_planet = this.R * 0.98;
+    const cosEcl = Math.cos(0.409), sinEcl = Math.sin(0.409);
+
+    if (this.showPlanets && this.planets) {
+      for (let i = 0; i < this.planets.length; i++) {
+        const pl = this.planets[i];
+        pl.lon = (pl.lon + pl.speed * 0.035) % (Math.PI * 2);
+
+        const x0 = R_planet * Math.cos(pl.lon);
+        const z0 = R_planet * Math.sin(pl.lon);
+        pl.x = x0;
+        pl.y = -z0 * sinEcl;
+        pl.z = z0 * cosEcl;
+
+        const proj = this.project(pl.x, pl.y, pl.z, cx, cy, cosX, sinX, cosY, sinY);
+        pl.px = proj.px;
+        pl.py = proj.py;
+        pl.pz = proj.z;
+        pl.scale = proj.scale;
+        pl.visible = proj.visible;
+
+        if (pl.visible) {
+          const d = Math.hypot(pl.px - pointer.x, pl.py - pointer.y);
+          if (d < closestDist) {
+            closestDist = d;
+            closestPlanet = pl;
+          }
+        }
+      }
+    }
+    this.hoveredPlanet = closestPlanet;
+
+    // Project stars and test hover if no planet hovered
     for (let i = 0; i < this.stars.length; i++) {
       const s = this.stars[i];
       const p = this.project(s.x, s.y, s.z, cx, cy, cosX, sinX, cosY, sinY);
@@ -900,8 +1067,7 @@ class StellarMap {
       s.scale = p.scale;
       s.visible = p.visible;
 
-      // Check hover for major stars
-      if (s.isMajor && s.visible) {
+      if (!this.hoveredPlanet && s.isMajor && s.visible) {
         const d = Math.hypot(s.px - pointer.x, s.py - pointer.y);
         if (d < closestDist) {
           closestDist = d;
@@ -939,6 +1105,11 @@ class StellarMap {
     // 7. Render Stars
     this.renderStars(ctx);
 
+    // 7.5 Render Classical Wandering Planets
+    if (this.showPlanets) {
+      this.renderPlanets(ctx);
+    }
+
     // 8. Render Gravitational Shockwave Ripples
     this.renderPulses(ctx);
 
@@ -952,8 +1123,10 @@ class StellarMap {
       this.bloomAlpha *= 0.95;
     }
 
-    // 10. Render Hovered Star Gothic Astrolabe Callout Tooltip
-    if (this.hoveredStar) {
+    // 11. Render Tooltips (Planet takes precedence over Star)
+    if (this.hoveredPlanet) {
+      this.renderPlanetTooltip(ctx, this.hoveredPlanet);
+    } else if (this.hoveredStar) {
       this.renderStarTooltip(ctx, this.hoveredStar);
     }
 
@@ -1207,6 +1380,156 @@ class StellarMap {
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       ctx.stroke();
     }
+  }
+
+  renderPlanets(ctx) {
+    if (!this.planets) return;
+
+    for (let i = 0; i < this.planets.length; i++) {
+      const p = this.planets[i];
+      if (!p.visible) continue;
+
+      const r = Math.max(1.8, p.baseR * p.scale);
+      const depthAlpha = Math.max(0.25, Math.min(1.0, (1200 - p.pz) / 1400));
+      ctx.globalAlpha = depthAlpha;
+
+      // 1. Radiant Planetary Corona & Halo
+      const haloR = r * 5.2;
+      const haloGrad = ctx.createRadialGradient(p.px, p.py, 0, p.px, p.py, haloR);
+      haloGrad.addColorStop(0, p.color);
+      haloGrad.addColorStop(0.35, p.haloColor);
+      haloGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = haloGrad;
+      ctx.beginPath();
+      ctx.arc(p.px, p.py, haloR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 2. Special Features
+      if (p.hasRing) {
+        // Saturn's golden tilted ring
+        ctx.strokeStyle = "rgba(255, 218, 140, 0.78)";
+        ctx.lineWidth = Math.max(1.0, 1.8 * p.scale);
+        ctx.beginPath();
+        ctx.ellipse(p.px, p.py, r * 2.4, r * 0.85, -0.42, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (p.isBrilliant) {
+        // Venus brilliant diamond diffraction spikes
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.lineWidth = 1.0;
+        const sp = r * 4.4;
+        ctx.beginPath();
+        ctx.moveTo(p.px - sp, p.py); ctx.lineTo(p.px + sp, p.py);
+        ctx.moveTo(p.px, p.py - sp); ctx.lineTo(p.px, p.py + sp);
+        ctx.stroke();
+      }
+
+      if (p.name === "Sol") {
+        // Sun's subtle 8-ray golden corona
+        ctx.strokeStyle = "rgba(255, 240, 130, 0.6)";
+        ctx.lineWidth = 0.9;
+        const rayLen = r * 3.4;
+        for (let a = 0; a < 8; a++) {
+          const angle = (a / 8) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(p.px + Math.cos(angle) * (r * 1.2), p.py + Math.sin(angle) * (r * 1.2));
+          ctx.lineTo(p.px + Math.cos(angle) * rayLen, p.py + Math.sin(angle) * rayLen);
+          ctx.stroke();
+        }
+      }
+
+      // 3. Planet Body Core
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.px, p.py, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.isBanded) {
+        // Jupiter's subtle equatorial cloud stripe
+        ctx.strokeStyle = "rgba(180, 120, 60, 0.6)";
+        ctx.lineWidth = Math.max(0.8, 1.3 * p.scale);
+        ctx.beginPath();
+        ctx.moveTo(p.px - r * 0.85, p.py);
+        ctx.lineTo(p.px + r * 0.85, p.py);
+        ctx.stroke();
+      }
+
+      if (p.isMoon) {
+        // Moon's crescent shadow overlay
+        ctx.fillStyle = "rgba(10, 6, 18, 0.68)";
+        ctx.beginPath();
+        ctx.arc(p.px + r * 0.35, p.py, r * 0.85, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 4. Alchemical Glyph Label
+      ctx.font = `bold ${Math.max(10, Math.round(11 * p.scale))}px 'Cinzel Decorative', 'MedievalSharp', serif`;
+      ctx.fillStyle = "#ffd56b";
+      ctx.fillText(p.glyph, p.px + r + 5, p.py - r + 3);
+    }
+    ctx.globalAlpha = 1.0;
+  }
+
+  renderPlanetTooltip(ctx, planet) {
+    const title = `✠ ${planet.name.toUpperCase()} ${planet.glyph}`;
+    const subtitle = `${planet.title}`;
+    const eclLonDeg = ((planet.lon * 180) / Math.PI).toFixed(1);
+    const meta = `Ecliptic Longitude ${eclLonDeg}° • Visual Mag ${planet.mag} • Classical Sphere`;
+
+    const fontTitle = "bold 11.5px 'Cinzel Decorative', 'MedievalSharp', serif";
+    const fontSubtitle = "italic 11px 'Cormorant Garamond', Georgia, serif";
+    const fontMeta = "9.5px monospace, Courier, sans-serif";
+
+    ctx.font = fontTitle;
+    const w1 = ctx.measureText(title).width;
+    ctx.font = fontSubtitle;
+    const w2 = ctx.measureText(subtitle).width;
+    ctx.font = fontMeta;
+    const w3 = ctx.measureText(meta).width;
+
+    const padX = 14;
+    const boxW = Math.ceil(Math.max(w1, w2, w3)) + padX * 2;
+    const boxH = 56;
+
+    let x = planet.px + 16;
+    let y = planet.py - 12;
+
+    if (x + boxW > this.width - 12) x = planet.px - boxW - 16;
+    if (x < 12) x = 12;
+    if (y + boxH - 14 > this.height - 12) y = this.height - boxH - 12 + 14;
+    if (y - 14 < 68) y = planet.py + 26;
+
+    // Tooltip Card with planet-tinted glow border
+    ctx.fillStyle = "rgba(14, 9, 22, 0.95)";
+    ctx.strokeStyle = planet.color;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(x, y - 14, boxW, boxH, 6);
+    } else {
+      ctx.rect(x, y - 14, boxW, boxH);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    // Subtle outer halo
+    ctx.strokeStyle = planet.haloColor;
+    ctx.lineWidth = 3.0;
+    ctx.stroke();
+
+    // Text Lines
+    ctx.fillStyle = planet.color;
+    ctx.font = fontTitle;
+    ctx.fillText(title, x + padX, y + 2);
+
+    ctx.fillStyle = "#e0d5c1";
+    ctx.font = fontSubtitle;
+    ctx.fillText(subtitle, x + padX, y + 18);
+
+    ctx.fillStyle = "#9fb6d0";
+    ctx.font = fontMeta;
+    ctx.fillText(meta, x + padX, y + 33);
   }
 
   renderConstellationBanner(ctx) {
