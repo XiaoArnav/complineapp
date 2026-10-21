@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=19.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=23.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=19.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -514,15 +514,170 @@
             <span>⚙️</span> Reliquary Settings
           </button>
 
-          <!-- 3D Celestial Astrolabe HUD Toggle -->
+          <!-- 3D Celestial Astrolabe HUD Toggle & Constellation Finder -->
           <div style="position:relative;display:inline-block;">
-            <button id="btnToggleStellarHUD" class="header-action-btn stellar-hud-button" title="Interactive 3D Astrolabe & Stellar Map">
-              <span id="stellarCoordsLabel" class="stellar-hud-coords">✦ RA 19h 50m • DEC +28°</span>
+            <button id="btnToggleStellarHUD" class="header-action-btn stellar-hud-button" title="Interactive 3D Astrolabe & Constellation Finder">
+              <span>🧭 Astrolabe</span> <span id="stellarCoordsLabel" class="stellar-hud-coords">✦ RA 19h 50m • DEC +28°</span>
             </button>
             <div id="stellarPopover" class="stellar-controls-popover">
-              <div style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;letter-spacing:1.5px;">
-                ✠ CELESTIAL ASTROLABE
+              <div style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;letter-spacing:1.5px;display:flex;align-items:center;justify-content:space-between;">
+                <span>✠ CELESTIAL ASTROLABE</span>
+                <span style="font-size:10px;color:#a0d8ef;font-family:monospace;">89 FIGURES</span>
               </div>
+
+              <!-- Constellation Finder & Quick-Glide -->
+              <div class="stellar-finder-section">
+                <div class="stellar-finder-label">
+                  <span>🔭</span> CONSTELLATION QUICK-GLIDE
+                </div>
+                <select id="selectConstellation" class="stellar-finder-select">
+                  <option value="">✦ Select a Constellation...</option>
+                  <optgroup label="── Zodiac Constellations (12 Signs) ──">
+                    <option value="Aries">♈ Aries (The Ram)</option>
+                    <option value="Taurus">♉ Taurus (The Bull)</option>
+                    <option value="Gemini">♊ Gemini (The Twins)</option>
+                    <option value="Cancer">♋ Cancer (The Crab)</option>
+                    <option value="Leo">♌ Leo (The Lion)</option>
+                    <option value="Virgo">♍ Virgo (The Maiden)</option>
+                    <option value="Libra">♎ Libra (The Scales)</option>
+                    <option value="Scorpius">♏ Scorpius (The Scorpion)</option>
+                    <option value="Sagittarius">♐ Sagittarius (The Archer / Teapot)</option>
+                    <option value="Capricornus">♑ Capricornus (The Sea Goat)</option>
+                    <option value="Aquarius">♒ Aquarius (The Water Bearer)</option>
+                    <option value="Pisces">♓ Pisces (The Fishes)</option>
+                  </optgroup>
+                  <optgroup label="── Classical Masters & Asterisms ──">
+                    <option value="Ursa Major">⭐ Ursa Major (The Big Dipper)</option>
+                    <option value="Ursa Minor">⭐ Ursa Minor (Polaris)</option>
+                    <option value="Orion">⭐ Orion (The Hunter)</option>
+                    <option value="Cassiopeia">⭐ Cassiopeia (The Heavenly Queen)</option>
+                    <option value="Cygnus">⭐ Cygnus (The Northern Cross)</option>
+                    <option value="Crux">⭐ Crux (The Southern Cross)</option>
+                    <option value="Canis Major">⭐ Canis Major (Sirius)</option>
+                    <option value="Pleiades">⭐ Pleiades (The Seven Sisters)</option>
+                    <option value="Centaurus">⭐ Centaurus (Alpha Centauri)</option>
+                    <option value="Carina">⭐ Carina (Canopus)</option>
+                    <option value="Pegasus">⭐ Pegasus (The Great Square)</option>
+                    <option value="Andromeda">⭐ Andromeda (Chained Princess)</option>
+                    <option value="Boötes">⭐ Boötes (Arcturus)</option>
+                    <option value="Lyra">⭐ Lyra (Vega)</option>
+                    <option value="Aquila">⭐ Aquila (Altair)</option>
+                    <option value="Hercules">⭐ Hercules (The Kneeler)</option>
+                    <option value="Draco">⭐ Draco (Celestial Dragon)</option>
+                    <option value="Eridanus">⭐ Eridanus (Celestial River)</option>
+                  </optgroup>
+                  <optgroup label="── Complete 88 Celestial Figures (A–Z) ──">
+                    <option value="Andromeda">Andromeda</option>
+                    <option value="Antlia">Antlia</option>
+                    <option value="Apus">Apus</option>
+                    <option value="Aquarius">Aquarius</option>
+                    <option value="Aquila">Aquila</option>
+                    <option value="Ara">Ara</option>
+                    <option value="Aries">Aries</option>
+                    <option value="Auriga">Auriga</option>
+                    <option value="Boötes">Boötes</option>
+                    <option value="Caelum">Caelum</option>
+                    <option value="Camelopardalis">Camelopardalis</option>
+                    <option value="Cancer">Cancer</option>
+                    <option value="Canes Venatici">Canes Venatici</option>
+                    <option value="Canis Major">Canis Major</option>
+                    <option value="Canis Minor">Canis Minor</option>
+                    <option value="Capricornus">Capricornus</option>
+                    <option value="Carina">Carina</option>
+                    <option value="Cassiopeia">Cassiopeia</option>
+                    <option value="Centaurus">Centaurus</option>
+                    <option value="Cepheus">Cepheus</option>
+                    <option value="Cetus">Cetus</option>
+                    <option value="Chamaeleon">Chamaeleon</option>
+                    <option value="Circinus">Circinus</option>
+                    <option value="Columba">Columba</option>
+                    <option value="Coma Berenices">Coma Berenices</option>
+                    <option value="Corona Australis">Corona Australis</option>
+                    <option value="Corona Borealis">Corona Borealis</option>
+                    <option value="Corvus">Corvus</option>
+                    <option value="Crater">Crater</option>
+                    <option value="Crux">Crux</option>
+                    <option value="Cygnus">Cygnus</option>
+                    <option value="Delphinus">Delphinus</option>
+                    <option value="Dorado">Dorado</option>
+                    <option value="Draco">Draco</option>
+                    <option value="Equuleus">Equuleus</option>
+                    <option value="Eridanus">Eridanus</option>
+                    <option value="Fornax">Fornax</option>
+                    <option value="Gemini">Gemini</option>
+                    <option value="Grus">Grus</option>
+                    <option value="Hercules">Hercules</option>
+                    <option value="Horologium">Horologium</option>
+                    <option value="Hydra">Hydra</option>
+                    <option value="Hydrus">Hydrus</option>
+                    <option value="Indus">Indus</option>
+                    <option value="Lacerta">Lacerta</option>
+                    <option value="Leo">Leo</option>
+                    <option value="Leo Minor">Leo Minor</option>
+                    <option value="Lepus">Lepus</option>
+                    <option value="Libra">Libra</option>
+                    <option value="Lupus">Lupus</option>
+                    <option value="Lynx">Lynx</option>
+                    <option value="Lyra">Lyra</option>
+                    <option value="Mensa">Mensa</option>
+                    <option value="Microscopium">Microscopium</option>
+                    <option value="Monoceros">Monoceros</option>
+                    <option value="Musca">Musca</option>
+                    <option value="Norma">Norma</option>
+                    <option value="Octans">Octans</option>
+                    <option value="Ophiuchus">Ophiuchus</option>
+                    <option value="Orion">Orion</option>
+                    <option value="Pavo">Pavo</option>
+                    <option value="Pegasus">Pegasus</option>
+                    <option value="Perseus">Perseus</option>
+                    <option value="Phoenix">Phoenix</option>
+                    <option value="Pictor">Pictor</option>
+                    <option value="Pisces">Pisces</option>
+                    <option value="Piscis Austrinus">Piscis Austrinus</option>
+                    <option value="Pleiades">Pleiades</option>
+                    <option value="Puppis">Puppis</option>
+                    <option value="Pyxis">Pyxis</option>
+                    <option value="Reticulum">Reticulum</option>
+                    <option value="Sagitta">Sagitta</option>
+                    <option value="Sagittarius">Sagittarius</option>
+                    <option value="Scorpius">Scorpius</option>
+                    <option value="Sculptor">Sculptor</option>
+                    <option value="Scutum">Scutum</option>
+                    <option value="Serpens">Serpens</option>
+                    <option value="Sextans">Sextans</option>
+                    <option value="Taurus">Taurus</option>
+                    <option value="Telescopium">Telescopium</option>
+                    <option value="Triangulum">Triangulum</option>
+                    <option value="Triangulum Australe">Triangulum Australe</option>
+                    <option value="Tucana">Tucana</option>
+                    <option value="Ursa Major">Ursa Major</option>
+                    <option value="Ursa Minor">Ursa Minor</option>
+                    <option value="Vela">Vela</option>
+                    <option value="Virgo">Virgo</option>
+                    <option value="Volans">Volans</option>
+                    <option value="Vulpecula">Vulpecula</option>
+                  </optgroup>
+                </select>
+
+                <div style="font-size:10px;color:#c0b293;margin-top:2px;letter-spacing:0.5px;">ZODIAC QUICK-GLIDE:</div>
+                <div class="zodiac-quick-grid">
+                  <button type="button" class="zodiac-chip" data-constell="Aries" title="Aries (The Ram)">♈</button>
+                  <button type="button" class="zodiac-chip" data-constell="Taurus" title="Taurus (The Bull)">♉</button>
+                  <button type="button" class="zodiac-chip" data-constell="Gemini" title="Gemini (The Twins)">♊</button>
+                  <button type="button" class="zodiac-chip" data-constell="Cancer" title="Cancer (The Crab)">♋</button>
+                  <button type="button" class="zodiac-chip" data-constell="Leo" title="Leo (The Lion)">♌</button>
+                  <button type="button" class="zodiac-chip" data-constell="Virgo" title="Virgo (The Virgin)">♍</button>
+                  <button type="button" class="zodiac-chip" data-constell="Libra" title="Libra (The Scales)">♎</button>
+                  <button type="button" class="zodiac-chip" data-constell="Scorpius" title="Scorpius (The Scorpion)">♏</button>
+                  <button type="button" class="zodiac-chip" data-constell="Sagittarius" title="Sagittarius (The Archer / Teapot)">♐</button>
+                  <button type="button" class="zodiac-chip" data-constell="Capricornus" title="Capricornus (The Sea Goat)">♑</button>
+                  <button type="button" class="zodiac-chip" data-constell="Aquarius" title="Aquarius (The Water Bearer)">♒</button>
+                  <button type="button" class="zodiac-chip" data-constell="Pisces" title="Pisces (The Fishes)">♓</button>
+                </div>
+              </div>
+
+              <div style="border-top:1px solid rgba(212,175,55,0.18);margin:2px 0;"></div>
+
               <div class="stellar-control-row">
                 <span class="stellar-control-label">Constellations</span>
                 <input type="checkbox" id="chkConstellations" checked>
@@ -535,7 +690,7 @@
                 <span class="stellar-control-label">Diurnal Auto-Drift</span>
                 <input type="checkbox" id="chkAutoDrift" checked>
               </div>
-              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:4px;width:100%;">
+              <button id="btnResetPolaris" class="btn-gothic" style="padding:6px 10px;font-size:11px;margin-top:2px;width:100%;">
                 ⭐ Reset to Polaris (North Star)
               </button>
             </div>
@@ -1052,12 +1207,12 @@
   <div id="gothicToast" class="gothic-toast">Chapter Inscribed in Grimoire ✠</div>
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
-  <script src="/static/js/stellar-map.js?v=22.0"></script>
+  <script src="/static/js/stellar-map.js?v=23.0"></script>
   <script src="/static/js/soundscape.js?v=19.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=19.0"></script>
-  <script src="/static/js/app.js?v=19.0"></script>
+  <script src="/static/js/app.js?v=23.0"></script>
 </body>
 </html>

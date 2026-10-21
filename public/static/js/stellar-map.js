@@ -331,6 +331,7 @@ class StellarMap {
     ];
 
     const R = 880; // Celestial Sphere Radius
+    this.R = R;
 
     this.majorStarIndexMap = {};
     majorStarsData.forEach((d) => {
@@ -725,6 +726,75 @@ class StellarMap {
     this.targetRotX = 0.22;
     this.targetRotY = -0.45;
     this.targetFocal = Math.max(380, Math.min(680, Math.min(this.width, this.height) * 0.7));
+    this.activeConstellation = "Ursa Minor";
+    this.constellationFocusWeight = 1.0;
+    this.triggerGravitationalPulse(this.width / 2, this.height / 2);
+    this.bloomAlpha = 0.4;
+  }
+
+  glideToConstellation(constellName, targetZoom = null) {
+    if (!constellName) return false;
+
+    // Collect all major stars in this constellation
+    const matchingStars = this.stars.filter(
+      s => s.isMajor && s.constell && s.constell.toLowerCase() === constellName.toLowerCase()
+    );
+    if (matchingStars.length === 0) return false;
+
+    // Calculate spherical 3D centroid
+    let sumX = 0, sumY = 0, sumZ = 0;
+    matchingStars.forEach(s => {
+      sumX += s.x;
+      sumY += s.y;
+      sumZ += s.z;
+    });
+
+    const cx = sumX / matchingStars.length;
+    const cy = sumY / matchingStars.length;
+    const cz = sumZ / matchingStars.length;
+
+    const R = this.R || 880;
+    const dec = Math.asin(Math.max(-1, Math.min(1, cy / R)));
+    let ra = Math.atan2(cz, cx);
+    if (ra < 0) ra += Math.PI * 2;
+
+    // Optimal camera angles to place centroid directly in screen center:
+    const desiredRotX = Math.max(-1.38, Math.min(1.38, dec));
+    const desiredRotY = Math.PI / 2 - ra;
+
+    // Shortest angular path on Y axis (yaw)
+    const currentYNorm = ((this.rotY % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    let diffY = (desiredRotY - currentYNorm) % (Math.PI * 2);
+    if (diffY > Math.PI) diffY -= Math.PI * 2;
+    if (diffY < -Math.PI) diffY += Math.PI * 2;
+
+    this.targetRotY = this.rotY + diffY;
+    this.targetRotX = desiredRotX;
+
+    // Zoom camera in for dramatic perspective
+    if (targetZoom) {
+      this.targetFocal = targetZoom;
+    } else {
+      const minDim = Math.min(this.width, this.height);
+      this.targetFocal = Math.max(540, Math.min(840, minDim * 0.82));
+    }
+
+    // Activate radiant focus on this constellation
+    this.activeConstellation = matchingStars[0].constell;
+    this.constellationFocusWeight = 1.0;
+
+    // Temporarily pause diurnal drift during glide so it locks on target
+    const prevAutoDrift = this.autoDrift;
+    this.autoDrift = false;
+    setTimeout(() => {
+      this.autoDrift = prevAutoDrift;
+    }, 4500);
+
+    // Trigger celestial ripple pulse at screen center
+    this.triggerGravitationalPulse(this.width / 2, this.height / 2);
+    this.bloomAlpha = 0.55;
+
+    return true;
   }
 
   toggleConstellations() {

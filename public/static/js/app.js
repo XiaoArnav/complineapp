@@ -822,9 +822,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2800);
   }
 
-  // --- 9. Celestial Astrolabe HUD Controller ---
+  // --- 9. Celestial Astrolabe HUD & Constellation Finder ---
   const btnToggleStellarHUD = document.getElementById("btnToggleStellarHUD");
   const stellarPopover = document.getElementById("stellarPopover");
+  const selectConstellation = document.getElementById("selectConstellation");
   const chkConstellations = document.getElementById("chkConstellations");
   const chkAstrolabeRings = document.getElementById("chkAstrolabeRings");
   const chkAutoDrift = document.getElementById("chkAutoDrift");
@@ -840,6 +841,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!stellarPopover.contains(e.target) && e.target !== btnToggleStellarHUD) {
         stellarPopover.classList.remove("active");
       }
+    });
+
+    if (selectConstellation) {
+      selectConstellation.addEventListener("change", () => {
+        const val = selectConstellation.value;
+        if (val && window.stellarMap) {
+          const ok = window.stellarMap.glideToConstellation(val);
+          if (ok) {
+            showToast(`Astrolabe Gliding to ${val} ✠`);
+          }
+        }
+      });
+    }
+
+    document.querySelectorAll(".zodiac-chip").forEach(chip => {
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const constell = chip.getAttribute("data-constell");
+        if (constell && window.stellarMap) {
+          if (selectConstellation) selectConstellation.value = constell;
+          const ok = window.stellarMap.glideToConstellation(constell);
+          if (ok) {
+            showToast(`Astrolabe Gliding to ${constell} ✠`);
+          }
+        }
+      });
     });
 
     if (chkConstellations) {
@@ -863,6 +890,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnResetPolaris) {
       btnResetPolaris.addEventListener("click", () => {
         if (window.stellarMap) window.stellarMap.resetToPolaris();
+        if (selectConstellation) selectConstellation.value = "Ursa Minor";
         showToast("Celestial View Aligned with Polaris ✠");
       });
     }
