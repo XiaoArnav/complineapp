@@ -1,17 +1,19 @@
 /**
- * Tarot Cosmos — Realistic Deep-Sky Astrophotography Canvas Engine (JWST / Hubble Deep Field)
+ * Tarot Cosmos — Live Interactive 3D Deep-Sky Astrophotography Engine
  *
- * Aesthetic Philosophy:
- *  - 100% authentic astronomical space: zero cartoon stickers, zero neon donuts, zero strobing stars.
- *  - Over 550 pinpoint stars layered in true astronomical depth (microscopic sub-pixel background,
- *    crisp main-sequence stellar bodies, and rare luminous foreground stellar gems with delicate
- *    JWST 6-point diffraction spikes and diffuse Gaussian bloom).
- *  - Natural stellar classification temperatures: warm ivory/gold, diamond ice-white, ethereal pale blue.
- *  - Hypnagogic stability: stars shine with steady, crisp luminance. Only a tiny fraction (~8%)
- *    gently breathes over a slow 9–16 second sinusoidal wave to induce restfulness.
- *  - Volumetric deep-space nebulae: midnight indigo, deep celestial amethyst, and warm antique gold dust lanes.
- *  - Rare, majestic incandescent shooting stars with tapered plasma ion trails.
- *  - Interactive mouse wake: soft stardust embers and subtle gravitational ripples on click.
+ * Features:
+ *  - Real 3D Cartesian coordinates (x, y, z) with Euler perspective projection (Yaw & Pitch)
+ *  - 100% live and interactive:
+ *    • Continuous live 3D cosmic drift (stars slowly glide through 3D space)
+ *    • 3D mouse orbit: cursor movement tilts the 3D celestial camera with silky lerp damping
+ *    • Dynamic gravitational lens: stars near the cursor gently curve and illuminate
+ *    • 3D gravitational shockwave on click with oscillating stellar displacement
+ *    • 3D stardust particle wake
+ *  - Authentic JWST / Hubble deep-field realism:
+ *    • Microscopic deep background pinpricks (zero strobing)
+ *    • Main-sequence stellar bodies with natural spectral temperatures (ice-white, ivory gold, cerulean)
+ *    • Luminous foreground gems with soft Gaussian bloom and 6-point JWST diffraction spikes
+ *  - Layered volumetric deep-sky nebulae veils (midnight indigo, royal amethyst, antique gold dust)
  */
 
 class TarotCosmos {
@@ -26,23 +28,30 @@ class TarotCosmos {
     this.isRunning = false;
     this.animId = null;
 
+    // 3D Camera Rotation State (Euler Yaw & Pitch)
+    this.rotX = 0;        // Pitch
+    this.rotY = 0;        // Yaw
+    this.targetRotX = 0;
+    this.targetRotY = 0;
+    this.focalLength = 950; // Perspective camera depth
+    this.driftSpeed = 0.45; // Live 3D forward drift speed
+
     // Mouse / Pointer Tracking
     this.mouseX = this.width / 2;
     this.mouseY = this.height / 2;
     this.targetMouseX = this.mouseX;
     this.targetMouseY = this.mouseY;
-    this.mouseSpeed = 0;
     this.lastMouseX = this.mouseX;
     this.lastMouseY = this.mouseY;
     this.isMouseOver = false;
 
-    // Entities
+    // 3D Entities
     this.stars = [];
     this.shootingStars = [];
-    this.stardust = [];   // Cursor wake embers
-    this.gravWaves = [];  // Click ripples
+    this.stardust = [];   // 3D cursor wake embers
+    this.gravWaves = [];  // Click shockwaves
 
-    // Meteor schedule timer (gentle cadence: 5 - 9 seconds)
+    // Meteor schedule timer
     this.nextMeteorTime = this._now() + 2500;
 
     if (this.canvas) {
@@ -62,7 +71,7 @@ class TarotCosmos {
     this.ctx = this.canvas.getContext("2d", { alpha: false });
     this.resize();
 
-    this.initStars(560);
+    this.init3DStars(560);
     this.bindEvents();
   }
 
@@ -95,21 +104,27 @@ class TarotCosmos {
       this.targetMouseY = clientY;
       this.isMouseOver = true;
 
-      // Spawn soft stardust wake behind cursor
+      // 3D Camera Orbit Target (Yaw & Pitch)
+      const cx = this.width / 2;
+      const cy = this.height / 2;
+      const normX = (clientX - cx) / cx;
+      const normY = (clientY - cy) / cy;
+
+      this.targetRotY = normX * 0.42;  // ~24 deg 3D horizontal yaw
+      this.targetRotX = -normY * 0.32; // ~18 deg 3D vertical pitch
+
+      // Spawn soft 3D stardust wake
       if (this.isRunning) {
         const dx = clientX - this.lastMouseX;
         const dy = clientY - this.lastMouseY;
         const dist = Math.hypot(dx, dy);
-        this.mouseSpeed = dist;
 
-        if (dist > 6) {
-          const spawnCount = Math.min(3, Math.floor(dist / 10) + 1);
+        if (dist > 5) {
+          const spawnCount = Math.min(3, Math.floor(dist / 9) + 1);
           for (let i = 0; i < spawnCount; i++) {
-            const spreadX = (Math.random() - 0.5) * 14;
-            const spreadY = (Math.random() - 0.5) * 14;
             this.stardust.push({
-              x: clientX + spreadX,
-              y: clientY + spreadY,
+              x: clientX + (Math.random() - 0.5) * 16,
+              y: clientY + (Math.random() - 0.5) * 16,
               vx: (Math.random() - 0.5) * 1.2 - dx * 0.08,
               vy: (Math.random() - 0.5) * 1.2 - dy * 0.08,
               size: Math.random() * 1.6 + 0.6,
@@ -128,7 +143,7 @@ class TarotCosmos {
     modal.addEventListener("pointermove", handlePointerMove, { passive: true });
     modal.addEventListener("touchmove", handlePointerMove, { passive: true });
 
-    // Click / Tap background for subtle gravitational wave and stardust burst
+    // Click / Tap background for 3D Gravitational Shockwave
     const handleCanvasClick = (e) => {
       if (e.target.closest && (e.target.closest(".tarot-3d-card") || e.target.closest(".tarot-3d-toolbar") || e.target.closest("button"))) {
         return;
@@ -142,49 +157,53 @@ class TarotCosmos {
   }
 
   // ─────────────────────────────────────────────────────────────
-  // STELLAR ENTITY GENERATION
+  // 3D STELLAR FIELD INITIALIZATION
   // ─────────────────────────────────────────────────────────────
-  initStars(count = 560) {
+  init3DStars(count = 560) {
     this.stars = [];
 
     // Natural astronomical spectral colors (O, B, A, F, G, K, M stellar temperatures)
     const spectralColors = [
-      { core: "#ffffff", glow: "rgba(255, 255, 255, 0.40)" }, // Pure White (A-class)
-      { core: "#f8f9ff", glow: "rgba(240, 245, 255, 0.35)" }, // Diamond Ice (F-class)
-      { core: "#ffe9b8", glow: "rgba(255, 225, 170, 0.30)" }, // Warm Golden Ivory (G/K-class)
-      { core: "#ffd485", glow: "rgba(245, 195, 115, 0.30)" }, // Amber Stardust (K-class)
-      { core: "#cbe4ff", glow: "rgba(180, 220, 255, 0.35)" }, // Pale Cerulean (B-class)
-      { core: "#e2d4ff", glow: "rgba(215, 195, 255, 0.25)" }  // Celestial Violet
+      { core: "#ffffff", glow: "rgba(255, 255, 255, 0.45)" }, // Pure White (A-class)
+      { core: "#f8f9ff", glow: "rgba(240, 245, 255, 0.40)" }, // Diamond Ice (F-class)
+      { core: "#ffe9b8", glow: "rgba(255, 225, 170, 0.35)" }, // Warm Golden Ivory (G/K-class)
+      { core: "#ffd485", glow: "rgba(245, 195, 115, 0.35)" }, // Amber Stardust (K-class)
+      { core: "#cbe4ff", glow: "rgba(180, 220, 255, 0.40)" }, // Pale Cerulean (B-class)
+      { core: "#e2d4ff", glow: "rgba(215, 195, 255, 0.30)" }  // Celestial Violet
     ];
 
     for (let i = 0; i < count; i++) {
-      const depth = Math.random(); // 0 = far, 1 = near
+      // 3D Cartesian coordinates spread across a deep celestial volume
+      const x = (Math.random() - 0.5) * 3400;
+      const y = (Math.random() - 0.5) * 2400;
+      const z = -350 + Math.random() * 2600; // z: -350 (near foreground) to 2250 (deep void)
+
+      const depth = (z + 350) / 2600; // 0 = closest, 1 = farthest
 
       let baseR, alpha, hasDiffraction = false, hasBreathing = false;
       const colorObj = spectralColors[Math.floor(Math.random() * spectralColors.length)];
 
-      if (depth < 0.65) {
-        // 1. Deep Background Micro-Stars (65%): Microscopic sub-pixel pinpricks, 100% steady
-        baseR = 0.35 + Math.random() * 0.45;
-        alpha = 0.25 + Math.random() * 0.45;
-      } else if (depth < 0.93) {
-        // 2. Midground Main-Sequence (28%): Crisp sharp stars, steady
-        baseR = 0.8 + Math.random() * 0.6;
-        alpha = 0.6 + Math.random() * 0.35;
-        // ~8% have slow meditative breathing wave (takes 9-16s)
+      if (depth > 0.45) {
+        // Deep background micro-stars (crisp, steady pinpricks)
+        baseR = 0.45 + Math.random() * 0.45;
+        alpha = 0.30 + Math.random() * 0.45;
+      } else if (depth > 0.12) {
+        // Midground main-sequence stars
+        baseR = 0.85 + Math.random() * 0.65;
+        alpha = 0.65 + Math.random() * 0.30;
         hasBreathing = Math.random() < 0.12;
       } else {
-        // 3. Foreground Stellar Jewels (7%): Luminous telescope-imaged stars
-        baseR = 1.4 + Math.random() * 0.9;
+        // Luminous foreground gems (JWST 6-point spikes)
+        baseR = 1.45 + Math.random() * 0.85;
         alpha = 0.85 + Math.random() * 0.15;
-        hasDiffraction = true; // 6-point JWST/Hubble spikes
-        hasBreathing = Math.random() < 0.22;
+        hasDiffraction = true;
+        hasBreathing = Math.random() < 0.25;
       }
 
       this.stars.push({
-        x: Math.random() * this.width,
-        y: Math.random() * this.height,
-        depth: depth,
+        x: x,
+        y: y,
+        z: z,
         baseR: baseR,
         alpha: alpha,
         color: colorObj.core,
@@ -192,16 +211,54 @@ class TarotCosmos {
         hasDiffraction: hasDiffraction,
         hasBreathing: hasBreathing,
         breathPhase: Math.random() * Math.PI * 2,
-        breathSpeed: 0.0004 + Math.random() * 0.0007 // 9 to 16 seconds per gentle wave
+        breathSpeed: 0.0004 + Math.random() * 0.0006, // 10–16 second meditative breathing
+        driftSpeed: 0.25 + (1 - depth) * 0.35,        // Foreground moves faster
+        // Projected cache
+        px: 0,
+        py: 0,
+        scale: 1,
+        visible: true
       });
     }
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // 3D PERSPECTIVE PROJECTION
+  // ─────────────────────────────────────────────────────────────
+  project(x, y, z, cx, cy, cosX, sinX, cosY, sinY) {
+    // 1. Yaw rotation around Y axis
+    const x1 = x * cosY - z * sinY;
+    const z1 = x * sinY + z * cosY;
+
+    // 2. Pitch rotation around X axis
+    const y2 = y * cosX - z1 * sinX;
+    const z2 = y * sinX + z1 * cosX;
+
+    // 3. Perspective focal projection
+    const distance = this.focalLength;
+    const denom = distance + z2;
+    if (denom <= 20) {
+      return { px: 0, py: 0, scale: 0, visible: false, z: z2 };
+    }
+
+    const scale = distance / denom;
+    const px = cx + x1 * scale;
+    const py = cy + y2 * scale;
+
+    const margin = 70;
+    return {
+      px,
+      py,
+      scale,
+      visible: px >= -margin && px <= this.width + margin && py >= -margin && py <= this.height + margin,
+      z: z2
+    };
+  }
+
   spawnShootingStar() {
-    // Elegant, realistic shooting star
-    const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.45; // ~45 deg diagonal sweep
-    const speed = 14 + Math.random() * 9;
-    const length = 90 + Math.random() * 100;
+    const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.45;
+    const speed = 15 + Math.random() * 9;
+    const length = 95 + Math.random() * 105;
 
     const startFromTop = Math.random() > 0.35;
     const startX = startFromTop ? Math.random() * this.width * 0.85 : -50;
@@ -227,21 +284,21 @@ class TarotCosmos {
   }
 
   triggerBurst(x, y) {
-    // 1. Subtle Gravitational Wave Shockwave
+    // 1. 3D Gravitational Shockwave
     this.gravWaves.push({
       x: x,
       y: y,
       radius: 8,
-      maxRadius: Math.min(this.width, this.height) * 0.32,
-      speed: 4.5,
-      alpha: 0.65
+      maxRadius: Math.min(this.width, this.height) * 0.35,
+      speed: 5.5,
+      alpha: 0.75
     });
 
-    // 2. Soft stardust embers
-    const burstCount = 14;
+    // 2. 3D Stardust Burst
+    const burstCount = 16;
     for (let i = 0; i < burstCount; i++) {
-      const angle = (i / burstCount) * Math.PI * 2 + Math.random() * 0.4;
-      const spd = Math.random() * 2.8 + 1.0;
+      const angle = (i / burstCount) * Math.PI * 2 + Math.random() * 0.35;
+      const spd = Math.random() * 3.2 + 1.2;
       this.stardust.push({
         x: x,
         y: y,
@@ -283,29 +340,44 @@ class TarotCosmos {
   }
 
   // ─────────────────────────────────────────────────────────────
-  // UPDATE
+  // UPDATE 3D PHYSICS
   // ─────────────────────────────────────────────────────────────
   update() {
     const now = this._now();
 
-    // Smooth cursor interpolation (lerp)
-    this.mouseX += (this.targetMouseX - this.mouseX) * 0.06;
-    this.mouseY += (this.targetMouseY - this.mouseY) * 0.06;
+    // 1. Smooth 3D Camera Orbit Interpolation (Lerp)
+    this.rotX += (this.targetRotX - this.rotX) * 0.065;
+    this.rotY += (this.targetRotY - this.rotY) * 0.065;
 
-    // A. Showering Meteor Scheduler (Calm cadence: 5 - 9 seconds)
+    // 2. Smooth Cursor Tracking
+    this.mouseX += (this.targetMouseX - this.mouseX) * 0.08;
+    this.mouseY += (this.targetMouseY - this.mouseY) * 0.08;
+
+    // 3. Live 3D Cosmic Drift (Stars continuously glide forward in depth)
+    for (let i = 0; i < this.stars.length; i++) {
+      const s = this.stars[i];
+      s.z -= s.driftSpeed;
+      // Loop stars smoothly from near foreground to deep cosmic horizon
+      if (s.z < -350) {
+        s.z = 2250;
+        s.x = (Math.random() - 0.5) * 3400;
+        s.y = (Math.random() - 0.5) * 2400;
+      }
+    }
+
+    // 4. Meteor Scheduler
     if (now > this.nextMeteorTime) {
       this.spawnShootingStar();
       this.nextMeteorTime = now + (4800 + Math.random() * 4200);
     }
 
-    // B. Update Shooting Stars
+    // 5. Update Shooting Stars
     for (let i = this.shootingStars.length - 1; i >= 0; i--) {
       const s = this.shootingStars[i];
       s.x += s.vx;
       s.y += s.vy;
       s.life++;
 
-      // Subtle occasional spark in the wake
       if (Math.random() > 0.6) {
         s.sparks.push({
           x: s.x + (Math.random() - 0.5) * 3,
@@ -331,7 +403,7 @@ class TarotCosmos {
       }
     }
 
-    // C. Update Stardust Embers
+    // 6. Update Stardust Embers
     for (let i = this.stardust.length - 1; i >= 0; i--) {
       const p = this.stardust[i];
       p.x += p.vx;
@@ -345,11 +417,11 @@ class TarotCosmos {
       }
     }
 
-    // D. Update Gravitational Waves
+    // 7. Update Gravitational Waves
     for (let i = this.gravWaves.length - 1; i >= 0; i--) {
       const w = this.gravWaves[i];
       w.radius += w.speed;
-      w.alpha -= 0.02;
+      w.alpha -= 0.022;
       if (w.alpha <= 0 || w.radius > w.maxRadius) {
         this.gravWaves.splice(i, 1);
       }
@@ -357,7 +429,7 @@ class TarotCosmos {
   }
 
   // ─────────────────────────────────────────────────────────────
-  // RENDER GRAPHICS
+  // RENDER 3D GRAPHICS
   // ─────────────────────────────────────────────────────────────
   draw() {
     if (!this.ctx) return;
@@ -367,33 +439,39 @@ class TarotCosmos {
     ctx.fillStyle = "#030106";
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Subtle Parallax offsets based on cursor
-    const parallaxX = (this.mouseX - this.width / 2) * 0.035;
-    const parallaxY = (this.mouseY - this.height / 2) * 0.035;
+    const cx = this.width / 2;
+    const cy = this.height / 2;
+    const cosX = Math.cos(this.rotX);
+    const sinX = Math.sin(this.rotX);
+    const cosY = Math.cos(this.rotY);
+    const sinY = Math.sin(this.rotY);
 
-    // 2. Volumetric Deep-Sky Astrophotography Nebulae Veils
-    this.drawNebulae(ctx, parallaxX, parallaxY);
+    // 2. Volumetric Deep-Sky Astrophotography Nebulae Veils (Tilting in 3D)
+    this.drawNebulae(ctx, cx, cy, cosY, sinY, cosX, sinX);
 
-    // 3. Steady, Crisp Deep-Field Starfield
-    this.drawStars(ctx, parallaxX, parallaxY);
+    // 3. Live Interactive 3D Starfield
+    this.draw3DStars(ctx, cx, cy, cosX, sinX, cosY, sinY);
 
-    // 4. Subtle Gravitational Shockwaves (on click)
+    // 4. Gravitational Shockwaves (on click)
     this.drawGravWaves(ctx);
 
-    // 5. Cinematic Incandescent Shooting Stars
+    // 5. Incandescent Shooting Stars
     this.drawShootingStars(ctx);
 
-    // 6. Interactive Cursor Stardust Wake
+    // 6. Cursor Stardust Wake
     this.drawStardust(ctx);
   }
 
-  drawNebulae(ctx, px, py) {
+  drawNebulae(ctx, cx, cy, cosY, sinY, cosX, sinX) {
     ctx.save();
+    // 3D Parallax offset for nebulae veils
+    const nebOffX = sinY * 180;
+    const nebOffY = -sinX * 140;
 
-    // 1. Vast Midnight Indigo Cosmic Veil (Drifting across mid-space)
+    // A. Vast Midnight Indigo Cosmic Veil
     const g1 = ctx.createRadialGradient(
-      this.width * 0.28 + px * 0.25, this.height * 0.32 + py * 0.25, 40,
-      this.width * 0.28 + px * 0.25, this.height * 0.32 + py * 0.25, Math.max(this.width, this.height) * 0.55
+      this.width * 0.28 + nebOffX * 0.5, this.height * 0.32 + nebOffY * 0.5, 40,
+      this.width * 0.28 + nebOffX * 0.5, this.height * 0.32 + nebOffY * 0.5, Math.max(this.width, this.height) * 0.55
     );
     g1.addColorStop(0, "rgba(22, 38, 85, 0.18)");
     g1.addColorStop(0.45, "rgba(14, 20, 52, 0.10)");
@@ -402,10 +480,10 @@ class TarotCosmos {
     ctx.fillStyle = g1;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // 2. Soft Celestial Amethyst & Deep Violet Dust Cloud (Upper-Right to Center-Left)
+    // B. Soft Celestial Amethyst & Deep Violet Dust Cloud
     const g2 = ctx.createRadialGradient(
-      this.width * 0.74 + px * 0.35, this.height * 0.68 + py * 0.35, 50,
-      this.width * 0.74 + px * 0.35, this.height * 0.68 + py * 0.35, Math.max(this.width, this.height) * 0.50
+      this.width * 0.74 + nebOffX * 0.7, this.height * 0.68 + nebOffY * 0.7, 50,
+      this.width * 0.74 + nebOffX * 0.7, this.height * 0.68 + nebOffY * 0.7, Math.max(this.width, this.height) * 0.50
     );
     g2.addColorStop(0, "rgba(82, 28, 112, 0.15)");
     g2.addColorStop(0.40, "rgba(52, 16, 75, 0.08)");
@@ -414,10 +492,10 @@ class TarotCosmos {
     ctx.fillStyle = g2;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // 3. Stardust Gold Filament Dust Lane (Subtle warm interstellar gas)
+    // C. Stardust Gold Filament Dust Lane
     const g3 = ctx.createRadialGradient(
-      this.width * 0.45 + px * 0.20, this.height * 0.78 + py * 0.20, 30,
-      this.width * 0.45 + px * 0.20, this.height * 0.78 + py * 0.20, Math.max(this.width, this.height) * 0.42
+      this.width * 0.45 + nebOffX * 0.35, this.height * 0.78 + nebOffY * 0.35, 30,
+      this.width * 0.45 + nebOffX * 0.35, this.height * 0.78 + nebOffY * 0.35, Math.max(this.width, this.height) * 0.42
     );
     g3.addColorStop(0, "rgba(212, 168, 55, 0.09)");
     g3.addColorStop(0.35, "rgba(165, 110, 32, 0.04)");
@@ -426,10 +504,10 @@ class TarotCosmos {
     ctx.fillStyle = g3;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // 4. Secondary Faint Ethereal Lagoon Veil (Far top-left)
+    // D. Faint Ethereal Lagoon Veil (Far top-left)
     const g4 = ctx.createRadialGradient(
-      this.width * 0.15 + px * 0.15, this.height * 0.15 + py * 0.15, 20,
-      this.width * 0.15 + px * 0.15, this.height * 0.15 + py * 0.15, Math.max(this.width, this.height) * 0.35
+      this.width * 0.15 + nebOffX * 0.25, this.height * 0.15 + nebOffY * 0.25, 20,
+      this.width * 0.15 + nebOffX * 0.25, this.height * 0.15 + nebOffY * 0.25, Math.max(this.width, this.height) * 0.35
     );
     g4.addColorStop(0, "rgba(42, 65, 120, 0.12)");
     g4.addColorStop(0.5, "rgba(20, 30, 65, 0.05)");
@@ -440,65 +518,102 @@ class TarotCosmos {
     ctx.restore();
   }
 
-  drawStars(ctx, px, py) {
+  draw3DStars(ctx, cx, cy, cosX, sinX, cosY, sinY) {
     ctx.save();
     const time = this._now();
 
     for (let i = 0; i < this.stars.length; i++) {
       const s = this.stars[i];
-      // Gentle parallax based on astronomical depth
-      const sx = s.x + px * s.depth * 0.8;
-      const sy = s.y + py * s.depth * 0.8;
 
-      let currentAlpha = s.alpha;
-      let currentR = s.baseR;
+      // Project 3D Cartesian coordinates to screen plane
+      const p = this.project(s.x, s.y, s.z, cx, cy, cosX, sinX, cosY, sinY);
+      if (!p.visible) continue;
 
-      if (s.hasBreathing) {
-        // Slow, soothing 9–16s wave, NOT a strobe
-        const wave = Math.sin(time * s.breathSpeed + s.breathPhase);
-        currentAlpha = Math.max(0.35, Math.min(1.0, s.alpha + wave * 0.18));
-        currentR = s.baseR * (0.92 + wave * 0.08);
+      s.px = p.px;
+      s.py = p.py;
+      s.scale = p.scale;
+
+      // ── Live Mouse Gravitational Deflection & Illuminating Lens ──
+      const dx = p.px - this.mouseX;
+      const dy = p.py - this.mouseY;
+      const dist = Math.hypot(dx, dy);
+
+      let drawX = p.px;
+      let drawY = p.py;
+      let extraLuminance = 0;
+
+      if (dist < 180 && dist > 1) {
+        // Subtle gravitational lensing curvature away from cursor
+        const lensForce = Math.pow((180 - dist) / 180, 2) * 16 * Math.min(1.4, p.scale);
+        drawX += (dx / dist) * lensForce;
+        drawY += (dy / dist) * lensForce;
+        // Cursor proximity gently illuminates nearby stars
+        extraLuminance = ((180 - dist) / 180) * 0.35;
       }
 
-      // Draw Star Core
+      // Gravitational Wave Ripple Displacement
+      for (let w = 0; w < this.gravWaves.length; w++) {
+        const wave = this.gravWaves[w];
+        const wDist = Math.hypot(drawX - wave.x, drawY - wave.y);
+        const waveDelta = Math.abs(wDist - wave.radius);
+        if (waveDelta < 35) {
+          const wavePush = Math.sin((waveDelta / 35) * Math.PI) * 7 * wave.alpha;
+          if (wDist > 1) {
+            drawX += ((drawX - wave.x) / wDist) * wavePush;
+            drawY += ((drawY - wave.y) / wDist) * wavePush;
+          }
+          extraLuminance = Math.min(1.0, extraLuminance + wave.alpha * 0.4);
+        }
+      }
+
+      // Scale-scaled 3D radius and alpha
+      const scaledR = Math.max(0.3, s.baseR * p.scale);
+      let currentAlpha = Math.min(1.0, s.alpha * Math.min(1.2, p.scale * 1.1) + extraLuminance);
+
+      if (s.hasBreathing) {
+        const wave = Math.sin(time * s.breathSpeed + s.breathPhase);
+        currentAlpha = Math.max(0.35, Math.min(1.0, currentAlpha + wave * 0.15));
+      }
+
+      // Draw 3D Star Nucleus
       ctx.beginPath();
-      ctx.arc(sx, sy, currentR, 0, Math.PI * 2);
+      ctx.arc(drawX, drawY, scaledR, 0, Math.PI * 2);
       ctx.fillStyle = s.color;
       ctx.globalAlpha = currentAlpha;
       ctx.fill();
 
-      // Optical Bloom & Delicate JWST 6-Point Spikes for Luminous Foreground Stars
-      if (s.hasDiffraction) {
+      // Optical Bloom & Delicate JWST 6-Point Spikes for Luminous Stars
+      if (s.hasDiffraction && p.scale > 0.8) {
         // 1. Soft photographic Gaussian bloom halo
-        const glowR = currentR * 3.8;
-        const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
+        const glowR = scaledR * 3.8;
+        const glow = ctx.createRadialGradient(drawX, drawY, 0, drawX, drawY, glowR);
         glow.addColorStop(0, s.glowColor);
         glow.addColorStop(0.4, s.glowColor.replace(/[\d\.]+\)$/, "0.15)"));
         glow.addColorStop(1, "rgba(0,0,0,0)");
         ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.arc(sx, sy, glowR, 0, Math.PI * 2);
+        ctx.arc(drawX, drawY, glowR, 0, Math.PI * 2);
         ctx.fill();
 
         // 2. Delicate, razor-thin 6-point diffraction spikes (JWST / Hubble style)
         ctx.strokeStyle = s.color;
-        ctx.lineWidth = 0.55;
+        ctx.lineWidth = Math.max(0.4, 0.55 * p.scale);
         ctx.globalAlpha = currentAlpha * 0.32;
-        const spikeLen = currentR * 5.2;
+        const spikeLen = scaledR * 5.4;
 
         ctx.beginPath();
         // Horizontal & Vertical
-        ctx.moveTo(sx - spikeLen, sy);
-        ctx.lineTo(sx + spikeLen, sy);
-        ctx.moveTo(sx, sy - spikeLen);
-        ctx.lineTo(sx, sy + spikeLen);
+        ctx.moveTo(drawX - spikeLen, drawY);
+        ctx.lineTo(drawX + spikeLen, drawY);
+        ctx.moveTo(drawX, drawY - spikeLen);
+        ctx.lineTo(drawX, drawY + spikeLen);
         // Diagonal secondary axes
         const dX = spikeLen * 0.65;
         const dY = spikeLen * 0.38;
-        ctx.moveTo(sx - dX, sy - dY);
-        ctx.lineTo(sx + dX, sy + dY);
-        ctx.moveTo(sx - dX, sy + dY);
-        ctx.lineTo(sx + dX, sy - dY);
+        ctx.moveTo(drawX - dX, drawY - dY);
+        ctx.lineTo(drawX + dX, drawY + dY);
+        ctx.moveTo(drawX - dX, drawY + dY);
+        ctx.lineTo(drawX + dX, drawY - dY);
         ctx.stroke();
       }
     }
@@ -515,7 +630,6 @@ class TarotCosmos {
       const tailX = s.x - normVx * s.length;
       const tailY = s.y - normVy * s.length;
 
-      // Realistic tapered plasma trail gradient
       const grad = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
       grad.addColorStop(0, s.color.tail);
       grad.addColorStop(0.65, s.color.mid);
@@ -530,7 +644,7 @@ class TarotCosmos {
       ctx.lineCap = "round";
       ctx.stroke();
 
-      // Bright white-hot incandescence at nucleus head
+      // Incandescent nucleus
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.width * 1.3, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
