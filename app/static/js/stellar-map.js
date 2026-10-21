@@ -393,7 +393,12 @@ class StellarMap {
                el.closest(".gothic-modal-card") || el.closest(".track-stepper-btn") ||
                el.closest(".repertoire-card") || el.closest("#turntablePlatter") ||
                el.closest("#toneArmAssembly") || el.closest("#btnPinToggle") ||
-               el.closest("#candleShrine") || el.closest(".rune-pill");
+               el.closest("#candleShrine") || el.closest(".rune-pill") ||
+               el.closest(".phonograph-card") || el.closest(".phonograph-stage") ||
+               el.closest("#phonographStage") || el.closest("#phonographStatusBadge") ||
+               el.closest(".vinyl-record") || el.closest(".record-center-label") ||
+               el.closest(".rose-window-wrapper") || el.closest(".rose-stained-window") ||
+               el.closest(".reliquary-card") || el.closest(".tome-card");
       };
 
       if (window.getSelection) {

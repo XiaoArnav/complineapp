@@ -14,17 +14,23 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  transition: opacity 2s ease;
-  cursor: grab;
+  transition: opacity 2s ease, visibility 2s ease;
+  cursor: default;
 }
 
 #introOverlay:active {
-  cursor: grabbing;
+  cursor: default;
 }
 
 #introOverlay.dissolve {
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+#introOverlay.dissolve * {
+  pointer-events: none !important;
+  cursor: default !important;
 }
 
 /* ── Intro candle container ── */

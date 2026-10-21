@@ -97,7 +97,18 @@
   overflow: hidden;
 }
 
+.tarot-modal-backdrop:not(.active) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.tarot-modal-backdrop:not(.active) * {
+  pointer-events: none !important;
+}
+
 .tarot-modal-backdrop.active {
+  display: flex !important;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -137,11 +148,12 @@
   height: 100%;
   pointer-events: none;
   z-index: 2;
+  cursor: default;
 }
 
 .tarot-modal-backdrop.active .tarot-cosmos-canvas {
   pointer-events: auto;
-  cursor: crosshair;
+  cursor: default;
 }
 
 /* Stardust Sparks Around Portal (Superseded by Cosmos Canvas) */

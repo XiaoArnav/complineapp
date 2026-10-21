@@ -557,6 +557,15 @@ body {
   color: var(--gold-antique);
   text-transform: uppercase;
   transition: all 0.3s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.phonograph-status-badge:hover {
+  background: rgba(65, 30, 85, 0.95);
+  border-color: var(--gold-bright);
+  color: #fff6db;
+  transform: scale(1.04);
 }
 
 .phonograph-card.playing .phonograph-status-badge,
@@ -914,6 +923,32 @@ body {
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
+  pointer-events: auto;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.phonograph-stage:hover {
+  border-color: rgba(212, 175, 55, 0.55);
+  box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.95), 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+.phonograph-stage *,
+.turntable-platter,
+.turntable-platter *,
+.vinyl-record,
+.vinyl-record *,
+.record-center-label,
+.record-center-label *,
+.record-spindle,
+.tone-arm-assembly,
+.tone-arm-assembly *,
+.btn-pin-toggle,
+.btn-pin-toggle *,
+.repertoire-card,
+.repertoire-card *,
+.track-stepper-btn,
+.track-stepper-btn * {
+  cursor: pointer !important;
 }
 
 /* ── The CD / Vinyl Disc ── */

@@ -111,16 +111,18 @@ class CandleIntro {
           // Step 4: Surrounding is bright, cathedral sanctuary fades into view
           setTimeout(() => {
             this.overlay.classList.add('dissolve');       // overlay fades out
+            this.overlay.style.pointerEvents = 'none';
             this.mainContent.classList.add('fade-in-lit');// main content appears
 
             setTimeout(() => {
               this.overlay.style.display = 'none';
+              this.overlay.style.visibility = 'hidden';
               this.lit = true;
               this.introPlayed = true;
               this._attachCandleListener();
-            }, 2400);
+            }, 800);
 
-          }, 2000);
+          }, 1800);
 
         }, 1300); // 1.3s pause where candle is lit before surrounding brightens
 

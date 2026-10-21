@@ -54,6 +54,7 @@ class GothicSoundscape {
     this.onPhonographStateChange = null;
     this.onPhonographTimeUpdate = null;
     this.onTrackChange = null;
+    this._isChangingTrack = false;
 
     this.setupAudioElementEvents();
   }
@@ -74,7 +75,8 @@ class GothicSoundscape {
     });
 
     this.phonographAudio.addEventListener("pause", () => {
-      if (this.isPhonographPlaying) {
+      if (this._isChangingTrack) return;
+      if (this.isPhonographPlaying && this.phonographAudio.paused) {
         this.isPhonographPlaying = false;
         this.isPlaying = false;
         if (this.onPhonographStateChange) this.onPhonographStateChange(false);
@@ -104,18 +106,20 @@ class GothicSoundscape {
       this.pausePhonograph();
     }
 
+    this._isChangingTrack = true;
     this.currentTrackIndex = index;
     const track = this.playlist[index];
     this.phonographAudio.src = track.src;
+    this.phonographAudio.currentTime = 0;
+    this._isChangingTrack = false;
 
     if (this.onTrackChange) {
       this.onTrackChange(track, index);
     }
 
     if (shouldPlay) {
-      setTimeout(() => {
-        this.playPhonograph();
-      }, 180);
+      // Synchronously call playPhonograph to preserve transient user gesture context!
+      this.playPhonograph();
     }
   }
 
@@ -270,6 +274,10 @@ class GothicSoundscape {
     this.phonographAudio.volume = vol;
     this.phonographAudio.playbackRate = this.phonographSpeed || 1.0;
 
+    if (this.phonographAudio.ended) {
+      this.phonographAudio.currentTime = 0;
+    }
+
     this.isPhonographPlaying = true;
     this.isPlaying = true;
     if (this.onPhonographStateChange) this.onPhonographStateChange(true);
@@ -277,6 +285,10 @@ class GothicSoundscape {
     const playPromise = this.phonographAudio.play();
     if (playPromise !== undefined) {
       playPromise.catch(err => {
+        if (err && err.name === "AbortError") {
+          // Benign load-switch interruption; new track is loading/playing
+          return;
+        }
         console.warn("Direct play error:", err);
         this.isPhonographPlaying = false;
         this.isPlaying = false;

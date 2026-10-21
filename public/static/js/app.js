@@ -633,7 +633,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const toneArm = document.getElementById("toneArmAssembly");
     const platter = document.getElementById("turntablePlatter");
+    const vinylRec = document.getElementById("vinylRecord");
+    const stage = document.getElementById("phonographStage");
     const pinBtn = document.getElementById("btnPinToggle");
+    const statusBadge = document.getElementById("phonographStatusBadge");
 
     // Sacred Repertoire Cards & Stepper Bar
     const repCards = document.querySelectorAll(".repertoire-card");
@@ -641,9 +644,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnPrev = document.getElementById("btnPrevTrack");
     const btnNext = document.getElementById("btnNextTrack");
 
-    function selectTrackByIndex(idx) {
+    function selectTrackByIndex(idx, autoPlay = true) {
+      unlockAudioContexts();
       if (window.gothicSoundscape) {
-        window.gothicSoundscape.setTrack(idx);
+        window.gothicSoundscape.setTrack(idx, autoPlay);
       }
     }
 
@@ -652,13 +656,13 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         e.stopPropagation();
         const trackIdx = parseInt(card.dataset.track, 10);
-        selectTrackByIndex(trackIdx);
+        selectTrackByIndex(trackIdx, true);
       });
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           const trackIdx = parseInt(card.dataset.track, 10);
-          selectTrackByIndex(trackIdx);
+          selectTrackByIndex(trackIdx, true);
         }
       });
     });
@@ -667,7 +671,8 @@ document.addEventListener("DOMContentLoaded", () => {
       btnPrev.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack(true);
       });
     }
 
@@ -675,7 +680,8 @@ document.addEventListener("DOMContentLoaded", () => {
       btnNext.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack(true);
       });
     }
 
@@ -684,10 +690,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
       if (e.shiftKey && e.key === "ArrowLeft") {
         e.preventDefault();
-        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) window.gothicSoundscape.prevTrack(true);
       } else if (e.shiftKey && e.key === "ArrowRight") {
         e.preventDefault();
-        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) window.gothicSoundscape.nextTrack(true);
       }
     });
 
@@ -698,7 +706,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         e.stopPropagation();
         const trackIdx = parseInt(tab.dataset.track, 10);
-        selectTrackByIndex(trackIdx);
+        selectTrackByIndex(trackIdx, true);
       });
     });
 
@@ -721,21 +729,33 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         e.stopPropagation();
       }
-      window.gothicSoundscape.togglePhonograph();
+      unlockAudioContexts();
+      if (window.gothicSoundscape) {
+        window.gothicSoundscape.togglePhonograph();
+      }
     }
 
-    // Putting pin on / taking off via:
+    // Putting pin on / taking off via all phonograph elements:
     // 1. The Pin (Tone-Arm)
     if (toneArm) toneArm.addEventListener("click", togglePinAction);
     // 2. The CD (Platter)
     if (platter) platter.addEventListener("click", togglePinAction);
-    // 3. The Master Feature Button
+    // 3. The Vinyl Record directly
+    if (vinylRec) vinylRec.addEventListener("click", togglePinAction);
+    // 4. The Phonograph Stage (around platter)
+    if (stage) stage.addEventListener("click", togglePinAction);
+    // 5. The Master Feature Button
     if (pinBtn) pinBtn.addEventListener("click", togglePinAction);
+    // 6. The Status Badge
+    if (statusBadge) statusBadge.addEventListener("click", togglePinAction);
   }
 
   // --- 6. 📻 Tome Reading Bar Phonograph Button ---
   function toggleSoundscape() {
-    window.gothicSoundscape.togglePhonograph();
+    unlockAudioContexts();
+    if (window.gothicSoundscape) {
+      window.gothicSoundscape.togglePhonograph();
+    }
   }
 
   // --- 7. Quick Mood Rune Pills ---
