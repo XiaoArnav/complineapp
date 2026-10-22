@@ -43,6 +43,9 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.close_connection = True
 
+    def do_HEAD(self):
+        self.do_GET()
+
     def _resolve_route(self):
         """
         Determines the requested route based on query parameter (?endpoint=...),
