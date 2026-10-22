@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
         self.handle_one_request()
 
     def send_cors_headers(self):
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", os.environ.get("CORS_ORIGIN", "null"))
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
