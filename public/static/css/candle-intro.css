@@ -141,7 +141,7 @@
   opacity: 1 !important;
 }
 
-/* ── Sukuna's Flame Arrow (開 / Kamino / Fūga) Divine Ignition ── */
+/* ── Serene Sacred Candle Flame Awakening (Peaceful, Gentle & Organic) ── */
 .intro-candle-wrap .intro-flame {
   display: none !important;
   opacity: 0 !important;
@@ -156,69 +156,51 @@
   transform-origin: 59px 67px;
 }
 
-.intro-candle-wrap.sukuna-erupt .intro-flame {
-  animation: sukunaFlameArrowErupt 1.2s cubic-bezier(0.12, 0.95, 0.2, 1) forwards !important;
+/* Gentle golden bloom: awakens like a warm morning sunbeam */
+.intro-candle-wrap.flame-blooming .intro-flame {
+  animation: gentleCandleBloom 1.5s cubic-bezier(0.18, 0.85, 0.25, 1) forwards !important;
 }
 
+/* Living, breathing monastic flame: hypnotic, tranquil & heartwarming */
 .intro-candle-wrap.flame-settled .intro-flame {
-  animation: flameFlicker 4s ease-in-out infinite !important;
+  animation: gentleSoulFlicker 5.2s ease-in-out infinite !important;
 }
 
-/* Sukuna Curved Arrow Blades */
-.sukuna-blade {
-  opacity: 0;
-  transform-origin: 59px 67px;
-  transition: opacity 0.3s ease, transform 0.6s ease;
-}
-
-.intro-candle-wrap.sukuna-erupt .sukuna-blade {
-  opacity: 0.95;
-  animation: sukunaBladesSurge 1.2s ease-out forwards;
-}
-
-@keyframes sukunaFlameArrowErupt {
+@keyframes gentleCandleBloom {
   0% {
-    transform: scale(0.06) translateY(8px);
-    filter: brightness(3.5) drop-shadow(0 0 45px #ffffff);
+    transform: scale(0.06) translateY(6px);
+    filter: brightness(1.6) drop-shadow(0 0 10px rgba(255, 205, 90, 0.9));
     opacity: 0;
   }
-  14% {
-    transform: scaleX(1.48) scaleY(1.95) translateY(-16px);
-    filter: brightness(2.8) drop-shadow(0 0 35px #ff4500) drop-shadow(0 0 75px #ffbb00);
+  24% {
+    transform: scaleX(0.78) scaleY(1.22) translateY(-4px);
+    filter: brightness(1.35) drop-shadow(0 0 18px rgba(255, 170, 45, 0.85)) drop-shadow(0 0 32px rgba(255, 110, 25, 0.5));
+    opacity: 0.92;
+  }
+  55% {
+    transform: scaleX(1.06) scaleY(1.05) translateY(-1px);
+    filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 180, 50, 0.8));
     opacity: 1;
   }
-  38% {
-    transform: scaleX(1.24) scaleY(1.52) translateY(-9px);
-    filter: brightness(2.0) drop-shadow(0 0 28px #ff5500);
-  }
-  68% {
-    transform: scaleX(1.08) scaleY(1.18) translateY(-3px);
-    filter: brightness(1.4) drop-shadow(0 0 18px #ff7700);
+  78% {
+    transform: scaleX(0.97) scaleY(1.02);
+    filter: brightness(1.02) drop-shadow(0 0 16px rgba(255, 185, 55, 0.75));
   }
   100% {
     transform: scale(1) translateY(0);
-    filter: brightness(1) drop-shadow(0 0 14px rgba(255, 180, 50, 0.75));
+    filter: brightness(1) drop-shadow(0 0 15px rgba(255, 190, 60, 0.75));
     opacity: 1;
   }
 }
 
-@keyframes sukunaBladesSurge {
-  0% {
-    transform: scale(0.1);
-    opacity: 0;
-  }
-  18% {
-    transform: scale(1.38) rotate(-7deg);
-    opacity: 1;
-  }
-  48% {
-    transform: scale(1.12) rotate(-3deg);
-    opacity: 0.88;
-  }
-  100% {
-    transform: scale(0.55) translateY(6px);
-    opacity: 0; /* Dissolves smoothly into the living central flame */
-  }
+@keyframes gentleSoulFlicker {
+  0%   { transform: scaleX(1)    scaleY(1)    rotate(0deg);     opacity: 1;    }
+  16%  { transform: scaleX(0.96) scaleY(1.03) rotate(-0.8deg);  opacity: 0.96; }
+  34%  { transform: scaleX(1.03) scaleY(0.97) rotate(0.6deg);   opacity: 1;    }
+  50%  { transform: scaleX(0.98) scaleY(1.02) rotate(-0.4deg);  opacity: 0.98; }
+  68%  { transform: scaleX(1.02) scaleY(0.98) rotate(0.7deg);   opacity: 1;    }
+  84%  { transform: scaleX(0.97) scaleY(1.02) rotate(-0.5deg);  opacity: 0.97; }
+  100% { transform: scaleX(1)    scaleY(1)    rotate(0deg);     opacity: 1;    }
 }
 
 /* ── Intro label text & hint ── */

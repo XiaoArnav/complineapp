@@ -3,27 +3,28 @@
  * 
  * Cinematic Flow:
  * 1. Pitch-black obsidian void
- * 2. Burning coal embers drift in the air; a destiny ember flies in along a curved aerodynamic path
- * 3. Ember strikes the dry cotton wick tip: spark explosion & smoldering wick
- * 4. Sukuna's Flame Arrow (開 / Kamino) divine flame eruption: expanding shockwave, soaring twin arrow blades
+ * 2. Burning coal embers drift peacefully; a gentle destiny ember glides in along an aerodynamic curve
+ * 3. Warm contact with dry cotton wick tip: soft golden sparks and incandescent cotton glow
+ * 4. Serene Sacred Flame Awakening: single harmonious teardrop blooms gently like a golden lotus
  * 5. Sacred illumination floods the room; background 3D celestial map emerges dreamily blurred
- * 6. Smooth landing into the cathedral sanctuary as blur clarifies
+ * 6. Smooth landing into cathedral sanctuary as blur clarifies into crystal vision
  * 
- * Zero external audio or image dependencies — synthesized Web Audio + Canvas 2D + SVG.
+ * Zero external audio or image dependencies — Web Audio (432Hz) + Canvas 2D + SVG.
  */
 
 class IntroEmberEngine {
-  constructor(canvas, onWickImpact, onSukunaBurst) {
+  constructor(canvas, onWickImpact, onFlameBloom) {
     this.canvas = canvas;
     this.ctx = canvas ? canvas.getContext('2d') : null;
     this.onWickImpact = onWickImpact;
-    this.onSukunaBurst = onSukunaBurst;
+    this.onFlameBloom = onFlameBloom;
     this.rafId = null;
     this.active = false;
 
     this.ambientEmbers = [];
     this.impactSparks = [];
     this.shockwaves = [];
+    this.peaceMotes = [];
     this.destinyEmber = null;
     this.time = 0;
 
@@ -52,9 +53,10 @@ class IntroEmberEngine {
     this.ambientEmbers = [];
     this.impactSparks = [];
     this.shockwaves = [];
+    this.peaceMotes = [];
 
-    // Spawn 28 ambient floating coal ember particles
-    for (let i = 0; i < 28; i++) {
+    // Spawn 24 gentle ambient floating coal ember particles
+    for (let i = 0; i < 24; i++) {
       this.ambientEmbers.push(this._createAmbientEmber());
     }
 
@@ -107,13 +109,13 @@ class IntroEmberEngine {
     return {
       x: Math.random() * (this.width || 800),
       y: Math.random() * (this.height || 600),
-      vx: (Math.random() * 0.5 - 0.2) + 0.35, // gentle drift to the right
-      vy: (Math.random() * 0.6 - 0.3) - 0.15, // gentle upward heat float
-      size: 1.2 + Math.random() * 2.2,
-      maxLife: 240 + Math.random() * 320,
+      vx: (Math.random() * 0.4 - 0.15) + 0.28, // gentle drift to the right
+      vy: (Math.random() * 0.5 - 0.25) - 0.12, // gentle upward heat float
+      size: 1.2 + Math.random() * 2.0,
+      maxLife: 260 + Math.random() * 320,
       life: Math.random() * 200,
-      flickerFreq: 0.05 + Math.random() * 0.08,
-      baseAlpha: 0.35 + Math.random() * 0.5
+      flickerFreq: 0.04 + Math.random() * 0.06,
+      baseAlpha: 0.32 + Math.random() * 0.45
     };
   }
 
@@ -136,8 +138,8 @@ class IntroEmberEngine {
     for (let i = 0; i < this.ambientEmbers.length; i++) {
       const e = this.ambientEmbers[i];
       e.life += 1;
-      e.x += e.vx + Math.sin(e.life * 0.04) * 0.25;
-      e.y += e.vy + Math.cos(e.life * 0.03) * 0.15;
+      e.x += e.vx + Math.sin(e.life * 0.035) * 0.22;
+      e.y += e.vy + Math.cos(e.life * 0.025) * 0.12;
 
       // Wrap around edges
       if (e.x > this.width + 20) e.x = -20;
@@ -162,16 +164,16 @@ class IntroEmberEngine {
       const pos = this._bezier(t, this.destinyEmber.p0, this.destinyEmber.p1, this.destinyEmber.p2, this.destinyEmber.p3);
       this.destinyEmber.currentPos = pos;
 
-      // Spawn burning coal trail sparks
-      for (let s = 0; s < 3; s++) {
+      // Spawn soft burning coal trail sparks
+      for (let s = 0; s < 2; s++) {
         this.destinyEmber.trail.push({
-          x: pos.x + (Math.random() * 6 - 3),
-          y: pos.y + (Math.random() * 6 - 3),
-          vx: -(Math.random() * 1.5 + 0.5),
-          vy: (Math.random() * 1.2 - 0.6),
-          size: 1.0 + Math.random() * 1.8,
-          alpha: 0.9,
-          decay: 0.035 + Math.random() * 0.03
+          x: pos.x + (Math.random() * 4 - 2),
+          y: pos.y + (Math.random() * 4 - 2),
+          vx: -(Math.random() * 1.2 + 0.3),
+          vy: (Math.random() * 0.8 - 0.4),
+          size: 0.9 + Math.random() * 1.5,
+          alpha: 0.85,
+          decay: 0.032 + Math.random() * 0.025
         });
       }
 
@@ -202,15 +204,15 @@ class IntroEmberEngine {
       sp.prevY = sp.y;
       sp.x += sp.vx;
       sp.y += sp.vy;
-      sp.vx *= 0.94; // air resistance
-      sp.vy = sp.vy * 0.94 + 0.12; // gravity
+      sp.vx *= 0.93; // air resistance
+      sp.vy = sp.vy * 0.93 + 0.08; // gentle gravity
       sp.alpha -= sp.decay;
       if (sp.alpha <= 0) {
         this.impactSparks.splice(i, 1);
       }
     }
 
-    // 4. Update Shockwaves
+    // 4. Update Peaceful Ripples
     for (let i = this.shockwaves.length - 1; i >= 0; i--) {
       const sw = this.shockwaves[i];
       sw.radius += sw.speed;
@@ -219,82 +221,78 @@ class IntroEmberEngine {
         this.shockwaves.splice(i, 1);
       }
     }
+
+    // 5. Update Peace Motes (Gentle upward floating warm fireflies)
+    for (let i = this.peaceMotes.length - 1; i >= 0; i--) {
+      const pm = this.peaceMotes[i];
+      pm.life += 1;
+      pm.x += pm.vx + Math.sin(pm.life * pm.swaySpeed) * pm.swayAmp;
+      pm.y += pm.vy;
+      pm.alpha -= pm.decay;
+      if (pm.alpha <= 0 || pm.y < -20) {
+        this.peaceMotes.splice(i, 1);
+      }
+    }
   }
 
   _triggerWickImpact(target) {
-    // 1. Spawn 42 high-velocity incandescent impact sparks
-    for (let i = 0; i < 42; i++) {
+    // Spawn 16 gentle warm golden sparks bouncing softly off the cotton wick
+    for (let i = 0; i < 16; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2.5 + Math.random() * 9.5;
+      const speed = 1.8 + Math.random() * 4.2;
       this.impactSparks.push({
         x: target.x,
         y: target.y,
         prevX: target.x,
         prevY: target.y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - (Math.random() * 2.5 + 1.0),
-        size: 1.2 + Math.random() * 2.4,
-        alpha: 1.0,
-        decay: 0.02 + Math.random() * 0.025,
-        hue: Math.random() > 0.4 ? '#ffffff' : (Math.random() > 0.5 ? '#ffbb22' : '#ff4400')
+        vy: Math.sin(angle) * speed - (Math.random() * 1.5 + 0.5),
+        size: 1.0 + Math.random() * 1.8,
+        alpha: 0.95,
+        decay: 0.022 + Math.random() * 0.02,
+        hue: Math.random() > 0.4 ? '#fff4b8' : '#ffaa33'
       });
     }
 
-    // Notify controller of cotton wick impact
+    // Notify controller of cotton wick contact
     if (this.onWickImpact) this.onWickImpact(target);
 
-    // 2. Sukuna's Flame Arrow (開 / Kamino) Divine Eruption after 90ms condensation
+    // Serene flame awakening after 100ms
     setTimeout(() => {
       if (!this.active) return;
-      this._triggerSukunaShockwave(target);
-      if (this.onSukunaBurst) this.onSukunaBurst(target);
-    }, 90);
+      this._triggerPeacefulBloom(target);
+      if (this.onFlameBloom) this.onFlameBloom(target);
+    }, 100);
   }
 
-  _triggerSukunaShockwave(target) {
-    // Primary incandescent circular shockwave
+  _triggerPeacefulBloom(target) {
+    // 1. Serene Golden Ripple of Peace
     this.shockwaves.push({
       x: target.x,
       y: target.y,
-      radius: 6,
-      maxRadius: Math.min(this.width, this.height) * 0.48,
-      speed: 18,
-      alpha: 1.0,
-      decay: 0.028,
-      lineWidth: 4.5,
-      color: '#ffffff',
-      outerColor: '#ff6600'
-    });
-
-    // Secondary deep crimson heat pulse
-    this.shockwaves.push({
-      x: target.x,
-      y: target.y,
-      radius: 2,
-      maxRadius: Math.min(this.width, this.height) * 0.36,
-      speed: 12,
+      radius: 4,
+      maxRadius: Math.min(this.width, this.height) * 0.38,
+      speed: 6.2, // slow, serene expansion
       alpha: 0.85,
-      decay: 0.022,
-      lineWidth: 8.0,
-      color: '#ffbb00',
-      outerColor: '#cc1100'
+      decay: 0.015,
+      lineWidth: 2.2,
+      color: 'rgba(255, 225, 140, 0.85)',
+      outerColor: 'rgba(255, 170, 50, 0.5)'
     });
 
-    // 24 Radial fiery lightning/flame energy streaks
-    for (let i = 0; i < 24; i++) {
-      const angle = (i / 24) * Math.PI * 2 + (Math.random() * 0.2 - 0.1);
-      const speed = 7.0 + Math.random() * 12.0;
-      this.impactSparks.push({
-        x: target.x,
-        y: target.y,
-        prevX: target.x,
-        prevY: target.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        size: 2.0 + Math.random() * 2.8,
-        alpha: 1.0,
-        decay: 0.028 + Math.random() * 0.02,
-        hue: '#fff7a0'
+    // 2. Warm floating golden peace motes (gently ascending fireflies of tranquility)
+    for (let i = 0; i < 18; i++) {
+      this.peaceMotes.push({
+        x: target.x + (Math.random() * 10 - 5),
+        y: target.y - 10 - (Math.random() * 14),
+        vx: (Math.random() * 0.5 - 0.25),
+        vy: -(0.5 + Math.random() * 1.0), // gently floats upward
+        size: 1.2 + Math.random() * 1.8,
+        alpha: 0.9,
+        decay: 0.007 + Math.random() * 0.007,
+        swaySpeed: 0.035 + Math.random() * 0.035,
+        swayAmp: 0.3 + Math.random() * 0.4,
+        life: Math.random() * 60
       });
     }
   }
@@ -307,17 +305,17 @@ class IntroEmberEngine {
     for (let i = 0; i < this.ambientEmbers.length; i++) {
       const e = this.ambientEmbers[i];
       const flicker = Math.sin(e.life * e.flickerFreq);
-      const alpha = Math.max(0.08, Math.min(1.0, e.baseAlpha + flicker * 0.3));
+      const alpha = Math.max(0.08, Math.min(1.0, e.baseAlpha + flicker * 0.25));
 
-      const grad = this.ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.size * 2.8);
+      const grad = this.ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.size * 2.6);
       grad.addColorStop(0, `rgba(255, 245, 200, ${alpha})`);
       grad.addColorStop(0.35, `rgba(255, 130, 20, ${alpha * 0.85})`);
-      grad.addColorStop(0.75, `rgba(200, 30, 0, ${alpha * 0.45})`);
+      grad.addColorStop(0.75, `rgba(200, 30, 0, ${alpha * 0.4})`);
       grad.addColorStop(1, 'rgba(100, 0, 0, 0)');
 
       this.ctx.fillStyle = grad;
       this.ctx.beginPath();
-      this.ctx.arc(e.x, e.y, e.size * 2.8, 0, Math.PI * 2);
+      this.ctx.arc(e.x, e.y, e.size * 2.6, 0, Math.PI * 2);
       this.ctx.fill();
     }
 
@@ -325,54 +323,53 @@ class IntroEmberEngine {
     if (this.destinyEmber && this.destinyEmber.trail.length > 0) {
       for (let i = 0; i < this.destinyEmber.trail.length; i++) {
         const tr = this.destinyEmber.trail[i];
-        this.ctx.fillStyle = `rgba(255, 140, 25, ${tr.alpha})`;
+        this.ctx.fillStyle = `rgba(255, 145, 30, ${tr.alpha})`;
         this.ctx.beginPath();
         this.ctx.arc(tr.x, tr.y, tr.size, 0, Math.PI * 2);
         this.ctx.fill();
       }
     }
 
-    // 3. Draw Destiny Ember (The flying hot coal particle)
+    // 3. Draw Destiny Ember (The flying warm coal particle)
     if (this.destinyEmber && !this.destinyEmber.hasImpacted && this.destinyEmber.currentPos) {
       const pos = this.destinyEmber.currentPos;
 
-      // Searing coal outer aura
-      const auraGrad = this.ctx.createRadialGradient(pos.x, pos.y, 1, pos.x, pos.y, 22);
-      auraGrad.addColorStop(0, 'rgba(255, 255, 240, 0.95)');
-      auraGrad.addColorStop(0.25, 'rgba(255, 165, 30, 0.85)');
-      auraGrad.addColorStop(0.65, 'rgba(220, 45, 0, 0.45)');
+      // Soft warm outer aura
+      const auraGrad = this.ctx.createRadialGradient(pos.x, pos.y, 1, pos.x, pos.y, 20);
+      auraGrad.addColorStop(0, 'rgba(255, 255, 240, 0.92)');
+      auraGrad.addColorStop(0.25, 'rgba(255, 170, 35, 0.8)');
+      auraGrad.addColorStop(0.65, 'rgba(220, 50, 0, 0.4)');
       auraGrad.addColorStop(1, 'rgba(120, 0, 0, 0)');
 
       this.ctx.fillStyle = auraGrad;
       this.ctx.beginPath();
-      this.ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+      this.ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
       this.ctx.fill();
 
       // Incandescent burning coal core
       this.ctx.fillStyle = '#ffffff';
       this.ctx.beginPath();
-      this.ctx.arc(pos.x, pos.y, 3.2, 0, Math.PI * 2);
+      this.ctx.arc(pos.x, pos.y, 2.8, 0, Math.PI * 2);
       this.ctx.fill();
     }
 
-    // 4. Draw Impact Sparks (High-speed incandescent streaks)
-    this.ctx.lineWidth = 1.6;
+    // 4. Draw Impact Sparks (Soft, gentle warm spark flecks)
+    this.ctx.lineWidth = 1.3;
     for (let i = 0; i < this.impactSparks.length; i++) {
       const sp = this.impactSparks[i];
-      this.ctx.strokeStyle = sp.hue || `rgba(255, 180, 50, ${sp.alpha})`;
+      this.ctx.strokeStyle = sp.hue || `rgba(255, 190, 60, ${sp.alpha})`;
       this.ctx.beginPath();
       this.ctx.moveTo(sp.prevX, sp.prevY);
       this.ctx.lineTo(sp.x, sp.y);
       this.ctx.stroke();
 
-      // Spark head point
-      this.ctx.fillStyle = `rgba(255, 255, 255, ${sp.alpha})`;
+      this.ctx.fillStyle = `rgba(255, 255, 240, ${sp.alpha})`;
       this.ctx.beginPath();
-      this.ctx.arc(sp.x, sp.y, sp.size * 0.7, 0, Math.PI * 2);
+      this.ctx.arc(sp.x, sp.y, sp.size * 0.6, 0, Math.PI * 2);
       this.ctx.fill();
     }
 
-    // 5. Draw Sukuna Shockwaves
+    // 5. Draw Peaceful Ripples (Gentle circular waves of light)
     for (let i = 0; i < this.shockwaves.length; i++) {
       const sw = this.shockwaves[i];
       this.ctx.save();
@@ -382,9 +379,24 @@ class IntroEmberEngine {
       this.ctx.globalAlpha = sw.alpha;
       this.ctx.lineWidth = sw.lineWidth;
       this.ctx.shadowColor = sw.outerColor;
-      this.ctx.shadowBlur = 18;
+      this.ctx.shadowBlur = 12;
       this.ctx.stroke();
       this.ctx.restore();
+    }
+
+    // 6. Draw Peace Motes (Warm ascending fireflies of comfort)
+    for (let i = 0; i < this.peaceMotes.length; i++) {
+      const pm = this.peaceMotes[i];
+      const grad = this.ctx.createRadialGradient(pm.x, pm.y, 0, pm.x, pm.y, pm.size * 2.4);
+      grad.addColorStop(0, `rgba(255, 255, 235, ${pm.alpha})`);
+      grad.addColorStop(0.35, `rgba(255, 205, 80, ${pm.alpha * 0.85})`);
+      grad.addColorStop(0.8, `rgba(255, 140, 25, ${pm.alpha * 0.4})`);
+      grad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+
+      this.ctx.fillStyle = grad;
+      this.ctx.beginPath();
+      this.ctx.arc(pm.x, pm.y, pm.size * 2.4, 0, Math.PI * 2);
+      this.ctx.fill();
     }
   }
 }
@@ -459,7 +471,7 @@ class CandleIntro {
         this.emberEngine = new IntroEmberEngine(
           this.canvas,
           (target) => this._onWickImpact(target),
-          (target) => this._onSukunaBurst(target)
+          (target) => this._onFlameBloom(target)
         );
       } else {
         this.emberEngine.stop();
@@ -495,9 +507,9 @@ class CandleIntro {
     document.documentElement.style.setProperty('--flame-center-x', `${flameXPercent.toFixed(1)}%`);
     document.documentElement.style.setProperty('--flame-center-y', `${flameYPercent.toFixed(1)}%`);
 
-    // 1. Scene 1: Pitch-Black Silence (350ms of quiet void)
+    // 1. Scene 1: Pitch-Black Silence (350ms of quiet meditative void)
     setTimeout(() => {
-      // 2. Scene 2: Burning Coal Ember flies in with the wind
+      // 2. Scene 2: Burning Coal Ember glides in with gentle air
       try {
         if (window.candleSound) window.candleSound.playEmberTravel();
       } catch (e) {}
@@ -509,23 +521,23 @@ class CandleIntro {
   }
 
   _onWickImpact(target) {
-    // 3. Scene 3: Burning Coal strikes the cotton wick tip
+    // 3. Scene 3: Burning Coal warms the cotton wick tip
     const candleWrap = this.overlay ? this.overlay.querySelector('.intro-candle-wrap') : null;
     if (candleWrap) {
       candleWrap.classList.add('wick-smoldering');
     }
 
-    // Audio: Crisp cotton impact snap
+    // Audio: Delicate cotton contact tone
     try {
       if (window.candleSound) window.candleSound.playWickStrike();
     } catch (e) {}
   }
 
-  _onSukunaBurst(target) {
+  _onFlameBloom(target) {
     const candleWrap = this.overlay ? this.overlay.querySelector('.intro-candle-wrap') : null;
     const introFlame = document.getElementById('introFlame');
 
-    // 4. Scene 4: Sukuna's Flame Arrow (開 / Kamino) Divine Ignition
+    // 4. Scene 4: Single Pure Candle Flame Blooms Gently
     if (introFlame) {
       introFlame.style.display = 'block';
       introFlame.removeAttribute('display');
@@ -535,10 +547,10 @@ class CandleIntro {
 
     if (candleWrap) {
       candleWrap.classList.add('flame-on');
-      candleWrap.classList.add('sukuna-erupt');
+      candleWrap.classList.add('flame-blooming');
     }
 
-    // Audio: Deep sub-bass cosmic shockwave & roaring divine fire
+    // Audio: Serene 432Hz Tibetan singing bowl chime & soft breath of fire
     try {
       if (window.candleSound) window.candleSound.playKaminoBurst();
     } catch (e) {}
@@ -548,11 +560,11 @@ class CandleIntro {
       if (window.stellarMap) window.stellarMap.triggerCelestialBloom();
     } catch (e) {}
 
-    // 5. Scene 5: Sacred Illumination floods the darkness (700ms after burst)
+    // 5. Scene 5: Sacred Illumination floods the darkness (850ms after bloom)
     setTimeout(() => {
       if (!this.overlay) return;
       if (candleWrap) {
-        candleWrap.classList.remove('sukuna-erupt');
+        candleWrap.classList.remove('flame-blooming');
         candleWrap.classList.add('flame-settled');
         candleWrap.classList.add('halo-expand');
       }
@@ -566,19 +578,19 @@ class CandleIntro {
         if (window.stellarMap) window.stellarMap.triggerCelestialBloom();
       } catch (e) {}
 
-      // 6. Scene 6: Smooth Landing to Main Sanctuary (1800ms of blurred wonder)
+      // 6. Scene 6: Smooth Landing to Main Sanctuary (1800ms of blurred peace)
       setTimeout(() => {
         this._landToSanctuary();
       }, 1800);
 
-    }, 700);
+    }, 850);
   }
 
   _landToSanctuary() {
     if (this.introPlayed) return;
     this.introPlayed = true;
 
-    // Blur clarifies smoothly to sharp view
+    // Blur clarifies smoothly to sharp crystal view
     if (this.veil) {
       this.veil.classList.remove('veil-revealed');
       this.veil.classList.add('veil-landing');
@@ -590,7 +602,7 @@ class CandleIntro {
       this.overlay.style.pointerEvents = 'none';
     }
 
-    // Main sanctuary cards fade in
+    // Main sanctuary cards fade in with golden warmth
     if (this.mainContent) {
       this.mainContent.classList.add('fade-in-lit');
     }
@@ -610,9 +622,7 @@ class CandleIntro {
   }
 
   _handleOverlayInteraction() {
-    // If user clicks during the intro, smoothly accelerate to ignition/landing
     if (!this.introPlayed) {
-      // Resume audio context on user gesture if browser suspended it
       try {
         if (window.candleSound && window.candleSound.ctx && window.candleSound.ctx.state === 'suspended') {
           window.candleSound.ctx.resume();
@@ -623,12 +633,10 @@ class CandleIntro {
       const isFlameAlreadyLit = introFlame && introFlame.style.display === 'block';
 
       if (!isFlameAlreadyLit) {
-        // Instant ignite
         const target = this._getWickCoordinates();
         this._onWickImpact(target);
-        this._onSukunaBurst(target);
+        this._onFlameBloom(target);
       } else {
-        // Fast-forward to landing
         this._landToSanctuary();
       }
     }

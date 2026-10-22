@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
   <link rel="stylesheet" href="/static/css/gothic.css?v=35.0">
-  <link rel="stylesheet" href="/static/css/candle-intro.css?v=36.0">
+  <link rel="stylesheet" href="/static/css/candle-intro.css?v=38.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=35.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
 
@@ -381,19 +381,11 @@
             <stop offset="60%"  stop-color="#c83200" stop-opacity="0.5"/>
             <stop offset="100%" stop-color="#5a0000"  stop-opacity="0"/>
           </radialGradient>
-          <!-- Sukuna Flame Arrow outer blades glow -->
-          <linearGradient id="sukunaBladeGlow" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%"   stop-color="#ff2a00" stop-opacity="0.9"/>
-            <stop offset="45%"  stop-color="#ff8c00" stop-opacity="0.95"/>
-            <stop offset="85%"  stop-color="#ffdf50" stop-opacity="0.9"/>
-            <stop offset="100%" stop-color="#ffffff"/>
-          </linearGradient>
-          <!-- Sukuna core plasma glow -->
-          <radialGradient id="sukunaCoreGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stop-color="#ffffff"/>
-            <stop offset="30%"  stop-color="#fff5a0"/>
-            <stop offset="65%"  stop-color="#ff7b00" stop-opacity="0.9"/>
-            <stop offset="100%" stop-color="#990000" stop-opacity="0"/>
+          <!-- Soft ambient flame aura -->
+          <radialGradient id="iFlameAura" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ffcc44" stop-opacity="0.45"/>
+            <stop offset="45%"  stop-color="#ff8800" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#cc3300" stop-opacity="0"/>
           </radialGradient>
           <!-- Dark wrought iron -->
           <linearGradient id="iIronG" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -479,41 +471,39 @@
                 fill="#ff5500" opacity="0"/>
 
         <!-- ══════════════════════════════
-             SUKUNA FLAME ARROW (開 / KAMINO) IGNITION
+             SERENE SACRED CANDLE FLAME
+             Single harmonious teardrop that blooms peacefully like a golden lotus
              Strictly hidden initially with SVG attribute display="none"
              ══════════════════════════════ -->
         <g id="introFlame" class="intro-flame" display="none"
            style="display:none !important; opacity:0 !important; visibility:hidden !important;">
 
-          <!-- Sukuna Twin Flame Arrow Curved Blades (flare out during divine eruption) -->
-          <path id="sukunaBladeLeft" class="sukuna-blade sukuna-blade-left"
-                d="M 59,67 C 48,60 36,48 34,28 C 40,36 48,42 54,48 Z"
-                fill="url(#sukunaBladeGlow)"/>
-          <path id="sukunaBladeRight" class="sukuna-blade sukuna-blade-right"
-                d="M 59,67 C 70,60 82,48 84,28 C 78,36 70,42 64,48 Z"
-                fill="url(#sukunaBladeGlow)"/>
+          <!-- Ambient soft golden flame aura halo -->
+          <ellipse cx="59" cy="42" rx="22" ry="30" fill="url(#iFlameAura)"/>
 
-          <!-- Base combustion core & ember point -->
-          <ellipse cx="59" cy="67" rx="5" ry="3.5" fill="#1836a0" opacity="0.8"/>
-          <circle cx="59" cy="67" r="2.2" fill="#ff7700" opacity="0.9"/>
+          <!-- Sapphire combustion base (gentle blue foundation of pure beeswax) -->
+          <ellipse cx="59" cy="67" rx="4.5" ry="3.0" fill="#2040a8" opacity="0.65"/>
 
-          <!-- Sukuna Soaring Arrow Spear flame teardrop -->
-          <path class="sukuna-arrow-spear"
-                d="M 59,67 C 48,54 47,30 59,10 C 71,30 70,54 59,67 Z"
+          <!-- Warm ember heart at wick tip -->
+          <circle cx="59" cy="67" r="1.8" fill="#ff7a10" opacity="0.9"/>
+
+          <!-- Pure, elegant outer flame teardrop -->
+          <path class="candle-flame-body"
+                d="M 59,67 C 48,56 47,36 59,16 C 71,36 70,56 59,67 Z"
                 fill="url(#iFlameGlow)"/>
 
-          <!-- Mid incandescent golden fire column -->
-          <path class="sukuna-arrow-mid"
-                d="M 59,65 C 53,54 52,36 59,20 C 65,36 65,54 59,65 Z"
-                fill="#ffbb33" opacity="0.85"/>
+          <!-- Mid glowing honey-amber mantle -->
+          <path class="candle-flame-mantle"
+                d="M 59,65 C 52,56 52,40 59,25 C 66,40 66,56 59,65 Z"
+                fill="#ffbb33" opacity="0.88"/>
 
-          <!-- Inner white-hot plasma arrow column -->
-          <path class="sukuna-arrow-core"
-                d="M 59,63 C 55,54 55,38 59,26 C 63,38 63,54 59,63 Z"
-                fill="#ffffff" opacity="0.95"/>
+          <!-- Inner soft radiant ivory core (liquid candlelight) -->
+          <path class="candle-flame-core"
+                d="M 59,63 C 55,56 55,44 59,33 C 63,44 63,56 59,63 Z"
+                fill="#fffdf2" opacity="0.96"/>
 
-          <!-- Hot piercing tip -->
-          <circle cx="59" cy="12" r="2.2" fill="#ffffff" opacity="0.95"/>
+          <!-- Soft luminous flame tip -->
+          <circle cx="59" cy="18" r="1.6" fill="#ffffff" opacity="0.95"/>
         </g>
       </svg><!-- /intro candle svg -->
 
@@ -523,7 +513,6 @@
     <p class="intro-hint" style="font-size:11px;letter-spacing:2.5px;color:rgba(212,175,55,0.7);text-transform:uppercase;margin-top:6px;font-family:var(--font-display);user-select:none;text-align:center;">
       ✦ Tap to Ignite • Drag to Orbit Cosmos ✦
     </p>
-  </div><!-- /introOverlay -->
   </div><!-- /introOverlay -->
 
 
@@ -1348,8 +1337,8 @@
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
   <script src="/static/js/stellar-map.js?v=35.0"></script>
   <script src="/static/js/soundscape.js?v=35.0"></script>
-  <script src="/static/js/candle-sound.js?v=37.0"></script>
-  <script src="/static/js/candle-intro.js?v=36.0"></script>
+  <script src="/static/js/candle-sound.js?v=38.0"></script>
+  <script src="/static/js/candle-intro.js?v=38.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=35.0"></script>
   <script src="/static/js/app.js?v=35.0"></script>
