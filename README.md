@@ -7,6 +7,8 @@ A candlelit gothic wind-down sanctuary designed for restful, low-cognitive-load 
 [![Open-Weight Model](https://img.shields.io/badge/Model-Gemma_2-4a154b.svg)](https://ai.google.dev/gemma)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FXiaoArnav%2Fcomplineapp)
 
+![Compline: The Entire Project in One Picture](app/static/assets/compline-entire-project-xiaohei.jpg)
+
 ---
 
 ## 🏛️ Features
