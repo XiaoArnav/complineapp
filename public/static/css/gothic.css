@@ -1112,24 +1112,48 @@ body {
   height: 145px;
   z-index: 6;
   transform-origin: 27px 16px;
-  transform: rotate(var(--pin-angle, 0deg));
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: rotate(var(--pin-angle, 0deg)) translateY(var(--pin-lift-y, 0px)) scale(var(--pin-scale, 1));
+  transition: transform 0.4s cubic-bezier(0.2, 0.95, 0.4, 1), filter 0.3s ease;
   cursor: grab;
   pointer-events: auto;
   user-select: none;
   touch-action: none;
   filter: drop-shadow(2px 6px 12px rgba(0, 0, 0, 0.85));
-  will-change: transform;
+  will-change: transform, filter;
 }
 
 .tone-arm-assembly:hover {
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.45)) drop-shadow(2px 6px 12px rgba(0, 0, 0, 0.85));
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.55)) drop-shadow(2px 8px 16px rgba(0, 0, 0, 0.9));
 }
 
+/* 3D Mechanical Elevation when Picked Up */
+.tone-arm-assembly.lifted,
 .tone-arm-assembly.dragging {
   cursor: grabbing !important;
-  transition: none !important;
-  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.75)) drop-shadow(3px 8px 16px rgba(0, 0, 0, 0.9)) !important;
+  --pin-lift-y: -6px;
+  --pin-scale: 1.04;
+  filter: drop-shadow(4px 18px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(212, 175, 55, 0.7)) !important;
+  transition: filter 0.2s ease, transform 0.08s ease-out !important;
+}
+
+/* Micro-cushioned mechanical cueing touchdown bounce */
+.tone-arm-assembly.touchdown {
+  animation: needleCueingTouchdown 0.38s cubic-bezier(0.25, 1.35, 0.5, 1) forwards !important;
+}
+
+@keyframes needleCueingTouchdown {
+  0% {
+    transform: rotate(var(--pin-angle, 0deg)) translateY(-6px) scale(1.04);
+    filter: drop-shadow(4px 18px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(212, 175, 55, 0.7));
+  }
+  60% {
+    transform: rotate(var(--pin-angle, 0deg)) translateY(1.2px) scale(0.99);
+    filter: drop-shadow(2px 5px 10px rgba(0, 0, 0, 0.8));
+  }
+  100% {
+    transform: rotate(var(--pin-angle, 0deg)) translateY(0px) scale(1);
+    filter: drop-shadow(2px 6px 12px rgba(0, 0, 0, 0.85));
+  }
 }
 
 .tone-arm-assembly.seeking {
@@ -1198,6 +1222,22 @@ body {
   justify-content: center;
 }
 
+/* Authentic Curved Finger Lift Hook */
+.tone-arm-finger-lift {
+  position: absolute;
+  top: 1px;
+  right: -9px;
+  width: 10px;
+  height: 6px;
+  border: 1.5px solid var(--gold-antique);
+  border-bottom: none;
+  border-left: none;
+  border-top-right-radius: 4px;
+  transform: rotate(-10deg);
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
 .ruby-stylus {
   width: 4px;
   height: 4px;
@@ -1221,23 +1261,26 @@ body {
 /* ── Floating Gothic Scrub Tooltip HUD ── */
 .phonograph-scrub-tooltip {
   position: absolute;
-  top: 12px;
+  top: 10px;
   left: 50%;
-  transform: translateX(-50%) translateY(0);
-  background: rgba(18, 10, 26, 0.95);
-  border: 1px solid var(--gold-antique, #d4af37);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 12px rgba(212, 175, 55, 0.35);
+  transform: translateX(-50%);
+  background: rgba(14, 8, 20, 0.95);
+  border: 1.5px solid var(--gold-antique, #d4af37);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95), 0 0 14px rgba(212, 175, 55, 0.4);
   border-radius: 6px;
   padding: 4px 12px;
   font-family: var(--font-display, serif);
-  font-size: 11.5px;
+  font-size: 11px;
   letter-spacing: 0.8px;
   color: var(--gold-bright, #f3e5ab);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 10;
+  z-index: 15;
   white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .phonograph-scrub-tooltip.visible {

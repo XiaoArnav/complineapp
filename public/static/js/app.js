@@ -740,16 +740,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const trackingRing = document.getElementById("grooveTrackingRing");
     const grooveSlider = document.getElementById("grooveTrackSlider");
 
+    let currentPhysicsAngle = PHONO_REST_ANGLE;
+    let targetPhysicsAngle = PHONO_REST_ANGLE;
+    let dragPhysicsRafId = null;
+
+    function runDragPhysicsLoop() {
+      if (isPhonoDraggingTonearm || isPhonoDraggingPlatter) {
+        // High-fidelity bearing damping lerp (fluid mechanical feel)
+        const delta = targetPhysicsAngle - currentPhysicsAngle;
+        currentPhysicsAngle += delta * 0.28;
+
+        if (toneArm) {
+          toneArm.style.setProperty("--pin-angle", `${currentPhysicsAngle.toFixed(2)}deg`);
+        }
+
+        // Live tracking ring follows the smoothed angle
+        if (trackingRing) {
+          if (currentPhysicsAngle < 13.5) {
+            trackingRing.classList.remove("visible");
+          } else {
+            const p = Math.max(0, Math.min(1.0, (currentPhysicsAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
+            const ringSize = 142 - p * (142 - 64);
+            trackingRing.style.width = `${ringSize.toFixed(1)}px`;
+            trackingRing.style.height = `${ringSize.toFixed(1)}px`;
+            trackingRing.classList.add("visible");
+          }
+        }
+
+        dragPhysicsRafId = requestAnimationFrame(runDragPhysicsLoop);
+      } else {
+        dragPhysicsRafId = null;
+      }
+    }
+
     let tooltipTimer = null;
     function showTooltip(text, x = null, y = null) {
       if (!scrubTooltip) return;
       if (tooltipTimer) clearTimeout(tooltipTimer);
       scrubTooltip.textContent = text;
       scrubTooltip.classList.add("visible");
-      if (x != null && y != null && stage) {
+      if (x != null && stage) {
         const stageRect = stage.getBoundingClientRect();
-        const relX = Math.max(50, Math.min(stageRect.width - 50, x - stageRect.left));
-        scrubTooltip.style.left = `${relX}px`;
+        const tooltipW = scrubTooltip.offsetWidth || 170;
+        const halfW = tooltipW / 2;
+        const relX = x - stageRect.left;
+        const clampedX = Math.max(halfW + 12, Math.min(stageRect.width - halfW - 12, relX));
+        scrubTooltip.style.left = `${clampedX}px`;
       } else {
         scrubTooltip.style.left = "50%";
       }
@@ -894,23 +930,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         isPhonoDraggingPlatter = true;
+        if (toneArm) {
+          toneArm.classList.remove("touchdown");
+          toneArm.classList.add("lifted");
+          toneArm.classList.add("dragging");
+        }
         try { platter.setPointerCapture(e.pointerId); } catch (_) {}
+
+        // Immediate tactile stylus lift acoustic transient
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.playNeedleLiftSfx();
+        }
 
         const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
         const targetSec = ratio * dur;
 
-        // Preview needle position and illuminated tracking ring
-        const previewAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
-        if (toneArm) toneArm.style.setProperty("--pin-angle", `${previewAngle.toFixed(2)}deg`);
+        // Set target physics angle
+        targetPhysicsAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
+        const curStyle = toneArm ? getComputedStyle(toneArm).getPropertyValue("--pin-angle") : null;
+        currentPhysicsAngle = curStyle ? (parseFloat(curStyle) || targetPhysicsAngle) : targetPhysicsAngle;
 
-        if (trackingRing) {
-          const ringSize = 142 - ratio * (142 - 64);
-          trackingRing.style.width = `${ringSize.toFixed(1)}px`;
-          trackingRing.style.height = `${ringSize.toFixed(1)}px`;
-          trackingRing.classList.add("visible");
+        if (!dragPhysicsRafId) {
+          dragPhysicsRafId = requestAnimationFrame(runDragPhysicsLoop);
         }
 
-        showTooltip(`📍 Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
+        showTooltip(`📍 Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
       });
 
       platter.addEventListener("pointermove", (e) => {
@@ -921,22 +965,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
         const targetSec = ratio * dur;
 
-        const previewAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
-        if (toneArm) toneArm.style.setProperty("--pin-angle", `${previewAngle.toFixed(2)}deg`);
+        targetPhysicsAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
 
-        if (trackingRing) {
-          const ringSize = 142 - ratio * (142 - 64);
-          trackingRing.style.width = `${ringSize.toFixed(1)}px`;
-          trackingRing.style.height = `${ringSize.toFixed(1)}px`;
-        }
-
-        showTooltip(`📍 Seek Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
+        showTooltip(`📍 Seek Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
       });
 
       const finishPlatterSeek = (e) => {
         if (!isPhonoDraggingPlatter) return;
         isPhonoDraggingPlatter = false;
         try { platter.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        if (toneArm) {
+          toneArm.classList.remove("lifted");
+          toneArm.classList.remove("dragging");
+          toneArm.classList.add("touchdown");
+          setTimeout(() => toneArm.classList.remove("touchdown"), 380);
+        }
 
         const { ratio, isCenterLabel } = getProgressFromPlatterCoords(e.clientX, e.clientY);
         if (isCenterLabel) {
@@ -952,31 +996,49 @@ document.addEventListener("DOMContentLoaded", () => {
           window.gothicSoundscape.seekPhonographRatio(ratio, true);
         }
 
-        showTooltip(`✠ Inscribed: ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
-        hideTooltip(1400);
+        showTooltip(`✠ Inscribed: ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
+        hideTooltip(1200);
       };
 
       platter.addEventListener("pointerup", finishPlatterSeek);
       platter.addEventListener("pointercancel", () => {
         isPhonoDraggingPlatter = false;
+        if (toneArm) {
+          toneArm.classList.remove("lifted");
+          toneArm.classList.remove("dragging");
+        }
         hideTooltip();
       });
     }
 
     // ── 2. REALISTIC PHYSICAL TONE-ARM (PIN) DRAGGING ACROSS DISK ──
     if (toneArm) {
-      let armDragAngle = 0;
-
       toneArm.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         e.stopPropagation();
         unlockAudioContexts();
 
         isPhonoDraggingTonearm = true;
+        toneArm.classList.remove("touchdown");
+        toneArm.classList.add("lifted");
         toneArm.classList.add("dragging");
         try { toneArm.setPointerCapture(e.pointerId); } catch (_) {}
 
-        showTooltip("📍 Moving Pin — Drop anywhere on Disc Grooves", e.clientX, e.clientY);
+        // Immediate tactile stylus lift acoustic transient
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.playNeedleLiftSfx();
+        }
+
+        // Initialize target physics angle to current visible angle
+        const curStyle = getComputedStyle(toneArm).getPropertyValue("--pin-angle");
+        currentPhysicsAngle = parseFloat(curStyle) || PHONO_REST_ANGLE;
+        targetPhysicsAngle = currentPhysicsAngle;
+
+        if (!dragPhysicsRafId) {
+          dragPhysicsRafId = requestAnimationFrame(runDragPhysicsLoop);
+        }
+
+        showTooltip("📍 Moving Pin • Drop on disc to play", e.clientX, e.clientY);
       });
 
       toneArm.addEventListener("pointermove", (e) => {
@@ -992,28 +1054,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Angle relative to vertical (clockwise rotation is towards the left/disc)
         const rawAngle = -Math.atan2(dx, dy) * (180 / Math.PI);
-        const clampedAngle = Math.max(0, Math.min(37.5, rawAngle));
-        armDragAngle = clampedAngle;
 
-        toneArm.style.setProperty("--pin-angle", `${clampedAngle.toFixed(2)}deg`);
+        // Magnetic snap: if close to cradle, snap cleanly to rest position
+        if (rawAngle < 12.0) {
+          targetPhysicsAngle = PHONO_REST_ANGLE;
+        } else {
+          targetPhysicsAngle = Math.max(PHONO_OUTER_GROOVE_ANGLE, Math.min(36.8, rawAngle));
+        }
 
         const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
 
-        if (clampedAngle < 13.5) {
-          showTooltip("📍 Pin on Rest Cradle (Release to Turn Off)", e.clientX, e.clientY);
-          if (trackingRing) trackingRing.classList.remove("visible");
+        if (targetPhysicsAngle < 13.5) {
+          showTooltip("📍 Pin on Cradle (Release to Park)", e.clientX, e.clientY);
         } else {
-          const p = Math.max(0, Math.min(1.0, (clampedAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
+          const p = Math.max(0, Math.min(1.0, (targetPhysicsAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
           const seekSec = p * dur;
-
-          if (trackingRing) {
-            const ringSize = 142 - p * (142 - 64);
-            trackingRing.style.width = `${ringSize.toFixed(1)}px`;
-            trackingRing.style.height = `${ringSize.toFixed(1)}px`;
-            trackingRing.classList.add("visible");
-          }
-
-          showTooltip(`📍 Drop Pin: ${formatPhonoTime(seekSec)} / ${formatPhonoTime(dur)} (Groove ${Math.round(p * 100)}%)`, e.clientX, e.clientY);
+          showTooltip(`📍 ${formatPhonoTime(seekSec)} / ${formatPhonoTime(dur)} • Groove ${Math.round(p * 100)}%`, e.clientX, e.clientY);
         }
       });
 
@@ -1021,19 +1077,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!isPhonoDraggingTonearm) return;
         isPhonoDraggingTonearm = false;
         toneArm.classList.remove("dragging");
+        toneArm.classList.remove("lifted");
         try { toneArm.releasePointerCapture(e.pointerId); } catch (_) {}
 
-        if (armDragAngle < 13.5) {
-          // Parked on cradle -> Pause / Turn off
+        if (targetPhysicsAngle < 13.5) {
+          // Park on cradle
           if (window.gothicSoundscape) {
             window.gothicSoundscape.pausePhonograph();
           }
+          currentPhysicsAngle = PHONO_REST_ANGLE;
+          targetPhysicsAngle = PHONO_REST_ANGLE;
           toneArm.style.setProperty("--pin-angle", `${PHONO_REST_ANGLE}deg`);
-          showTooltip("📍 Pin Off Disc", e.clientX, e.clientY);
+          showTooltip("📍 Pin Parked on Rest Clip", e.clientX, e.clientY);
           hideTooltip(1000);
         } else {
-          // Dropped on disc -> Play from this groove position!
-          const p = Math.max(0, Math.min(1.0, (armDragAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
+          // Touchdown cueing bounce onto groove!
+          toneArm.classList.add("touchdown");
+          setTimeout(() => {
+            toneArm.classList.remove("touchdown");
+          }, 380);
+
+          const p = Math.max(0, Math.min(1.0, (targetPhysicsAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
           const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
           const targetSec = p * dur;
 
@@ -1041,8 +1105,8 @@ document.addEventListener("DOMContentLoaded", () => {
             window.gothicSoundscape.seekPhonographRatio(p, true);
           }
 
-          showTooltip(`✠ Pin Inscribed at ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
-          hideTooltip(1400);
+          showTooltip(`✠ Inscribed: ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
+          hideTooltip(1200);
         }
       };
 
@@ -1050,6 +1114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toneArm.addEventListener("pointercancel", () => {
         isPhonoDraggingTonearm = false;
         toneArm.classList.remove("dragging");
+        toneArm.classList.remove("lifted");
         hideTooltip();
       });
     }
