@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
   <link rel="stylesheet" href="/static/css/gothic.css?v=35.0">
-  <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
+  <link rel="stylesheet" href="/static/css/candle-intro.css?v=36.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=35.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
 
@@ -354,27 +354,20 @@
 
   <!-- ═══════════════════════════════════════════════════════════
        CINEMATIC INTRO OVERLAY
-       Pitch-black screen → match strike → candle lights → site reveals
+       Pitch-black void → flying burning coal ember → wick cotton strike →
+       Sukuna divine flame arrow ignition → blurry stellar map emergence → sanctuary landing
        ══════════════════════════════════════════════════════════= -->
   <div id="introOverlay">
+    <!-- Atmospheric Celestial Veil: blurs background 3D stellar universe when flame blooms -->
+    <div id="introCelestialVeil" class="intro-celestial-veil"></div>
+
+    <!-- Fullscreen Canvas: Coal Ember wind physics, trajectory, spark explosion, Sukuna shockwave -->
+    <canvas id="introEmberCanvas" class="intro-ember-canvas"></canvas>
+
     <div class="intro-candle-wrap">
 
-      <!-- Ambient halo glow (expands to fill darkness) -->
+      <!-- Ambient golden illumination halo (expands to reveal the room) -->
       <div class="intro-halo"></div>
-
-      <!-- Match-strike spark -->
-      <svg class="match-spark" width="28" height="28" viewBox="0 0 28 28">
-        <g stroke="#fff8a0" stroke-linecap="round" stroke-width="1.5" opacity="0.9">
-          <line x1="14" y1="2"  x2="14" y2="8"/>
-          <line x1="14" y1="20" x2="14" y2="26"/>
-          <line x1="2"  y1="14" x2="8"  y2="14"/>
-          <line x1="20" y1="14" x2="26" y2="14"/>
-          <line x1="5"  y1="5"  x2="9"  y2="9"/>
-          <line x1="19" y1="19" x2="23" y2="23"/>
-          <line x1="5"  y1="23" x2="9"  y2="19"/>
-          <line x1="19" y1="9"  x2="23" y2="5"/>
-        </g>
-      </svg>
 
       <!-- The intro candle (Classical Gothic wrought-iron & aged beeswax) -->
       <svg class="intro-candle-svg" xmlns="http://www.w3.org/2000/svg"
@@ -383,10 +376,24 @@
         <defs>
           <!-- Intro flame glow -->
           <radialGradient id="iFlameGlow" cx="50%" cy="60%" r="50%">
-            <stop offset="0%"   stop-color="#fff6c0"/>
+            <stop offset="0%"   stop-color="#fff8d0"/>
             <stop offset="25%"  stop-color="#ffb020" stop-opacity="0.95"/>
             <stop offset="60%"  stop-color="#c83200" stop-opacity="0.5"/>
             <stop offset="100%" stop-color="#5a0000"  stop-opacity="0"/>
+          </radialGradient>
+          <!-- Sukuna Flame Arrow outer blades glow -->
+          <linearGradient id="sukunaBladeGlow" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%"   stop-color="#ff2a00" stop-opacity="0.9"/>
+            <stop offset="45%"  stop-color="#ff8c00" stop-opacity="0.95"/>
+            <stop offset="85%"  stop-color="#ffdf50" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#ffffff"/>
+          </linearGradient>
+          <!-- Sukuna core plasma glow -->
+          <radialGradient id="sukunaCoreGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ffffff"/>
+            <stop offset="30%"  stop-color="#fff5a0"/>
+            <stop offset="65%"  stop-color="#ff7b00" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#990000" stop-opacity="0"/>
           </radialGradient>
           <!-- Dark wrought iron -->
           <linearGradient id="iIronG" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -459,40 +466,64 @@
         <ellipse cx="60" cy="80" rx="13" ry="4" fill="#c4a870"/>
         <ellipse cx="60" cy="80" rx="9"  ry="2.5" fill="#d8bc88"/>
 
-        <!-- Cold unlit wick (pure black) -->
-        <path id="introColdWick" d="M 60,80 Q 61,72 59,67"
-              fill="none" stroke="#120c06" stroke-width="2.2" stroke-linecap="round"/>
+        <!-- ══════════════════════════════
+             COTTON WICK & INCANDESCENT EMBER TIP
+             ══════════════════════════════ -->
+        <!-- Twisted cotton wick body -->
+        <path id="introColdWick" d="M 60,80 Q 61,73 59,67"
+              fill="none" stroke="#221812" stroke-width="2.4" stroke-linecap="round"/>
+        <!-- Cotton wick fibrous tip -->
+        <circle id="introWickCottonTip" cx="59" cy="67" r="1.6" fill="#3a2a20"/>
+        <!-- Incandescent smoldering cotton ember (glows hot upon coal impact) -->
+        <circle id="introWickSmolder" class="intro-wick-smolder" cx="59" cy="67" r="2.8"
+                fill="#ff5500" opacity="0"/>
 
         <!-- ══════════════════════════════
-             FLAME (Revealed ONLY upon match strike)
+             SUKUNA FLAME ARROW (開 / KAMINO) IGNITION
              Strictly hidden initially with SVG attribute display="none"
              ══════════════════════════════ -->
         <g id="introFlame" class="intro-flame" display="none"
            style="display:none !important; opacity:0 !important; visibility:hidden !important;">
-          <!-- Wick ember glow (only visible when lit) -->
-          <circle cx="59.5" cy="67" r="2" fill="#ff8c00" opacity="0.8"/>
-          <!-- Blue combustion base -->
-          <ellipse cx="59.5" cy="67" rx="5" ry="3.5" fill="#2040a0" opacity="0.75"/>
-          <!-- Outer flame teardrop -->
-          <path d="M 59.5,67 C 51,57 50,38 60,24 C 70,38 69,57 59.5,67 Z"
+
+          <!-- Sukuna Twin Flame Arrow Curved Blades (flare out during divine eruption) -->
+          <path id="sukunaBladeLeft" class="sukuna-blade sukuna-blade-left"
+                d="M 59,67 C 48,60 36,48 34,28 C 40,36 48,42 54,48 Z"
+                fill="url(#sukunaBladeGlow)"/>
+          <path id="sukunaBladeRight" class="sukuna-blade sukuna-blade-right"
+                d="M 59,67 C 70,60 82,48 84,28 C 78,36 70,42 64,48 Z"
+                fill="url(#sukunaBladeGlow)"/>
+
+          <!-- Base combustion core & ember point -->
+          <ellipse cx="59" cy="67" rx="5" ry="3.5" fill="#1836a0" opacity="0.8"/>
+          <circle cx="59" cy="67" r="2.2" fill="#ff7700" opacity="0.9"/>
+
+          <!-- Sukuna Soaring Arrow Spear flame teardrop -->
+          <path class="sukuna-arrow-spear"
+                d="M 59,67 C 48,54 47,30 59,10 C 71,30 70,54 59,67 Z"
                 fill="url(#iFlameGlow)"/>
-          <!-- Mid warm core -->
-          <path d="M 59.5,65 C 54,57 54,44 60,32 C 66,44 66,57 59.5,65 Z"
-                fill="#ffcc44" opacity="0.75"/>
-          <!-- Inner bright core -->
-          <path d="M 59.5,63 C 56,57 57,47 60,38 C 63,47 64,57 59.5,63 Z"
-                fill="#ffffff" opacity="0.85"/>
-          <!-- Hot tip -->
-          <circle cx="60" cy="26" r="2.5" fill="#fff9e0"/>
+
+          <!-- Mid incandescent golden fire column -->
+          <path class="sukuna-arrow-mid"
+                d="M 59,65 C 53,54 52,36 59,20 C 65,36 65,54 59,65 Z"
+                fill="#ffbb33" opacity="0.85"/>
+
+          <!-- Inner white-hot plasma arrow column -->
+          <path class="sukuna-arrow-core"
+                d="M 59,63 C 55,54 55,38 59,26 C 63,38 63,54 59,63 Z"
+                fill="#ffffff" opacity="0.95"/>
+
+          <!-- Hot piercing tip -->
+          <circle cx="59" cy="12" r="2.2" fill="#ffffff" opacity="0.95"/>
         </g>
       </svg><!-- /intro candle svg -->
 
     </div><!-- /intro-candle-wrap -->
 
-    <p class="intro-label">Nocturne of the Abbey</p>
-    <p style="font-size:11px;letter-spacing:2.5px;color:rgba(212,175,55,0.7);text-transform:uppercase;margin-top:6px;font-family:var(--font-display);user-select:none;text-align:center;">
-      ✦ Drag to Orbit 3D Cosmos • Tap Candle to Light ✦
+    <p class="intro-label">✦ Nocturne of the Abbey ✦</p>
+    <p class="intro-hint" style="font-size:11px;letter-spacing:2.5px;color:rgba(212,175,55,0.7);text-transform:uppercase;margin-top:6px;font-family:var(--font-display);user-select:none;text-align:center;">
+      ✦ Tap to Ignite • Drag to Orbit Cosmos ✦
     </p>
+  </div><!-- /introOverlay -->
   </div><!-- /introOverlay -->
 
 
@@ -1317,8 +1348,8 @@
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
   <script src="/static/js/stellar-map.js?v=35.0"></script>
   <script src="/static/js/soundscape.js?v=35.0"></script>
-  <script src="/static/js/candle-sound.js?v=19.0"></script>
-  <script src="/static/js/candle-intro.js?v=19.0"></script>
+  <script src="/static/js/candle-sound.js?v=36.0"></script>
+  <script src="/static/js/candle-intro.js?v=36.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=35.0"></script>
   <script src="/static/js/app.js?v=35.0"></script>

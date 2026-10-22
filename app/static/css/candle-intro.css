@@ -1,21 +1,22 @@
 /* =================================================================
-   CANDLE INTRO & LIVE HYBRID NOCTURNAL OWL CANDLE
+   CINEMATIC INTRO: COAL EMBER FLIGHT, WICK IMPACT, SUKUNA FLAME ARROW,
+   AND CELESTIAL BLUR EMERGENCE
    ================================================================= */
 
-/* ── Full-screen intro overlay (translucent over 3D stellar universe) ── */
+/* ── Full-screen intro overlay (pitch-black obsidian void) ── */
 #introOverlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: radial-gradient(circle at center, rgba(8, 5, 14, 0.45) 0%, rgba(3, 2, 7, 0.88) 100%);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: #000000; /* Absolute pitch black void */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  transition: opacity 2s ease, visibility 2s ease;
+  transition: opacity 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 1.6s ease;
   cursor: default;
+  overflow: hidden;
+  user-select: none;
 }
 
 #introOverlay:active {
@@ -33,6 +34,43 @@
   cursor: default !important;
 }
 
+/* ── Atmospheric Celestial Veil (blurs the 3D celestial map behind) ── */
+.intro-celestial-veil {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 1.8s ease, backdrop-filter 1.6s ease, -webkit-backdrop-filter 1.6s ease, background 1.8s ease;
+}
+
+/* When flame ignites: veil reveals the 3D stellar universe with mysterious dreamy blur */
+.intro-celestial-veil.veil-revealed {
+  background: radial-gradient(circle at var(--flame-center-x, 50%) var(--flame-center-y, 45%), rgba(255, 205, 95, 0.09) 0%, rgba(14, 9, 22, 0.55) 44%, rgba(2, 1, 4, 0.94) 86%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 1;
+}
+
+/* When landing into sanctuary: blur smoothly clarifies */
+.intro-celestial-veil.veil-landing {
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+}
+
+/* ── Fullscreen Coal Ember & Shockwave Particle Canvas ── */
+.intro-ember-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* ── Intro candle container ── */
 .intro-candle-wrap {
   position: relative;
@@ -41,16 +79,17 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  z-index: 4;
 }
 
 .intro-candle-wrap .intro-candle-svg {
   position: relative;
-  z-index: 2;
-  filter: brightness(0.35) contrast(1.25); /* Cold, dark unlit silhouette initially */
-  transition: filter 1.4s ease;
+  z-index: 3;
+  filter: brightness(0.25) contrast(1.3); /* Cold, deep dark unlit silhouette initially */
+  transition: filter 1.2s ease;
 }
 
-/* When flame turns on, the candle catches the candlelight */
+/* When flame turns on, candle catches the divine candlelight */
 .intro-candle-wrap.flame-on .intro-candle-svg {
   filter: brightness(1) contrast(1);
 }
@@ -66,22 +105,43 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 215, 100, 0.85) 0%, rgba(212, 140, 30, 0.35) 45%, transparent 70%);
   opacity: 0;
-  transition: opacity 1.2s ease, width 2.8s cubic-bezier(0.16, 1, 0.3, 1), height 2.8s cubic-bezier(0.16, 1, 0.3, 1), top 2.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1.2s ease, width 2.6s cubic-bezier(0.16, 1, 0.3, 1), height 2.6s cubic-bezier(0.16, 1, 0.3, 1), top 2.6s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1;
   pointer-events: none;
 }
 
-/* Match flash: small spark flare right over the wick */
-.intro-candle-wrap.match-flash .intro-halo {
-  opacity: 0.9;
-  width: 65px;
-  height: 65px;
-  top: 35px;
-  background: radial-gradient(circle, #fffbe0 0%, rgba(255, 200, 60, 0.75) 45%, transparent 70%);
-  transition: opacity 0.1s ease, width 0.15s ease, height 0.15s ease;
+/* Candle flame burning alone in the dark before surrounding illuminates */
+.intro-candle-wrap.flame-on:not(.halo-expand) .intro-halo {
+  opacity: 0.72;
+  width: 95px;
+  height: 95px;
+  top: 20px;
+  background: radial-gradient(circle, rgba(255, 220, 110, 0.82) 0%, rgba(212, 140, 30, 0.32) 50%, transparent 75%);
+  transition: opacity 0.5s ease, width 0.7s ease, height 0.7s ease;
 }
 
-/* Flame is strictly OFF initially */
+/* Surrounding becomes bright as golden halo expands across the screen */
+.intro-candle-wrap.halo-expand .intro-halo {
+  opacity: 1;
+  width: 1350px;
+  height: 1350px;
+  top: -560px;
+  background: radial-gradient(circle, rgba(255, 225, 130, 0.75) 0%, rgba(212, 140, 30, 0.38) 38%, rgba(85, 30, 100, 0.16) 68%, transparent 88%);
+}
+
+/* ── Cotton Wick & Smoldering Ember Bead ── */
+.intro-wick-smolder {
+  opacity: 0;
+  transform-origin: 59px 67px;
+  transition: opacity 0.12s ease, r 0.2s ease;
+  filter: drop-shadow(0 0 6px #ff4500) drop-shadow(0 0 12px #ffbb00);
+}
+
+.intro-candle-wrap.wick-smoldering .intro-wick-smolder {
+  opacity: 1 !important;
+}
+
+/* ── Sukuna's Flame Arrow (開 / Kamino / Fūga) Divine Ignition ── */
 .intro-candle-wrap .intro-flame {
   display: none !important;
   opacity: 0 !important;
@@ -89,50 +149,79 @@
   animation: none !important;
 }
 
-/* Stage 2: When wick catches fire, flame turns ON with burst & flicker */
 .intro-candle-wrap.flame-on .intro-flame {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
-  animation: flameBurst 0.6s ease-out forwards, flameFlicker 4s ease-in-out infinite 0.6s !important;
-  transform-origin: 60px 67px;
+  transform-origin: 59px 67px;
 }
 
-/* Stage 2: Candle flame is burning alone in the dark (only small 85px local wick glow) */
-.intro-candle-wrap.flame-on:not(.halo-expand) .intro-halo {
-  opacity: 0.65;
-  width: 85px;
-  height: 85px;
-  top: 25px;
-  background: radial-gradient(circle, rgba(255, 220, 110, 0.75) 0%, rgba(212, 140, 30, 0.25) 50%, transparent 75%);
-  transition: opacity 0.6s ease, width 0.8s ease, height 0.8s ease;
+.intro-candle-wrap.sukuna-erupt .intro-flame {
+  animation: sukunaFlameArrowErupt 1.2s cubic-bezier(0.12, 0.95, 0.2, 1) forwards !important;
 }
 
-/* Stage 3: Surrounding becomes bright as the golden halo expands across the dark screen */
-.intro-candle-wrap.halo-expand .intro-halo {
-  opacity: 1;
-  width: 1100px;
-  height: 1100px;
-  top: -480px;
-  background: radial-gradient(circle, rgba(255, 225, 130, 0.7) 0%, rgba(212, 140, 30, 0.32) 40%, rgba(65, 20, 80, 0.18) 70%, transparent 88%);
+.intro-candle-wrap.flame-settled .intro-flame {
+  animation: flameFlicker 4s ease-in-out infinite !important;
 }
 
-/* ── Match-strike spark overlay ── */
-.match-spark {
-  position: absolute;
-  top: 62px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  pointer-events: none;
+/* Sukuna Curved Arrow Blades */
+.sukuna-blade {
   opacity: 0;
-  transition: opacity 0.05s ease;
-}
-.intro-candle-wrap.match-flash .match-spark {
-  opacity: 1;
+  transform-origin: 59px 67px;
+  transition: opacity 0.3s ease, transform 0.6s ease;
 }
 
-/* ── Intro label text ── */
+.intro-candle-wrap.sukuna-erupt .sukuna-blade {
+  opacity: 0.95;
+  animation: sukunaBladesSurge 1.2s ease-out forwards;
+}
+
+@keyframes sukunaFlameArrowErupt {
+  0% {
+    transform: scale(0.06) translateY(8px);
+    filter: brightness(3.5) drop-shadow(0 0 45px #ffffff);
+    opacity: 0;
+  }
+  14% {
+    transform: scaleX(1.48) scaleY(1.95) translateY(-16px);
+    filter: brightness(2.8) drop-shadow(0 0 35px #ff4500) drop-shadow(0 0 75px #ffbb00);
+    opacity: 1;
+  }
+  38% {
+    transform: scaleX(1.24) scaleY(1.52) translateY(-9px);
+    filter: brightness(2.0) drop-shadow(0 0 28px #ff5500);
+  }
+  68% {
+    transform: scaleX(1.08) scaleY(1.18) translateY(-3px);
+    filter: brightness(1.4) drop-shadow(0 0 18px #ff7700);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1) drop-shadow(0 0 14px rgba(255, 180, 50, 0.75));
+    opacity: 1;
+  }
+}
+
+@keyframes sukunaBladesSurge {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  18% {
+    transform: scale(1.38) rotate(-7deg);
+    opacity: 1;
+  }
+  48% {
+    transform: scale(1.12) rotate(-3deg);
+    opacity: 0.88;
+  }
+  100% {
+    transform: scale(0.55) translateY(6px);
+    opacity: 0; /* Dissolves smoothly into the living central flame */
+  }
+}
+
+/* ── Intro label text & hint ── */
 .intro-label {
   margin-top: 28px;
   font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
@@ -144,10 +233,17 @@
   transition: all 1.8s ease;
   text-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
   user-select: none;
+  z-index: 5;
 }
+
+.intro-hint {
+  z-index: 5;
+  transition: opacity 1.2s ease;
+}
+
 .intro-candle-wrap.halo-expand ~ .intro-label {
   color: rgba(255, 230, 140, 0.95);
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+  text-shadow: 0 0 22px rgba(212, 175, 55, 0.85);
 }
 
 /* ── Main content fade-in ── */

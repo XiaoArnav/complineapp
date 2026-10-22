@@ -73,6 +73,182 @@ class CandleSoundEngine {
     osc.start(t); osc.stop(t + 0.1);
   }
 
+  /**
+   * Flying Burning Coal Ember Whisper:
+   * Atmospheric sizzling ember traveling through cold night air with subtle flutter.
+   */
+  playEmberTravel() {
+    try {
+      const ctx = this._init();
+      const t = ctx.currentTime;
+      const duration = 1.35;
+
+      // Filtered fluttering air & ember noise
+      const bSize = Math.floor(ctx.sampleRate * duration);
+      const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      let b = 0;
+      for (let i = 0; i < bSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b = b * 0.94 + white * 0.06;
+        // Mild sizzle crackles embedded
+        const sizzle = (Math.random() > 0.985) ? (Math.random() * 1.5 - 0.75) : 0;
+        d[i] = b * 2.8 + sizzle * 0.45;
+      }
+
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+
+      // Sweeping bandpass simulating ember proximity & speed
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.setValueAtTime(320, t);
+      bp.frequency.exponentialRampToValueAtTime(880, t + duration * 0.85);
+      bp.Q.setValueAtTime(2.2, t);
+
+      // Amplitude swell as ember nears the candle
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.32, t + duration * 0.75);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+      src.connect(bp);
+      bp.connect(gain);
+      gain.connect(ctx.destination);
+
+      src.start(t);
+      src.stop(t + duration);
+    } catch (e) {}
+  }
+
+  /**
+   * Burning Coal Strikes Cotton Wick Tip:
+   * Crisp incandescent impact of hot ember meeting dry candle cotton fibers.
+   */
+  playWickStrike() {
+    try {
+      const ctx = this._init();
+      const t = ctx.currentTime;
+
+      // 1. High-frequency flint/cotton spark crackle
+      const bSize = Math.floor(ctx.sampleRate * 0.08);
+      const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bSize; i++) {
+        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.015));
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.setValueAtTime(3800, t);
+
+      const sparkGain = ctx.createGain();
+      sparkGain.gain.setValueAtTime(0.75, t);
+      sparkGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+
+      src.connect(hp);
+      hp.connect(sparkGain);
+      sparkGain.connect(ctx.destination);
+      src.start(t);
+      src.stop(t + 0.08);
+
+      // 2. Physical contact snap (pitched drop)
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(680, t);
+      osc.frequency.exponentialRampToValueAtTime(140, t + 0.04);
+
+      const oscGain = ctx.createGain();
+      oscGain.gain.setValueAtTime(0.5, t);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+      osc.connect(oscGain);
+      oscGain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.055);
+    } catch (e) {}
+  }
+
+  /**
+   * Sukuna's Flame Arrow (開 / Kamino / Fūga) Divine Flame Ignition:
+   * Deep sub-bass cosmic shockwave, roaring fire surge, and incandescent flame bloom.
+   */
+  playKaminoBurst() {
+    try {
+      const ctx = this._init();
+      const t = ctx.currentTime;
+
+      // 1. Visceral Divine Sub-Bass Drop (135Hz -> 36Hz)
+      const sub = ctx.createOscillator();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(138, t);
+      sub.frequency.exponentialRampToValueAtTime(36, t + 0.65);
+
+      const subGain = ctx.createGain();
+      subGain.gain.setValueAtTime(0.001, t);
+      subGain.gain.linearRampToValueAtTime(0.88, t + 0.035); // punchy attack
+      subGain.gain.exponentialRampToValueAtTime(0.001, t + 1.25);
+
+      sub.connect(subGain);
+      subGain.connect(ctx.destination);
+      sub.start(t);
+      sub.stop(t + 1.3);
+
+      // 2. Explosive Anime Fire Surge (Resonant filtered brown noise sweeping upward)
+      const bSize = Math.floor(ctx.sampleRate * 1.4);
+      const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      let lastVal = 0;
+      for (let i = 0; i < bSize; i++) {
+        const white = Math.random() * 2 - 1;
+        lastVal = (lastVal + 0.08 * white) / 1.08;
+        d[i] = lastVal * 6.0 + white * 0.35;
+      }
+
+      const noiseSrc = ctx.createBufferSource();
+      noiseSrc.buffer = buf;
+
+      // Resonant bandpass sweeping to simulate roaring flame blast
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.setValueAtTime(240, t);
+      bp.frequency.exponentialRampToValueAtTime(1600, t + 0.22);
+      bp.frequency.exponentialRampToValueAtTime(450, t + 1.1);
+      bp.Q.setValueAtTime(1.8, t);
+
+      const flameGain = ctx.createGain();
+      flameGain.gain.setValueAtTime(0.001, t);
+      flameGain.gain.linearRampToValueAtTime(0.92, t + 0.045);
+      flameGain.gain.exponentialRampToValueAtTime(0.001, t + 1.35);
+
+      noiseSrc.connect(bp);
+      bp.connect(flameGain);
+      flameGain.connect(ctx.destination);
+      noiseSrc.start(t);
+      noiseSrc.stop(t + 1.4);
+
+      // 3. Searing Divine Arrow Flame Harmonics (Sawtooth with soft waveshape bite)
+      const arrowTone = ctx.createOscillator();
+      arrowTone.type = 'triangle';
+      arrowTone.frequency.setValueAtTime(285, t);
+      arrowTone.frequency.exponentialRampToValueAtTime(190, t + 0.35);
+
+      const toneGain = ctx.createGain();
+      toneGain.gain.setValueAtTime(0.35, t);
+      toneGain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+
+      arrowTone.connect(toneGain);
+      toneGain.connect(ctx.destination);
+      arrowTone.start(t);
+      arrowTone.stop(t + 0.4);
+
+      // 4. Warm settling candle crackles after the blast
+      setTimeout(() => this.playCandleCatch(), 450);
+    } catch (e) {}
+  }
+
   /** Soft candle catch: warm crackle as wick takes flame */
   playCandleCatch() {
     const ctx = this._init();
