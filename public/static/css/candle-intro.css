@@ -85,12 +85,15 @@
 .intro-candle-wrap .intro-candle-svg {
   position: relative;
   z-index: 3;
-  filter: brightness(0.25) contrast(1.3); /* Cold, deep dark unlit silhouette initially */
-  transition: filter 1.2s ease;
+  opacity: 0; /* Strictly invisible in initial pitch-black darkness */
+  filter: brightness(0.15) contrast(1.1);
+  transition: opacity 1.8s cubic-bezier(0.2, 0.8, 0.25, 1), filter 2.0s ease;
 }
 
-/* When flame turns on, candle catches the divine candlelight */
+/* When flame awakens and surrounding illuminates: candle gradually emerges into golden light */
+.intro-candle-wrap.wick-smoldering .intro-candle-svg,
 .intro-candle-wrap.flame-on .intro-candle-svg {
+  opacity: 1;
   filter: brightness(1) contrast(1);
 }
 
@@ -203,29 +206,28 @@
   100% { transform: scaleX(1)    scaleY(1)    rotate(0deg);     opacity: 1;    }
 }
 
-/* ── Intro label text & hint ── */
+/* ── Intro label text (strictly hidden in pitch-black, gradually emerges with light) ── */
 .intro-label {
   margin-top: 28px;
   font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
   font-size: 13px;
   letter-spacing: 4px;
-  color: rgba(212, 175, 55, 0.6);
+  color: rgba(255, 230, 140, 0.95);
   text-transform: uppercase;
   text-align: center;
-  transition: all 1.8s ease;
-  text-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
   user-select: none;
   z-index: 5;
+  opacity: 0; /* Strictly invisible in initial pitch-black darkness */
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 2.2s cubic-bezier(0.2, 0.8, 0.25, 1), transform 2.2s cubic-bezier(0.2, 0.8, 0.25, 1);
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.65);
 }
 
-.intro-hint {
-  z-index: 5;
-  transition: opacity 1.2s ease;
-}
-
+/* Gradually becomes visible as golden halo expands and surrounding illuminates */
 .intro-candle-wrap.halo-expand ~ .intro-label {
-  color: rgba(255, 230, 140, 0.95);
-  text-shadow: 0 0 22px rgba(212, 175, 55, 0.85);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Main content fade-in ── */
