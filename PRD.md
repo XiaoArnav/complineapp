@@ -23,6 +23,8 @@ Modern digital sleep aids are riddled with hyperactive dopamine loops: push noti
 
 Compline requires **no logins, no payments, no tracking, and zero internet connectivity**—functioning fully in airplane mode with open-weight Google **Gemma 2** running locally.
 
+![Compline Sleep Sanctuary & Offline Phonograph Architecture](app/static/assets/xiaohei-compline-sanctuary.jpg)
+
 ---
 
 ## 2. Target Audience & User Personas
