@@ -413,7 +413,6 @@ class CandleIntro {
     this.emberEngine = null;
 
     this._handleCandleClick = this._handleCandleClick.bind(this);
-    this._handleOverlayInteraction = this._handleOverlayInteraction.bind(this);
   }
 
   start() {
@@ -457,12 +456,6 @@ class CandleIntro {
       if (smolder) {
         smolder.style.opacity = '0';
       }
-    }
-
-    // Attach interaction listener for skipping or instant ignite
-    if (this.overlay) {
-      this.overlay.removeEventListener('pointerdown', this._handleOverlayInteraction);
-      this.overlay.addEventListener('pointerdown', this._handleOverlayInteraction);
     }
 
     // Initialize or re-create Ember Canvas Engine
@@ -596,10 +589,12 @@ class CandleIntro {
       this.veil.classList.add('veil-landing');
     }
 
-    // Intro overlay dissolves smoothly
+    // Intro overlay dissolves smoothly and completely frees all clicks
     if (this.overlay) {
       this.overlay.classList.add('dissolve');
       this.overlay.style.pointerEvents = 'none';
+      this.overlay.style.display = 'none';
+      this.overlay.style.visibility = 'hidden';
     }
 
     // Main sanctuary cards fade in with golden warmth
@@ -618,28 +613,7 @@ class CandleIntro {
       }
       this.lit = true;
       this._attachCandleListener();
-    }, 1200);
-  }
-
-  _handleOverlayInteraction() {
-    if (!this.introPlayed) {
-      try {
-        if (window.candleSound && window.candleSound.ctx && window.candleSound.ctx.state === 'suspended') {
-          window.candleSound.ctx.resume();
-        }
-      } catch (e) {}
-
-      const introFlame = document.getElementById('introFlame');
-      const isFlameAlreadyLit = introFlame && introFlame.style.display === 'block';
-
-      if (!isFlameAlreadyLit) {
-        const target = this._getWickCoordinates();
-        this._onWickImpact(target);
-        this._onFlameBloom(target);
-      } else {
-        this._landToSanctuary();
-      }
-    }
+    }, 400);
   }
 
   // ─────────────────────────────────────────────────────────────

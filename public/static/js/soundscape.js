@@ -164,7 +164,7 @@ class GothicSoundscape {
     }
   }
 
-  // --- Procedural Vinyl Needle Drop Landing Thud & Contact Click ---
+  // --- Procedural Vinyl Needle Drop Landing Thud & Matte Contact ---
   playNeedleDropSfx() {
     this.initContext();
     if (!this.ctx) return;
@@ -172,31 +172,31 @@ class GothicSoundscape {
     const now = this.ctx.currentTime;
 
     try {
-      // 1. Stylus contact click (tiny highpass click)
+      // 1. Stylus contact (soft matte tap, low-frequency, no metallic ping)
       const clickOsc = this.ctx.createOscillator();
       const clickGain = this.ctx.createGain();
-      clickOsc.type = "triangle";
-      clickOsc.frequency.setValueAtTime(1400, now);
-      clickOsc.frequency.exponentialRampToValueAtTime(180, now + 0.02);
-      clickGain.gain.setValueAtTime(0.22, now);
+      clickOsc.type = "sine";
+      clickOsc.frequency.setValueAtTime(320, now);
+      clickOsc.frequency.exponentialRampToValueAtTime(90, now + 0.02);
+      clickGain.gain.setValueAtTime(0.08, now);
       clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
       clickOsc.connect(clickGain);
       clickGain.connect(this.masterGain || this.ctx.destination);
       clickOsc.start(now);
       clickOsc.stop(now + 0.03);
 
-      // 2. Low-frequency stylus touchdown thud (sub-bass landing thump)
+      // 2. Low-frequency stylus touchdown thud (warm sub-bass landing thump)
       const thudOsc = this.ctx.createOscillator();
       const thudGain = this.ctx.createGain();
       thudOsc.type = "sine";
-      thudOsc.frequency.setValueAtTime(110, now + 0.003);
-      thudOsc.frequency.exponentialRampToValueAtTime(42, now + 0.08);
-      thudGain.gain.setValueAtTime(0.32, now + 0.003);
-      thudGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+      thudOsc.frequency.setValueAtTime(95, now + 0.003);
+      thudOsc.frequency.exponentialRampToValueAtTime(38, now + 0.07);
+      thudGain.gain.setValueAtTime(0.18, now + 0.003);
+      thudGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
       thudOsc.connect(thudGain);
       thudGain.connect(this.masterGain || this.ctx.destination);
       thudOsc.start(now + 0.003);
-      thudOsc.stop(now + 0.1);
+      thudOsc.stop(now + 0.09);
     } catch (e) {}
   }
 
@@ -208,15 +208,15 @@ class GothicSoundscape {
     try {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(320, now);
-      osc.frequency.exponentialRampToValueAtTime(950, now + 0.03);
-      gain.gain.setValueAtTime(0.14, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.025);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
       osc.connect(gain);
       gain.connect(this.masterGain || this.ctx.destination);
       osc.start(now);
-      osc.stop(now + 0.04);
+      osc.stop(now + 0.035);
     } catch (e) {}
   }
 

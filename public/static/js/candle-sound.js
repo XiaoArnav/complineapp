@@ -172,69 +172,24 @@ class CandleSoundEngine {
   }
 
   /**
-   * Soothing Sacred Candle Awakening:
-   * Replaced the jarring explosive boom with a serene monastic Tibetan singing bowl chime (432Hz),
-   * gentle flame breath, and cozy beeswax crackles.
+   * Soothing Peaceful Candle Flame Awakening:
+   * Pure organic candle lighting sound: gentle warm air breath and cozy beeswax crackles.
+   * Completely free of any bells, chimes, or booms.
    */
   playKaminoBurst() {
     try {
       const ctx = this._init();
       const t = ctx.currentTime;
 
-      // 1. Serene Monastic Singing Bowl Fundamental (432 Hz - Sacred Healing Tuning)
-      const bowlRoot = ctx.createOscillator();
-      bowlRoot.type = 'sine';
-      bowlRoot.frequency.setValueAtTime(432, t);
-
-      const rootGain = ctx.createGain();
-      rootGain.gain.setValueAtTime(0.0001, t);
-      rootGain.gain.linearRampToValueAtTime(0.32, t + 0.08); // smooth, gentle attack
-      rootGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.5); // long tranquil decay
-
-      bowlRoot.connect(rootGain);
-      rootGain.connect(ctx.destination);
-      bowlRoot.start(t);
-      bowlRoot.stop(t + 2.6);
-
-      // 2. Warm Meditative Harmonic Fifth (648 Hz = 1.5 * 432 Hz)
-      const bowlFifth = ctx.createOscillator();
-      bowlFifth.type = 'sine';
-      bowlFifth.frequency.setValueAtTime(648, t);
-
-      const fifthGain = ctx.createGain();
-      fifthGain.gain.setValueAtTime(0.0001, t);
-      fifthGain.gain.linearRampToValueAtTime(0.14, t + 0.1);
-      fifthGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
-
-      bowlFifth.connect(fifthGain);
-      fifthGain.connect(ctx.destination);
-      bowlFifth.start(t);
-      bowlFifth.stop(t + 2.2);
-
-      // 3. Ethereal Celestial Sparkle Octave (864 Hz = 2 * 432 Hz)
-      const bowlOctave = ctx.createOscillator();
-      bowlOctave.type = 'sine';
-      bowlOctave.frequency.setValueAtTime(864, t);
-
-      const octaveGain = ctx.createGain();
-      octaveGain.gain.setValueAtTime(0.0001, t);
-      octaveGain.gain.linearRampToValueAtTime(0.06, t + 0.07);
-      octaveGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
-
-      bowlOctave.connect(octaveGain);
-      octaveGain.connect(ctx.destination);
-      bowlOctave.start(t);
-      bowlOctave.stop(t + 1.7);
-
-      // 4. Soft Breath of Sacred Flame (velvety warm air, low-pass filtered, NO boom)
-      const bSize = Math.floor(ctx.sampleRate * 0.9);
+      // 1. Soft Warm Breath of Sacred Flame (velvety gentle air as flame catches oxygen)
+      const bSize = Math.floor(ctx.sampleRate * 0.7);
       const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
       const d = buf.getChannelData(0);
       let lastVal = 0;
       for (let i = 0; i < bSize; i++) {
         const white = Math.random() * 2 - 1;
-        lastVal = (lastVal + 0.06 * white) / 1.06;
-        d[i] = lastVal * 2.5;
+        lastVal = (lastVal + 0.05 * white) / 1.05;
+        d[i] = lastVal * 1.8;
       }
 
       const breathSrc = ctx.createBufferSource();
@@ -242,22 +197,38 @@ class CandleSoundEngine {
 
       const lp = ctx.createBiquadFilter();
       lp.type = 'lowpass';
-      lp.frequency.setValueAtTime(520, t);
-      lp.frequency.exponentialRampToValueAtTime(320, t + 0.85);
+      lp.frequency.setValueAtTime(420, t);
+      lp.frequency.exponentialRampToValueAtTime(260, t + 0.65);
 
       const breathGain = ctx.createGain();
       breathGain.gain.setValueAtTime(0.0001, t);
-      breathGain.gain.linearRampToValueAtTime(0.18, t + 0.08); // soft warm breath
-      breathGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      breathGain.gain.linearRampToValueAtTime(0.12, t + 0.06); // very soft gentle breath
+      breathGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
 
       breathSrc.connect(lp);
       lp.connect(breathGain);
       breathGain.connect(ctx.destination);
       breathSrc.start(t);
-      breathSrc.stop(t + 0.95);
+      breathSrc.stop(t + 0.75);
 
-      // 5. Cozy Beeswax Crackle Pops as Flame Settles
-      setTimeout(() => this.playCandleCatch(), 320);
+      // 2. Subtle soft warm bloom warmth (low gentle sine hum around 95Hz, very quiet and comforting)
+      const warmBody = ctx.createOscillator();
+      warmBody.type = 'sine';
+      warmBody.frequency.setValueAtTime(95, t);
+      warmBody.frequency.exponentialRampToValueAtTime(65, t + 0.4);
+
+      const warmGain = ctx.createGain();
+      warmGain.gain.setValueAtTime(0.0001, t);
+      warmGain.gain.linearRampToValueAtTime(0.08, t + 0.04);
+      warmGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+
+      warmBody.connect(warmGain);
+      warmGain.connect(ctx.destination);
+      warmBody.start(t);
+      warmBody.stop(t + 0.5);
+
+      // 3. Cozy Beeswax Crackle Pops as Flame Settles peacefully
+      setTimeout(() => this.playCandleCatch(), 180);
     } catch (e) {}
   }
 
