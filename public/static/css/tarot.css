@@ -23,9 +23,10 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  transition: transform 4.5s cubic-bezier(0.12, 0.8, 0.2, 1);
   transform-origin: center center;
+  transform: rotate(0deg);
   will-change: transform;
+  pointer-events: none;
 }
 
 /* Wheel Pointer Marker (Gothic Bronze Arrow at 12 o'clock) */

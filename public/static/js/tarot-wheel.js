@@ -151,11 +151,16 @@ class GothicTarotWheel {
     this.backGlareEl = document.getElementById("tarotBackGlare");
     this.artworkChamberEl = document.getElementById("tarotArtworkChamber");
 
-    if (this.wrapperEl) {
-      this.wrapperEl.addEventListener("click", () => this.spin());
-    }
     if (this.wheelEl) {
-      this.wheelEl.addEventListener("click", () => this.spin());
+      this.wheelEl.style.transform = "rotate(0deg)";
+      this.wheelEl.style.transition = "none";
+    }
+
+    if (this.wrapperEl) {
+      this.wrapperEl.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.spin();
+      });
     }
 
     this.bind3DInteractivity();
@@ -364,30 +369,79 @@ class GothicTarotWheel {
     if (this.isSpinning) return;
     this.isSpinning = true;
 
-    const extraRotations = 4 + Math.floor(Math.random() * 3);
-    const randomAngle = Math.floor(Math.random() * 360);
-    const totalSpinDegrees = extraRotations * 360 + randomAngle;
-    this.currentRotation += totalSpinDegrees;
-
-    this.playGearSpinSoundSequence(4200);
-
-    if (this.wheelEl) {
-      // Ensure transition is active (it may have been suppressed on a prior frame)
-      this.wheelEl.style.transition = "transform 4.2s cubic-bezier(0.17, 0.67, 0.12, 1.0)";
-      // Force a reflow so the browser registers the transition before the new value
-      void this.wheelEl.offsetWidth;
-      this.wheelEl.style.transform = `rotate(${this.currentRotation}deg)`;
+    // Wake up Web Audio context on user gesture
+    const ctx = this._getAudioContext();
+    if (ctx && ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
     }
 
-    const normalizedAngle = (360 - (this.currentRotation % 360)) % 360;
+    // 5 to 7 full rotations plus a random slice angle
+    const extraRotations = 5 + Math.floor(Math.random() * 3);
+    const randomAngle = Math.floor(Math.random() * 360);
+    const totalSpinDegrees = extraRotations * 360 + randomAngle;
+    const startRotation = this.currentRotation || 0;
+    const targetRotation = startRotation + totalSpinDegrees;
+
+    const normalizedAngle = (360 - (targetRotation % 360)) % 360;
     const sliceAngle = 360 / this.deck.length;
     const cardIndex = Math.floor(normalizedAngle / sliceAngle) % this.deck.length;
     const drawnCard = this.deck[cardIndex];
 
-    setTimeout(() => {
-      this.isSpinning = false;
-      this.showTarotCard(drawnCard);
-    }, 4500);
+    const duration = 4000; // 4.0 seconds total deceleration
+    const startTime = this._now();
+
+    // Disable CSS transition so requestAnimationFrame has direct 60/120fps control
+    if (this.wheelEl) {
+      this.wheelEl.style.transition = "none";
+    }
+
+    // Mechanical gear teeth: click every 18 degrees of wheel turn (20 teeth on the wheel)
+    const degreesPerTooth = 18;
+    let lastClickAngle = startRotation;
+
+    const animateSpin = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+
+      // Smooth quintic ease-out: high initial velocity, gentle, natural deceleration
+      // y = 1 - (1 - x)^4
+      const easeOut = 1 - Math.pow(1 - progress, 4);
+      const currentAngle = startRotation + totalSpinDegrees * easeOut;
+
+      if (this.wheelEl) {
+        this.wheelEl.style.transform = `rotate(${currentAngle}deg)`;
+      }
+
+      // Procedural gear ratchet clicks in physical lockstep with the wheel!
+      if (currentAngle - lastClickAngle >= degreesPerTooth) {
+        const speed = 1 - progress; // Slows down as wheel decelerates
+        const pitch = 2300 + speed * 700 + (Math.random() * 200 - 100);
+        const volume = Math.max(0.06, 0.35 * speed);
+        this.playGearToothClick(pitch, volume);
+        lastClickAngle = currentAngle;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animateSpin);
+      } else {
+        // Spin finished: lock exact target angle
+        this.currentRotation = targetRotation;
+        if (this.wheelEl) {
+          this.wheelEl.style.transform = `rotate(${targetRotation}deg)`;
+        }
+
+        // Mechanical latch engages into final notched slot
+        this.playMechanicalLatch();
+
+        // Brief dramatic pause (550ms) so sleeper sees where the wheel landed
+        setTimeout(() => {
+          this.isSpinning = false;
+          this.showTarotCard(drawnCard);
+        }, 550);
+      }
+    };
+
+    requestAnimationFrame(animateSpin);
   }
 
   // --- 3D Card Presentation & Materialization ---
@@ -787,6 +841,7 @@ class GothicTarotWheel {
     this.flipAngle = 180;
     this.targetFlipAngle = 180;
     this.hasBeenRevealed = false;
+    this.isSpinning = false;
   }
 }
 

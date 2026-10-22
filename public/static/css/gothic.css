@@ -1855,14 +1855,13 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
-/* Rose Wheel: GPU compositing + spin transition */
+/* Rose Wheel: GPU compositing & crisp rendering */
 .rose-wheel-interactive {
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform-origin: center center;
-  /* Smooth deceleration easing — matches 4200ms gear-sound sequence */
-  transition: transform 4.2s cubic-bezier(0.17, 0.67, 0.12, 1.0);
+  transform: rotate(0deg);
   display: block;
 }
 
