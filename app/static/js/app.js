@@ -123,6 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const pinBtnIcon = document.getElementById("pinBtnIcon");
   const pinBtnLabel = document.getElementById("pinBtnLabel");
 
+  // ── Phonograph State & Geometry Constants (Scoped at top for all functions) ──
+  const PHONO_REST_ANGLE = 0.0;
+  const PHONO_OUTER_GROOVE_ANGLE = 26.5; // Lead-in outer groove (R = 71px, exactly at vinyl edge)
+  const PHONO_INNER_GROOVE_ANGLE = 49.5; // Run-out inner groove (R = 34px, right beside center label)
+  const PHONO_GROOVE_SPAN = PHONO_INNER_GROOVE_ANGLE - PHONO_OUTER_GROOVE_ANGLE; // 23.0 deg full disc traversal
+
+  let isPhonoDraggingTonearm = false;
+  let isPhonoDraggingPlatter = false;
+  let phonoRafId = null;
+
   // State
   let currentStoryText = "";
   let currentParagraphs = [];
@@ -193,20 +203,34 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof window.gothicSoundscape.setTrack === "function" && targetTrack !== window.gothicSoundscape.currentTrackIndex) {
         window.gothicSoundscape.setTrack(targetTrack, false);
       }
+    }
+
+    try {
       if (typeof updatePhonographUI === "function") {
-        updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
+        updatePhonographUI(window.gothicSoundscape ? window.gothicSoundscape.isPhonographPlaying : false);
       }
+    } catch (err) {
+      console.warn("Deferred updatePhonographUI:", err);
     }
   }
 
-  // Initialize settings on startup
-  applySettings(getSettings());
-
-  btnOpenSettings.addEventListener("click", () => {
+  // Safely initialize settings on startup
+  try {
     applySettings(getSettings());
-    openModal(settingsModal);
-  });
-  btnCloseSettings.addEventListener("click", () => closeModal(settingsModal));
+  } catch (err) {
+    console.warn("Startup applySettings error:", err);
+  }
+
+  if (btnOpenSettings) {
+    btnOpenSettings.addEventListener("click", () => {
+      applySettings(getSettings());
+      openModal(settingsModal);
+    });
+  }
+
+  if (btnCloseSettings) {
+    btnCloseSettings.addEventListener("click", () => closeModal(settingsModal));
+  }
 
   const btnReplayIntro = document.getElementById("btnReplayIntro");
   if (btnReplayIntro) {
@@ -218,32 +242,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  btnSaveSettings.addEventListener("click", () => {
-    const speedVal = (settingPhonographSpeed && !isNaN(parseFloat(settingPhonographSpeed.value)))
-      ? parseFloat(settingPhonographSpeed.value)
-      : 1.0;
-    const trackVal = (settingDefaultTrack && !isNaN(parseInt(settingDefaultTrack.value, 10)))
-      ? parseInt(settingDefaultTrack.value, 10)
-      : 0;
+  if (btnSaveSettings) {
+    btnSaveSettings.addEventListener("click", () => {
+      const speedVal = (settingPhonographSpeed && !isNaN(parseFloat(settingPhonographSpeed.value)))
+        ? parseFloat(settingPhonographSpeed.value)
+        : 1.0;
+      const trackVal = (settingDefaultTrack && !isNaN(parseInt(settingDefaultTrack.value, 10)))
+        ? parseInt(settingDefaultTrack.value, 10)
+        : 0;
 
-    const newSettings = {
-      model: settingModel ? settingModel.value : "gemma2:2b",
-      force_offline: settingForceOffline ? settingForceOffline.checked : false,
-      default_track: trackVal,
-      phonograph_speed: speedVal,
-      phonograph_crackle: settingDefaultCrackle ? settingDefaultCrackle.checked : true
-    };
-    localStorage.setItem("compline_settings", JSON.stringify(newSettings));
-    applySettings(newSettings);
-    if (window.gothicSoundscape) {
-      window.gothicSoundscape.setTrack(trackVal, false);
-      if (typeof updatePhonographUI === "function") {
-        updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
+      const newSettings = {
+        model: settingModel ? settingModel.value : "gemma2:2b",
+        force_offline: settingForceOffline ? settingForceOffline.checked : false,
+        default_track: trackVal,
+        phonograph_speed: speedVal,
+        phonograph_crackle: settingDefaultCrackle ? settingDefaultCrackle.checked : true
+      };
+      localStorage.setItem("compline_settings", JSON.stringify(newSettings));
+      applySettings(newSettings);
+      if (window.gothicSoundscape) {
+        window.gothicSoundscape.setTrack(trackVal, false);
+        if (typeof updatePhonographUI === "function") {
+          try {
+            updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
+          } catch (_) {}
+        }
       }
-    }
-    closeModal(settingsModal);
-    showToast("Reliquary Settings Sealed ✠");
-  });
+      closeModal(settingsModal);
+      showToast("Reliquary Settings Sealed ✠");
+    });
+  }
 
   // --- 2. Initial Status Check ---
   fetchStatus();
@@ -487,34 +515,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  btnBookmark.addEventListener("click", () => {
-    if (!currentStoryText) return;
-    const list = getGrimoire();
-    const existingIndex = list.findIndex(item => item.title === tomeTitle.textContent || item.story === currentStoryText);
+  if (btnBookmark) {
+    btnBookmark.addEventListener("click", () => {
+      if (!currentStoryText) return;
+      const list = getGrimoire();
+      const existingIndex = list.findIndex(item => item.title === tomeTitle.textContent || item.story === currentStoryText);
 
-    if (existingIndex >= 0) {
-      // Remove bookmark
-      list.splice(existingIndex, 1);
-      saveGrimoire(list);
-      updateBookmarkBtnState();
-      showToast("Chapter removed from Grimoire ✠");
-    } else {
-      // Inscribe new chapter
-      const excerpt = currentStoryText.slice(0, 140).replace(/\n+/g, " ") + "…";
-      const newEntry = {
-        id: "chap_" + Date.now(),
-        title: tomeTitle.textContent || "Gothic Nocturne",
-        meta: tomeMeta.textContent || "Classical Gothic Tale",
-        date: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }),
-        excerpt: excerpt,
-        story: currentStoryText
-      };
-      list.unshift(newEntry);
-      saveGrimoire(list);
-      updateBookmarkBtnState();
-      showToast("Chapter Inscribed in Grimoire ✠");
-    }
-  });
+      if (existingIndex >= 0) {
+        // Remove bookmark
+        list.splice(existingIndex, 1);
+        saveGrimoire(list);
+        updateBookmarkBtnState();
+        showToast("Chapter removed from Grimoire ✠");
+      } else {
+        // Inscribe new chapter
+        const excerpt = currentStoryText.slice(0, 140).replace(/\n+/g, " ") + "…";
+        const newEntry = {
+          id: "chap_" + Date.now(),
+          title: tomeTitle.textContent || "Gothic Nocturne",
+          meta: tomeMeta.textContent || "Classical Gothic Tale",
+          date: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }),
+          excerpt: excerpt,
+          story: currentStoryText
+        };
+        list.unshift(newEntry);
+        saveGrimoire(list);
+        updateBookmarkBtnState();
+        showToast("Chapter Inscribed in Grimoire ✠");
+      }
+    });
+  }
 
   function renderGrimoireList() {
     const list = getGrimoire();
@@ -612,26 +642,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  btnOpenGrimoire.addEventListener("click", () => {
-    renderGrimoireList();
-    openModal(grimoireModal);
-  });
-  btnCloseGrimoire.addEventListener("click", () => closeModal(grimoireModal));
-  btnGrimoireDone.addEventListener("click", () => closeModal(grimoireModal));
+  if (btnOpenGrimoire) {
+    btnOpenGrimoire.addEventListener("click", () => {
+      renderGrimoireList();
+      openModal(grimoireModal);
+    });
+  }
+  if (btnCloseGrimoire) btnCloseGrimoire.addEventListener("click", () => closeModal(grimoireModal));
+  if (btnGrimoireDone) btnGrimoireDone.addEventListener("click", () => closeModal(grimoireModal));
 
   // Initialize Grimoire Badge
   updateGrimoireBadge();
 
   // --- 5. 📻 The Abbey Phonograph — Authentic Inward Pin Motion & Disc Groove Seeking ---
-  const PHONO_REST_ANGLE = 0.0;
-  const PHONO_OUTER_GROOVE_ANGLE = 26.5; // Lead-in outer groove (R = 71px, exactly at vinyl edge)
-  const PHONO_INNER_GROOVE_ANGLE = 49.5; // Run-out inner groove (R = 34px, right beside center label)
-  const PHONO_GROOVE_SPAN = PHONO_INNER_GROOVE_ANGLE - PHONO_OUTER_GROOVE_ANGLE; // 23.0 deg full disc traversal
-
-  let isPhonoDraggingTonearm = false;
-  let isPhonoDraggingPlatter = false;
-  let phonoRafId = null;
-
   function formatPhonoTime(sec) {
     if (isNaN(sec) || sec < 0) return "00:00";
     const m = Math.floor(sec / 60);
@@ -1260,17 +1283,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  moodInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      streamStory(moodInput.value);
-    }
-  });
+  if (moodInput) {
+    moodInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        streamStory(moodInput.value);
+      }
+    });
+  }
 
-  btnSummon.addEventListener("click", () => {
-    streamStory(moodInput.value || "sloth");
-  });
+  if (btnSummon) {
+    btnSummon.addEventListener("click", () => {
+      streamStory(moodInput ? moodInput.value || "sloth" : "sloth");
+    });
+  }
 
-  btnSoundscape.addEventListener("click", toggleSoundscape);
+  if (btnSoundscape) {
+    btnSoundscape.addEventListener("click", toggleSoundscape);
+  }
 
   // --- 8. Modal Helpers & Toast ---
   function openModal(modal) {
@@ -1457,6 +1486,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 10. Initial Phonograph & Story Load ---
   setupPhonographController();
+  try {
+    applySettings(getSettings());
+  } catch (e) {
+    console.warn("Final applySettings error:", e);
+  }
 
   // Stream the introductory nocturnal chapter
   streamStory("sloth in cathedral");
