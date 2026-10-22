@@ -93,7 +93,7 @@ class CandleSoundEngine {
         b = b * 0.94 + white * 0.06;
         // Mild sizzle crackles embedded
         const sizzle = (Math.random() > 0.985) ? (Math.random() * 1.5 - 0.75) : 0;
-        d[i] = b * 2.8 + sizzle * 0.45;
+        d[i] = b * 2.2 + sizzle * 0.3;
       }
 
       const src = ctx.createBufferSource();
@@ -103,13 +103,13 @@ class CandleSoundEngine {
       const bp = ctx.createBiquadFilter();
       bp.type = 'bandpass';
       bp.frequency.setValueAtTime(320, t);
-      bp.frequency.exponentialRampToValueAtTime(880, t + duration * 0.85);
-      bp.Q.setValueAtTime(2.2, t);
+      bp.frequency.exponentialRampToValueAtTime(780, t + duration * 0.85);
+      bp.Q.setValueAtTime(1.8, t);
 
-      // Amplitude swell as ember nears the candle
+      // Gentle amplitude swell as ember nears the candle (soothing & quiet)
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.32, t + duration * 0.75);
+      gain.gain.linearRampToValueAtTime(0.16, t + duration * 0.75);
       gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
 
       src.connect(bp);
@@ -123,129 +123,141 @@ class CandleSoundEngine {
 
   /**
    * Burning Coal Strikes Cotton Wick Tip:
-   * Crisp incandescent impact of hot ember meeting dry candle cotton fibers.
+   * Delicate incandescent contact of warm ember meeting dry candle cotton fibers.
    */
   playWickStrike() {
     try {
       const ctx = this._init();
       const t = ctx.currentTime;
 
-      // 1. High-frequency flint/cotton spark crackle
-      const bSize = Math.floor(ctx.sampleRate * 0.08);
+      // 1. Soft spark crackle
+      const bSize = Math.floor(ctx.sampleRate * 0.06);
       const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
       const d = buf.getChannelData(0);
       for (let i = 0; i < bSize; i++) {
-        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.015));
+        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.012));
       }
       const src = ctx.createBufferSource();
       src.buffer = buf;
 
       const hp = ctx.createBiquadFilter();
       hp.type = 'highpass';
-      hp.frequency.setValueAtTime(3800, t);
+      hp.frequency.setValueAtTime(3200, t);
 
       const sparkGain = ctx.createGain();
-      sparkGain.gain.setValueAtTime(0.75, t);
-      sparkGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+      sparkGain.gain.setValueAtTime(0.24, t);
+      sparkGain.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
 
       src.connect(hp);
       hp.connect(sparkGain);
       sparkGain.connect(ctx.destination);
       src.start(t);
-      src.stop(t + 0.08);
+      src.stop(t + 0.06);
 
-      // 2. Physical contact snap (pitched drop)
+      // 2. Soft physical contact tone
       const osc = ctx.createOscillator();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(680, t);
-      osc.frequency.exponentialRampToValueAtTime(140, t + 0.04);
+      osc.frequency.setValueAtTime(480, t);
+      osc.frequency.exponentialRampToValueAtTime(160, t + 0.035);
 
       const oscGain = ctx.createGain();
-      oscGain.gain.setValueAtTime(0.5, t);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+      oscGain.gain.setValueAtTime(0.18, t);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
 
       osc.connect(oscGain);
       oscGain.connect(ctx.destination);
       osc.start(t);
-      osc.stop(t + 0.055);
+      osc.stop(t + 0.045);
     } catch (e) {}
   }
 
   /**
-   * Sukuna's Flame Arrow (開 / Kamino / Fūga) Divine Flame Ignition:
-   * Deep sub-bass cosmic shockwave, roaring fire surge, and incandescent flame bloom.
+   * Soothing Sacred Candle Awakening:
+   * Replaced the jarring explosive boom with a serene monastic Tibetan singing bowl chime (432Hz),
+   * gentle flame breath, and cozy beeswax crackles.
    */
   playKaminoBurst() {
     try {
       const ctx = this._init();
       const t = ctx.currentTime;
 
-      // 1. Visceral Divine Sub-Bass Drop (135Hz -> 36Hz)
-      const sub = ctx.createOscillator();
-      sub.type = 'sine';
-      sub.frequency.setValueAtTime(138, t);
-      sub.frequency.exponentialRampToValueAtTime(36, t + 0.65);
+      // 1. Serene Monastic Singing Bowl Fundamental (432 Hz - Sacred Healing Tuning)
+      const bowlRoot = ctx.createOscillator();
+      bowlRoot.type = 'sine';
+      bowlRoot.frequency.setValueAtTime(432, t);
 
-      const subGain = ctx.createGain();
-      subGain.gain.setValueAtTime(0.001, t);
-      subGain.gain.linearRampToValueAtTime(0.88, t + 0.035); // punchy attack
-      subGain.gain.exponentialRampToValueAtTime(0.001, t + 1.25);
+      const rootGain = ctx.createGain();
+      rootGain.gain.setValueAtTime(0.0001, t);
+      rootGain.gain.linearRampToValueAtTime(0.32, t + 0.08); // smooth, gentle attack
+      rootGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.5); // long tranquil decay
 
-      sub.connect(subGain);
-      subGain.connect(ctx.destination);
-      sub.start(t);
-      sub.stop(t + 1.3);
+      bowlRoot.connect(rootGain);
+      rootGain.connect(ctx.destination);
+      bowlRoot.start(t);
+      bowlRoot.stop(t + 2.6);
 
-      // 2. Explosive Anime Fire Surge (Resonant filtered brown noise sweeping upward)
-      const bSize = Math.floor(ctx.sampleRate * 1.4);
+      // 2. Warm Meditative Harmonic Fifth (648 Hz = 1.5 * 432 Hz)
+      const bowlFifth = ctx.createOscillator();
+      bowlFifth.type = 'sine';
+      bowlFifth.frequency.setValueAtTime(648, t);
+
+      const fifthGain = ctx.createGain();
+      fifthGain.gain.setValueAtTime(0.0001, t);
+      fifthGain.gain.linearRampToValueAtTime(0.14, t + 0.1);
+      fifthGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
+
+      bowlFifth.connect(fifthGain);
+      fifthGain.connect(ctx.destination);
+      bowlFifth.start(t);
+      bowlFifth.stop(t + 2.2);
+
+      // 3. Ethereal Celestial Sparkle Octave (864 Hz = 2 * 432 Hz)
+      const bowlOctave = ctx.createOscillator();
+      bowlOctave.type = 'sine';
+      bowlOctave.frequency.setValueAtTime(864, t);
+
+      const octaveGain = ctx.createGain();
+      octaveGain.gain.setValueAtTime(0.0001, t);
+      octaveGain.gain.linearRampToValueAtTime(0.06, t + 0.07);
+      octaveGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+
+      bowlOctave.connect(octaveGain);
+      octaveGain.connect(ctx.destination);
+      bowlOctave.start(t);
+      bowlOctave.stop(t + 1.7);
+
+      // 4. Soft Breath of Sacred Flame (velvety warm air, low-pass filtered, NO boom)
+      const bSize = Math.floor(ctx.sampleRate * 0.9);
       const buf = ctx.createBuffer(1, bSize, ctx.sampleRate);
       const d = buf.getChannelData(0);
       let lastVal = 0;
       for (let i = 0; i < bSize; i++) {
         const white = Math.random() * 2 - 1;
-        lastVal = (lastVal + 0.08 * white) / 1.08;
-        d[i] = lastVal * 6.0 + white * 0.35;
+        lastVal = (lastVal + 0.06 * white) / 1.06;
+        d[i] = lastVal * 2.5;
       }
 
-      const noiseSrc = ctx.createBufferSource();
-      noiseSrc.buffer = buf;
+      const breathSrc = ctx.createBufferSource();
+      breathSrc.buffer = buf;
 
-      // Resonant bandpass sweeping to simulate roaring flame blast
-      const bp = ctx.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.frequency.setValueAtTime(240, t);
-      bp.frequency.exponentialRampToValueAtTime(1600, t + 0.22);
-      bp.frequency.exponentialRampToValueAtTime(450, t + 1.1);
-      bp.Q.setValueAtTime(1.8, t);
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(520, t);
+      lp.frequency.exponentialRampToValueAtTime(320, t + 0.85);
 
-      const flameGain = ctx.createGain();
-      flameGain.gain.setValueAtTime(0.001, t);
-      flameGain.gain.linearRampToValueAtTime(0.92, t + 0.045);
-      flameGain.gain.exponentialRampToValueAtTime(0.001, t + 1.35);
+      const breathGain = ctx.createGain();
+      breathGain.gain.setValueAtTime(0.0001, t);
+      breathGain.gain.linearRampToValueAtTime(0.18, t + 0.08); // soft warm breath
+      breathGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
 
-      noiseSrc.connect(bp);
-      bp.connect(flameGain);
-      flameGain.connect(ctx.destination);
-      noiseSrc.start(t);
-      noiseSrc.stop(t + 1.4);
+      breathSrc.connect(lp);
+      lp.connect(breathGain);
+      breathGain.connect(ctx.destination);
+      breathSrc.start(t);
+      breathSrc.stop(t + 0.95);
 
-      // 3. Searing Divine Arrow Flame Harmonics (Sawtooth with soft waveshape bite)
-      const arrowTone = ctx.createOscillator();
-      arrowTone.type = 'triangle';
-      arrowTone.frequency.setValueAtTime(285, t);
-      arrowTone.frequency.exponentialRampToValueAtTime(190, t + 0.35);
-
-      const toneGain = ctx.createGain();
-      toneGain.gain.setValueAtTime(0.35, t);
-      toneGain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
-
-      arrowTone.connect(toneGain);
-      toneGain.connect(ctx.destination);
-      arrowTone.start(t);
-      arrowTone.stop(t + 0.4);
-
-      // 4. Warm settling candle crackles after the blast
-      setTimeout(() => this.playCandleCatch(), 450);
+      // 5. Cozy Beeswax Crackle Pops as Flame Settles
+      setTimeout(() => this.playCandleCatch(), 320);
     } catch (e) {}
   }
 
