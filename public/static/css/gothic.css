@@ -1846,7 +1846,6 @@ body {
    ================================================================= */
 
 /* Hardware acceleration & Compositing layers */
-.rose-wheel-interactive,
 .intro-halo,
 .intro-flame,
 .gothic-tarot-card,
@@ -1854,6 +1853,17 @@ body {
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+/* Rose Wheel: GPU compositing + spin transition */
+.rose-wheel-interactive {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-origin: center center;
+  /* Smooth deceleration easing — matches 4200ms gear-sound sequence */
+  transition: transform 4.2s cubic-bezier(0.17, 0.67, 0.12, 1.0);
+  display: block;
 }
 
 /* Tablets and Medium Laptops */

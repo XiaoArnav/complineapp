@@ -372,6 +372,10 @@ class GothicTarotWheel {
     this.playGearSpinSoundSequence(4200);
 
     if (this.wheelEl) {
+      // Ensure transition is active (it may have been suppressed on a prior frame)
+      this.wheelEl.style.transition = "transform 4.2s cubic-bezier(0.17, 0.67, 0.12, 1.0)";
+      // Force a reflow so the browser registers the transition before the new value
+      void this.wheelEl.offsetWidth;
       this.wheelEl.style.transform = `rotate(${this.currentRotation}deg)`;
     }
 
