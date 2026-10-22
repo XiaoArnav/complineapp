@@ -4,6 +4,7 @@ Specialized for low-cognitive-load, hypnagogic Gothic sleep tales.
 Supports local Ollama (Gemma 2), OpenAI-compatible local endpoints, and an offline procedural fallback.
 """
 
+import os
 import json
 import random
 import time
@@ -241,6 +242,14 @@ def stream_gothic_story(prompt="sloth in cathedral", preferred_model=None, force
     # Stream paragraph by paragraph, word by word with natural monastic pacing
     paragraphs = full_story.split("\n\n")
 
+    # In Serverless environments (Vercel / Lambda), pace swiftly (0.015s / 0.06s) so
+    # the SSE stream completes comfortably in ~3 seconds and avoids serverless timeouts.
+    is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+    base_delay = 0.015 if is_serverless else 0.055
+    punct_delay = 0.06 if is_serverless else 0.26
+    comma_delay = 0.035 if is_serverless else 0.14
+    para_delay = 0.1 if is_serverless else 0.42
+
     for p_idx, para in enumerate(paragraphs):
         words = para.split(" ")
         for w_idx, word in enumerate(words):
@@ -248,16 +257,18 @@ def stream_gothic_story(prompt="sloth in cathedral", preferred_model=None, force
             yield {"type": "chunk", "text": text_piece}
 
             # Monastic scribe hypnagogic cadence: deliberate, meditative, relaxing
-            delay = 0.055
+            delay = base_delay
             if word.endswith((".", "!", "?")):
-                delay = 0.26
+                delay = punct_delay
             elif word.endswith((",", ";", ":", "—")):
-                delay = 0.14
-            time.sleep(delay)
+                delay = comma_delay
+            if delay > 0:
+                time.sleep(delay)
 
         if p_idx < len(paragraphs) - 1:
             yield {"type": "chunk", "text": "\n\n"}
-            time.sleep(0.42)
+            if para_delay > 0:
+                time.sleep(para_delay)
 
     yield {"type": "done", "full_story": full_story}
 

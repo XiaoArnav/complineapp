@@ -1,13 +1,22 @@
 {
   "version": 2,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/index.py?endpoint=$1"
     },
     {
-      "source": "/(.*)",
-      "destination": "/public/index.html"
+      "source": "/public/(.*)",
+      "destination": "/$1"
+    },
+    {
+      "source": "/((?!api/|static/).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

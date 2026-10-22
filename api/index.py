@@ -22,6 +22,15 @@ except ImportError:
 
 
 class handler(BaseHTTPRequestHandler):
+    def handle(self):
+        """
+        Handle a single request and terminate immediately.
+        Serverless functions execute one request per container invocation;
+        terminating handle() prevents the runtime from hanging on empty socket reads.
+        """
+        self.close_connection = True
+        self.handle_one_request()
+
     def send_cors_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -30,7 +39,9 @@ class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_cors_headers()
+        self.send_header("Connection", "close")
         self.end_headers()
+        self.close_connection = True
 
     def _resolve_route(self):
         """
@@ -94,8 +105,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_cors_headers()
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
+            self.send_header("Cache-Control", "no-cache, no-transform")
+            self.send_header("Connection", "close")
             self.send_header("X-Accel-Buffering", "no")
             self.end_headers()
 
@@ -104,8 +115,10 @@ class handler(BaseHTTPRequestHandler):
                     msg = f"data: {json.dumps(event)}\n\n"
                     self.wfile.write(msg.encode("utf-8"))
                     self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
+            except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
+            finally:
+                self.close_connection = True
 
         elif route == "generate":
             prompt = query.get("prompt", ["sloth in cathedral"])[0]
@@ -136,8 +149,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_cors_headers()
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
+            self.send_header("Cache-Control", "no-cache, no-transform")
+            self.send_header("Connection", "close")
             self.send_header("X-Accel-Buffering", "no")
             self.end_headers()
 
@@ -146,8 +159,10 @@ class handler(BaseHTTPRequestHandler):
                     msg = f"data: {json.dumps(event)}\n\n"
                     self.wfile.write(msg.encode("utf-8"))
                     self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
+            except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
+            finally:
+                self.close_connection = True
 
         elif route == "generate":
             prompt = req_data.get("prompt", "sloth in cathedral")
@@ -177,5 +192,12 @@ class handler(BaseHTTPRequestHandler):
         self.send_cors_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Connection", "close")
         self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.wfile.write(body)
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            pass
+        finally:
+            self.close_connection = True
