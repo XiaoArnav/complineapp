@@ -566,7 +566,80 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Grimoire Badge
   updateGrimoireBadge();
 
-  // --- 5. 📻 The Abbey Phonograph — The CD & The Pin Only ---
+  // --- 5. 📻 The Abbey Phonograph — Authentic Inward Pin Motion & Disc Groove Seeking ---
+  const PHONO_REST_ANGLE = 0.0;
+  const PHONO_OUTER_GROOVE_ANGLE = 21.0;
+  const PHONO_INNER_GROOVE_ANGLE = 35.5;
+  const PHONO_GROOVE_SPAN = PHONO_INNER_GROOVE_ANGLE - PHONO_OUTER_GROOVE_ANGLE; // 14.5 deg
+
+  let isPhonoDraggingTonearm = false;
+  let isPhonoDraggingPlatter = false;
+  let phonoRafId = null;
+
+  function formatPhonoTime(sec) {
+    if (isNaN(sec) || sec < 0) return "00:00";
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+  }
+
+  function applyPhonographProgress(currentTime, duration, isPlaying) {
+    const toneArm = document.getElementById("toneArmAssembly");
+    const trackingRing = document.getElementById("grooveTrackingRing");
+    const timeCurrent = document.getElementById("phonoTimeCurrent");
+    const timeTotal = document.getElementById("phonoTimeTotal");
+    const grooveFill = document.getElementById("grooveTrackFill");
+    const groovePinhead = document.getElementById("grooveTrackPinhead");
+
+    const validDur = duration && !isNaN(duration) && duration > 0 ? duration : 180;
+    const p = Math.max(0, Math.min(1.0, (currentTime || 0) / validDur));
+
+    // 1. Move Pin towards inside as the song plays on and on
+    if (toneArm && !isPhonoDraggingTonearm && !isPhonoDraggingPlatter) {
+      if (isPlaying) {
+        const baseAngle = PHONO_OUTER_GROOVE_ANGLE + p * PHONO_GROOVE_SPAN;
+        // Subtle microscopic tactile vinyl groove vibration
+        const jitter = Math.sin(Date.now() * 0.007) * 0.14;
+        const liveAngle = (baseAngle + jitter).toFixed(2);
+        toneArm.style.setProperty("--pin-angle", `${liveAngle}deg`);
+      } else {
+        // If not playing, keep at rest cradle unless paused mid-song
+        const state = window.gothicSoundscape ? window.gothicSoundscape.isPhonographPlaying : false;
+        if (!state && (!currentTime || currentTime === 0)) {
+          toneArm.style.setProperty("--pin-angle", `${PHONO_REST_ANGLE}deg`);
+        }
+      }
+    }
+
+    // 2. Dynamic tracking ring on the vinyl record (shrinks inward beneath stylus)
+    if (trackingRing && !isPhonoDraggingPlatter) {
+      const ringDiameter = 142 - p * (142 - 64);
+      trackingRing.style.width = `${ringDiameter.toFixed(1)}px`;
+      trackingRing.style.height = `${ringDiameter.toFixed(1)}px`;
+      trackingRing.classList.toggle("visible", isPlaying);
+    }
+
+    // 3. Real-time time & groove slider readout
+    if (timeCurrent) timeCurrent.textContent = formatPhonoTime(currentTime || 0);
+    if (timeTotal && duration && !isNaN(duration)) timeTotal.textContent = formatPhonoTime(duration);
+    if (grooveFill) grooveFill.style.width = `${(p * 100).toFixed(1)}%`;
+    if (groovePinhead) groovePinhead.style.left = `${(p * 100).toFixed(1)}%`;
+
+    if (phonographStatusBadge && isPlaying && !isPhonoDraggingTonearm && !isPhonoDraggingPlatter) {
+      phonographStatusBadge.textContent = `Pin On Disc • ${formatPhonoTime(currentTime || 0)} / ${formatPhonoTime(validDur)}`;
+    }
+  }
+
+  function runPhonographTrackingLoop() {
+    if (window.gothicSoundscape && window.gothicSoundscape.isPhonographPlaying) {
+      const audio = window.gothicSoundscape.phonographAudio;
+      if (audio && audio.duration && !isNaN(audio.duration)) {
+        applyPhonographProgress(audio.currentTime, audio.duration, true);
+      }
+    }
+    phonoRafId = requestAnimationFrame(runPhonographTrackingLoop);
+  }
+
   function updatePhonographUI(isPlaying) {
     if (!phonographCard) return;
     const toneArm = document.getElementById("toneArmAssembly");
@@ -611,17 +684,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pinLabel) pinLabel.textContent = "Take Pin Off Disc (Turn Off)";
       }
       if (phonographStatusBadge) {
-        phonographStatusBadge.textContent = "Pin On Disc • Playing";
         phonographStatusBadge.classList.add("playing");
       }
       if (btnSoundscape) {
         btnSoundscape.innerHTML = "<span>⏸</span> Abbey Phonograph (Take Pin Off)";
         btnSoundscape.classList.add("active");
       }
+
+      // Start continuous 60fps needle glide tracking loop
+      if (!phonoRafId) {
+        phonoRafId = requestAnimationFrame(runPhonographTrackingLoop);
+      }
     } else {
       phonographCard.classList.remove("playing");
       if (vinylRec) vinylRec.classList.remove("spinning");
-      if (toneArm) toneArm.classList.remove("pin-on-disc");
+      if (toneArm) {
+        toneArm.classList.remove("pin-on-disc");
+        // Return to cradle
+        toneArm.style.setProperty("--pin-angle", `${PHONO_REST_ANGLE}deg`);
+      }
       if (pinBtn) {
         pinBtn.classList.remove("active");
         if (pinIcon) pinIcon.textContent = "📍";
@@ -635,6 +716,14 @@ document.addEventListener("DOMContentLoaded", () => {
         btnSoundscape.innerHTML = "<span>📻</span> Abbey Phonograph (Put Pin on Disc)";
         btnSoundscape.classList.remove("active");
       }
+
+      if (phonoRafId) {
+        cancelAnimationFrame(phonoRafId);
+        phonoRafId = null;
+      }
+      // Reset tracker visual
+      const trackingRing = document.getElementById("grooveTrackingRing");
+      if (trackingRing) trackingRing.classList.remove("visible");
     }
   }
 
@@ -647,6 +736,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const stage = document.getElementById("phonographStage");
     const pinBtn = document.getElementById("btnPinToggle");
     const statusBadge = document.getElementById("phonographStatusBadge");
+    const scrubTooltip = document.getElementById("phonographScrubTooltip");
+    const trackingRing = document.getElementById("grooveTrackingRing");
+    const grooveSlider = document.getElementById("grooveTrackSlider");
+
+    let tooltipTimer = null;
+    function showTooltip(text, x = null, y = null) {
+      if (!scrubTooltip) return;
+      if (tooltipTimer) clearTimeout(tooltipTimer);
+      scrubTooltip.textContent = text;
+      scrubTooltip.classList.add("visible");
+      if (x != null && y != null && stage) {
+        const stageRect = stage.getBoundingClientRect();
+        const relX = Math.max(50, Math.min(stageRect.width - 50, x - stageRect.left));
+        scrubTooltip.style.left = `${relX}px`;
+      } else {
+        scrubTooltip.style.left = "50%";
+      }
+    }
+
+    function hideTooltip(delay = 0) {
+      if (!scrubTooltip) return;
+      if (tooltipTimer) clearTimeout(tooltipTimer);
+      if (delay > 0) {
+        tooltipTimer = setTimeout(() => {
+          scrubTooltip.classList.remove("visible");
+        }, delay);
+      } else {
+        scrubTooltip.classList.remove("visible");
+      }
+    }
 
     // Sacred Repertoire Cards & Stepper Bar
     const repCards = document.querySelectorAll(".repertoire-card");
@@ -734,30 +853,263 @@ document.addEventListener("DOMContentLoaded", () => {
       updatePhonographUI(isPlaying);
     };
 
-    function togglePinAction(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      unlockAudioContexts();
-      if (window.gothicSoundscape) {
-        window.gothicSoundscape.togglePhonograph();
-      }
+    // Listen for time updates from audio element
+    window.gothicSoundscape.onPhonographTimeUpdate = (currentTime, duration) => {
+      applyPhonographProgress(currentTime, duration, window.gothicSoundscape.isPhonographPlaying);
+    };
+
+    // ── 1. REALISTIC VINYL DISC GROOVE SEEKING (Click or Drag anywhere on Disk) ──
+    function getProgressFromPlatterCoords(clientX, clientY) {
+      if (!vinylRec) return 0;
+      const rect = vinylRec.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(clientX - cx, clientY - cy);
+
+      const outerR = rect.width * 0.46; // ~71px
+      const innerR = rect.width * 0.20; // ~31px (edge of center label)
+
+      // Outside outer groove -> beginning (p = 0.0)
+      // Inside inner groove (near label) -> end (p = 1.0)
+      let p = (outerR - dist) / (outerR - innerR);
+      return {
+        ratio: Math.max(0, Math.min(1.0, p)),
+        distance: dist,
+        isCenterLabel: dist < innerR
+      };
     }
 
-    // Putting pin on / taking off via all phonograph elements:
-    // 1. The Pin (Tone-Arm)
-    if (toneArm) toneArm.addEventListener("click", togglePinAction);
-    // 2. The CD (Platter)
-    if (platter) platter.addEventListener("click", togglePinAction);
-    // 3. The Vinyl Record directly
-    if (vinylRec) vinylRec.addEventListener("click", togglePinAction);
-    // 4. The Phonograph Stage (around platter)
-    if (stage) stage.addEventListener("click", togglePinAction);
-    // 5. The Master Feature Button
-    if (pinBtn) pinBtn.addEventListener("click", togglePinAction);
-    // 6. The Status Badge
-    if (statusBadge) statusBadge.addEventListener("click", togglePinAction);
+    if (platter) {
+      platter.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        unlockAudioContexts();
+
+        const { ratio, isCenterLabel } = getProgressFromPlatterCoords(e.clientX, e.clientY);
+
+        // Clicking center label toggles play/pause
+        if (isCenterLabel) {
+          if (window.gothicSoundscape) window.gothicSoundscape.togglePhonograph();
+          return;
+        }
+
+        isPhonoDraggingPlatter = true;
+        try { platter.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+        const targetSec = ratio * dur;
+
+        // Preview needle position and illuminated tracking ring
+        const previewAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
+        if (toneArm) toneArm.style.setProperty("--pin-angle", `${previewAngle.toFixed(2)}deg`);
+
+        if (trackingRing) {
+          const ringSize = 142 - ratio * (142 - 64);
+          trackingRing.style.width = `${ringSize.toFixed(1)}px`;
+          trackingRing.style.height = `${ringSize.toFixed(1)}px`;
+          trackingRing.classList.add("visible");
+        }
+
+        showTooltip(`📍 Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
+      });
+
+      platter.addEventListener("pointermove", (e) => {
+        if (!isPhonoDraggingPlatter) return;
+        e.preventDefault();
+
+        const { ratio } = getProgressFromPlatterCoords(e.clientX, e.clientY);
+        const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+        const targetSec = ratio * dur;
+
+        const previewAngle = PHONO_OUTER_GROOVE_ANGLE + ratio * PHONO_GROOVE_SPAN;
+        if (toneArm) toneArm.style.setProperty("--pin-angle", `${previewAngle.toFixed(2)}deg`);
+
+        if (trackingRing) {
+          const ringSize = 142 - ratio * (142 - 64);
+          trackingRing.style.width = `${ringSize.toFixed(1)}px`;
+          trackingRing.style.height = `${ringSize.toFixed(1)}px`;
+        }
+
+        showTooltip(`📍 Seek Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
+      });
+
+      const finishPlatterSeek = (e) => {
+        if (!isPhonoDraggingPlatter) return;
+        isPhonoDraggingPlatter = false;
+        try { platter.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        const { ratio, isCenterLabel } = getProgressFromPlatterCoords(e.clientX, e.clientY);
+        if (isCenterLabel) {
+          hideTooltip();
+          return;
+        }
+
+        const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+        const targetSec = ratio * dur;
+
+        // Inscribe needle and seek playback to that exact minute/second
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.seekPhonographRatio(ratio, true);
+        }
+
+        showTooltip(`✠ Inscribed: ${formatPhonoTime(targetSec)} / ${formatPhonoTime(dur)}`, e.clientX, e.clientY);
+        hideTooltip(1400);
+      };
+
+      platter.addEventListener("pointerup", finishPlatterSeek);
+      platter.addEventListener("pointercancel", () => {
+        isPhonoDraggingPlatter = false;
+        hideTooltip();
+      });
+    }
+
+    // ── 2. REALISTIC PHYSICAL TONE-ARM (PIN) DRAGGING ACROSS DISK ──
+    if (toneArm) {
+      let armDragAngle = 0;
+
+      toneArm.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        unlockAudioContexts();
+
+        isPhonoDraggingTonearm = true;
+        toneArm.classList.add("dragging");
+        try { toneArm.setPointerCapture(e.pointerId); } catch (_) {}
+
+        showTooltip("📍 Moving Pin — Drop anywhere on Disc Grooves", e.clientX, e.clientY);
+      });
+
+      toneArm.addEventListener("pointermove", (e) => {
+        if (!isPhonoDraggingTonearm) return;
+        e.preventDefault();
+
+        const armRect = toneArm.getBoundingClientRect();
+        // Pivot point at top: 16px, left: 27px inside toneArm
+        const pivotX = armRect.left + 27;
+        const pivotY = armRect.top + 16;
+        const dx = e.clientX - pivotX;
+        const dy = e.clientY - pivotY;
+
+        // Angle relative to vertical (clockwise rotation is towards the left/disc)
+        const rawAngle = -Math.atan2(dx, dy) * (180 / Math.PI);
+        const clampedAngle = Math.max(0, Math.min(37.5, rawAngle));
+        armDragAngle = clampedAngle;
+
+        toneArm.style.setProperty("--pin-angle", `${clampedAngle.toFixed(2)}deg`);
+
+        const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+
+        if (clampedAngle < 13.5) {
+          showTooltip("📍 Pin on Rest Cradle (Release to Turn Off)", e.clientX, e.clientY);
+          if (trackingRing) trackingRing.classList.remove("visible");
+        } else {
+          const p = Math.max(0, Math.min(1.0, (clampedAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
+          const seekSec = p * dur;
+
+          if (trackingRing) {
+            const ringSize = 142 - p * (142 - 64);
+            trackingRing.style.width = `${ringSize.toFixed(1)}px`;
+            trackingRing.style.height = `${ringSize.toFixed(1)}px`;
+            trackingRing.classList.add("visible");
+          }
+
+          showTooltip(`📍 Drop Pin: ${formatPhonoTime(seekSec)} / ${formatPhonoTime(dur)} (Groove ${Math.round(p * 100)}%)`, e.clientX, e.clientY);
+        }
+      });
+
+      const finishTonearmDrag = (e) => {
+        if (!isPhonoDraggingTonearm) return;
+        isPhonoDraggingTonearm = false;
+        toneArm.classList.remove("dragging");
+        try { toneArm.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        if (armDragAngle < 13.5) {
+          // Parked on cradle -> Pause / Turn off
+          if (window.gothicSoundscape) {
+            window.gothicSoundscape.pausePhonograph();
+          }
+          toneArm.style.setProperty("--pin-angle", `${PHONO_REST_ANGLE}deg`);
+          showTooltip("📍 Pin Off Disc", e.clientX, e.clientY);
+          hideTooltip(1000);
+        } else {
+          // Dropped on disc -> Play from this groove position!
+          const p = Math.max(0, Math.min(1.0, (armDragAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
+          const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+          const targetSec = p * dur;
+
+          if (window.gothicSoundscape) {
+            window.gothicSoundscape.seekPhonographRatio(p, true);
+          }
+
+          showTooltip(`✠ Pin Inscribed at ${formatPhonoTime(targetSec)}`, e.clientX, e.clientY);
+          hideTooltip(1400);
+        }
+      };
+
+      toneArm.addEventListener("pointerup", finishTonearmDrag);
+      toneArm.addEventListener("pointercancel", () => {
+        isPhonoDraggingTonearm = false;
+        toneArm.classList.remove("dragging");
+        hideTooltip();
+      });
+    }
+
+    // ── 3. GROOVE BAR TRACK SLIDER SCRUBBING ──
+    if (grooveSlider) {
+      let isSliderDragging = false;
+      function seekFromSlider(e) {
+        const rect = grooveSlider.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1.0, (e.clientX - rect.left) / rect.width));
+        const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.seekPhonographRatio(ratio, true);
+        }
+        showTooltip(`📍 Groove ${Math.round(ratio * 100)}% • ${formatPhonoTime(ratio * dur)}`);
+        hideTooltip(1200);
+      }
+
+      grooveSlider.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        unlockAudioContexts();
+        isSliderDragging = true;
+        try { grooveSlider.setPointerCapture(e.pointerId); } catch (_) {}
+        seekFromSlider(e);
+      });
+
+      grooveSlider.addEventListener("pointermove", (e) => {
+        if (!isSliderDragging) return;
+        seekFromSlider(e);
+      });
+
+      grooveSlider.addEventListener("pointerup", (e) => {
+        if (!isSliderDragging) return;
+        isSliderDragging = false;
+        try { grooveSlider.releasePointerCapture(e.pointerId); } catch (_) {}
+      });
+    }
+
+    // ── 4. MASTER BUTTON & STATUS BADGE CONTROLS ──
+    if (pinBtn) {
+      pinBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.togglePhonograph();
+        }
+      });
+    }
+
+    if (statusBadge) {
+      statusBadge.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        unlockAudioContexts();
+        if (window.gothicSoundscape) {
+          window.gothicSoundscape.togglePhonograph();
+        }
+      });
+    }
   }
 
   // --- 6. 📻 Tome Reading Bar Phonograph Button ---

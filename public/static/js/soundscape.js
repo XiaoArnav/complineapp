@@ -60,6 +60,20 @@ class GothicSoundscape {
   }
 
   setupAudioElementEvents() {
+    this.phonographAudio.addEventListener("loadedmetadata", () => {
+      if (this._pendingSeekRatio != null) {
+        const r = this._pendingSeekRatio;
+        this._pendingSeekRatio = null;
+        this.seekPhonographRatio(r, this.isPhonographPlaying);
+      }
+      if (this.onPhonographTimeUpdate && this.phonographAudio.duration) {
+        this.onPhonographTimeUpdate(
+          this.phonographAudio.currentTime,
+          this.phonographAudio.duration
+        );
+      }
+    });
+
     this.phonographAudio.addEventListener("timeupdate", () => {
       if (this.onPhonographTimeUpdate && this.phonographAudio.duration) {
         this.onPhonographTimeUpdate(
@@ -318,6 +332,51 @@ class GothicSoundscape {
     } else {
       this.playPhonograph();
     }
+  }
+
+  // --- Seek Phonograph to specific second on the vinyl disc ---
+  seekPhonograph(targetTime, andPlay = true) {
+    if (!this.phonographAudio) return;
+    const dur = this.phonographAudio.duration;
+
+    if (dur && !isNaN(dur) && dur > 0) {
+      const clamped = Math.max(0, Math.min(dur - 0.2, targetTime));
+      this.phonographAudio.currentTime = clamped;
+    }
+
+    // Play tactile needle touchdown sound
+    this.playNeedleDropSfx();
+
+    if (andPlay && !this.isPhonographPlaying) {
+      this.playPhonograph();
+    } else if (this.onPhonographTimeUpdate && dur) {
+      this.onPhonographTimeUpdate(this.phonographAudio.currentTime, dur);
+    }
+  }
+
+  // --- Seek Phonograph by ratio [0.0 - 1.0] (0 = outer rim, 1 = run-out groove) ---
+  seekPhonographRatio(ratio, andPlay = true) {
+    if (!this.phonographAudio) return;
+    const dur = this.phonographAudio.duration;
+    const clampedRatio = Math.max(0, Math.min(1.0, ratio));
+
+    if (!dur || isNaN(dur) || dur <= 0) {
+      this._pendingSeekRatio = clampedRatio;
+      if (andPlay && !this.isPhonographPlaying) {
+        this.playPhonograph();
+      }
+      return;
+    }
+    this.seekPhonograph(clampedRatio * dur, andPlay);
+  }
+
+  // --- Get current playback progress and duration ---
+  getPhonographProgress() {
+    if (!this.phonographAudio) return { currentTime: 0, duration: 0, ratio: 0 };
+    const cur = this.phonographAudio.currentTime || 0;
+    const dur = this.phonographAudio.duration || 0;
+    const ratio = dur > 0 ? Math.max(0, Math.min(1.0, cur / dur)) : 0;
+    return { currentTime: cur, duration: dur, ratio: ratio };
   }
 
   setPhonographSpeed(rate) {

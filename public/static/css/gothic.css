@@ -1015,6 +1015,25 @@ body {
 .groove-ring.r4 { width: 84px; height: 84px; }
 .groove-ring.r5 { width: 66px; height: 66px; }
 
+/* Dynamic Active Groove Tracking Ring */
+.groove-tracking-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4), inset 0 0 8px rgba(212, 175, 55, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  width: 142px;
+  height: 142px;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.phonograph-card.playing .groove-tracking-ring,
+.groove-tracking-ring.visible {
+  opacity: 1;
+}
+
 /* Vinyl Reflection Sheen */
 .vinyl-reflection {
   position: absolute;
@@ -1091,25 +1110,30 @@ body {
   right: 18px;
   width: 55px;
   height: 145px;
-  z-index: 4;
+  z-index: 6;
   transform-origin: 27px 16px;
-  transform: rotate(0deg);
-  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
-  cursor: pointer;
+  transform: rotate(var(--pin-angle, 0deg));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: grab;
   pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  filter: drop-shadow(2px 6px 12px rgba(0, 0, 0, 0.85));
+  will-change: transform;
 }
 
-/* Pin ON the Disc */
-.phonograph-card.playing .tone-arm-assembly,
-.tone-arm-assembly.pin-on-disc {
-  transform: rotate(26deg);
-  animation: pinJitter 1.8s ease-in-out infinite alternate;
+.tone-arm-assembly:hover {
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.45)) drop-shadow(2px 6px 12px rgba(0, 0, 0, 0.85));
 }
 
-@keyframes pinJitter {
-  0% { transform: rotate(25.8deg) translateY(0); }
-  50% { transform: rotate(26.2deg) translateY(-0.25px); }
-  100% { transform: rotate(26.0deg) translateY(0.2px); }
+.tone-arm-assembly.dragging {
+  cursor: grabbing !important;
+  transition: none !important;
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.75)) drop-shadow(3px 8px 16px rgba(0, 0, 0, 0.9)) !important;
+}
+
+.tone-arm-assembly.seeking {
+  transition: transform 0.12s ease-out !important;
 }
 
 .tone-arm-base {
@@ -1185,6 +1209,110 @@ body {
 
 .phonograph-card.playing .ruby-stylus {
   box-shadow: 0 0 10px #ff2a55, 0 0 20px rgba(255, 42, 85, 0.9);
+  animation: stylusTrackingVibration 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes stylusTrackingVibration {
+  0% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.15) translateY(-0.25px); }
+  100% { transform: scale(1.05) translateY(0.2px); }
+}
+
+/* ── Floating Gothic Scrub Tooltip HUD ── */
+.phonograph-scrub-tooltip {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(18, 10, 26, 0.95);
+  border: 1px solid var(--gold-antique, #d4af37);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 12px rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: var(--font-display, serif);
+  font-size: 11.5px;
+  letter-spacing: 0.8px;
+  color: var(--gold-bright, #f3e5ab);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.phonograph-scrub-tooltip.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* ── Real-time Groove & Time Readout Bar ── */
+.phonograph-groove-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 12px;
+  background: rgba(10, 6, 14, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.85);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--gold-antique, #d4af37);
+  user-select: none;
+}
+
+.groove-time-current,
+.groove-time-total {
+  min-width: 38px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  color: var(--gold-bright, #f3e5ab);
+  font-variant-numeric: tabular-nums;
+}
+
+.groove-track-slider {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  background: rgba(35, 20, 10, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: visible;
+  touch-action: none;
+}
+
+.groove-track-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6c1d7e 0%, #d4af37 100%);
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.45);
+}
+
+.groove-track-pinhead {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #ff2a55 0%, #aa0d30 70%, #470414 100%);
+  border: 1.5px solid var(--gold-bright, #f3e5ab);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px #ff2a55, 0 2px 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.groove-track-slider:hover .groove-track-pinhead {
+  transform: translate(-50%, -50%) scale(1.25);
 }
 
 /* ── Big Tactile Pin Toggle Button ── */

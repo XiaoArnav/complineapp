@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=33.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=34.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=19.0">
-  <link rel="stylesheet" href="/static/css/tarot.css?v=33.0">
+  <link rel="stylesheet" href="/static/css/tarot.css?v=34.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
 
   <!-- Universal Hard Text Selection Lock & Critical Repertoire Switcher Styles -->
@@ -988,10 +988,13 @@
               </div>
             </div><!-- /sacred-repertoire-box -->
 
-            <!-- Phonograph Stage with ONLY the CD and the Pin -->
-            <div class="phonograph-stage" id="phonographStage" title="Click CD or Pin to Play / Turn Off">
+            <!-- Phonograph Stage with Live Micro-Groove Tracking & Interactive Pin -->
+            <div class="phonograph-stage" id="phonographStage" title="Drag Pin or Click/Drag Grooves to Seek Any Minute/Second">
+              <!-- Real-time HUD Seeking Tooltip -->
+              <div class="phonograph-scrub-tooltip" id="phonographScrubTooltip" aria-hidden="true"></div>
+
               <!-- The CD / Vinyl Disc -->
-              <div class="turntable-platter" id="turntablePlatter" title="Click to Put Pin on Disc or Take it Off">
+              <div class="turntable-platter" id="turntablePlatter" title="Click or Drag anywhere on Vinyl Grooves to Seek">
                 <div class="vinyl-record" id="vinylRecord">
                   <!-- Micro-Groove Rings on CD -->
                   <div class="groove-ring r1"></div>
@@ -999,6 +1002,8 @@
                   <div class="groove-ring r3"></div>
                   <div class="groove-ring r4"></div>
                   <div class="groove-ring r5"></div>
+                  <!-- Dynamic Illuminated Active Groove Tracker Ring -->
+                  <div class="groove-tracking-ring" id="grooveTrackingRing"></div>
                   <!-- Iridescent Glossy Reflection Sheen -->
                   <div class="vinyl-reflection"></div>
                   <!-- Center Gothic Disc Label -->
@@ -1013,7 +1018,7 @@
               </div>
 
               <!-- The Pin (Tone-Arm & Stylus Needle) -->
-              <div class="tone-arm-assembly" id="toneArmAssembly" title="The Pin — Click to Put on Disc or Take Off">
+              <div class="tone-arm-assembly" id="toneArmAssembly" title="The Pin — Drag across Disc to Seek or Click to Toggle">
                 <div class="tone-arm-base">
                   <div class="tone-arm-counterweight"></div>
                   <div class="tone-arm-rest-clip"></div>
@@ -1025,6 +1030,16 @@
                 </div>
               </div>
             </div><!-- /phonograph-stage -->
+
+            <!-- Real-time Groove & Time Readout Bar -->
+            <div class="phonograph-groove-bar" id="phonographGrooveBar">
+              <span class="groove-time-current" id="phonoTimeCurrent">00:00</span>
+              <div class="groove-track-slider" id="grooveTrackSlider" title="Scrub Vinyl Grooves (Seek Minute/Second)">
+                <div class="groove-track-fill" id="grooveTrackFill"></div>
+                <div class="groove-track-pinhead" id="grooveTrackPinhead"></div>
+              </div>
+              <span class="groove-time-total" id="phonoTimeTotal">--:--</span>
+            </div>
 
             <!-- Single Master Play / Turn Off Feature Button -->
             <button id="btnPinToggle" class="btn-pin-toggle" title="Put Pin on CD to Play, Take Off to Turn Off">
@@ -1280,11 +1295,11 @@
 
   <!-- Scripts — stellar-map, candle-sound & candle-intro must load before app.js -->
   <script src="/static/js/stellar-map.js?v=31.0"></script>
-  <script src="/static/js/soundscape.js?v=19.0"></script>
+  <script src="/static/js/soundscape.js?v=34.0"></script>
   <script src="/static/js/candle-sound.js?v=19.0"></script>
   <script src="/static/js/candle-intro.js?v=19.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
-  <script src="/static/js/tarot-wheel.js?v=33.0"></script>
-  <script src="/static/js/app.js?v=31.0"></script>
+  <script src="/static/js/tarot-wheel.js?v=34.0"></script>
+  <script src="/static/js/app.js?v=34.0"></script>
 </body>
 </html>
