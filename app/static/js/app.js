@@ -568,9 +568,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 5. 📻 The Abbey Phonograph — Authentic Inward Pin Motion & Disc Groove Seeking ---
   const PHONO_REST_ANGLE = 0.0;
-  const PHONO_OUTER_GROOVE_ANGLE = 21.0;
-  const PHONO_INNER_GROOVE_ANGLE = 35.5;
-  const PHONO_GROOVE_SPAN = PHONO_INNER_GROOVE_ANGLE - PHONO_OUTER_GROOVE_ANGLE; // 14.5 deg
+  const PHONO_OUTER_GROOVE_ANGLE = 26.5; // Lead-in outer groove (R = 71px, exactly at vinyl edge)
+  const PHONO_INNER_GROOVE_ANGLE = 49.5; // Run-out inner groove (R = 34px, right beside center label)
+  const PHONO_GROOVE_SPAN = PHONO_INNER_GROOVE_ANGLE - PHONO_OUTER_GROOVE_ANGLE; // 23.0 deg full disc traversal
 
   let isPhonoDraggingTonearm = false;
   let isPhonoDraggingPlatter = false;
@@ -598,9 +598,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (toneArm && !isPhonoDraggingTonearm && !isPhonoDraggingPlatter) {
       if (isPlaying) {
         const baseAngle = PHONO_OUTER_GROOVE_ANGLE + p * PHONO_GROOVE_SPAN;
-        // Subtle microscopic tactile vinyl groove vibration
-        const jitter = Math.sin(Date.now() * 0.007) * 0.14;
-        const liveAngle = (baseAngle + jitter).toFixed(2);
+        // Authentic microscopic vinyl eccentricity wow (synchronized with disc 3.4s revolution)
+        const wowPhase = ((Date.now() % 3400) / 3400) * Math.PI * 2;
+        const wowJitter = Math.sin(wowPhase) * 0.12;
+        const microJitter = Math.sin(Date.now() * 0.018) * 0.04;
+        const liveAngle = (baseAngle + wowJitter + microJitter).toFixed(2);
         toneArm.style.setProperty("--pin-angle", `${liveAngle}deg`);
       } else {
         // If not playing, keep at rest cradle unless paused mid-song
@@ -756,7 +758,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Live tracking ring follows the smoothed angle
         if (trackingRing) {
-          if (currentPhysicsAngle < 13.5) {
+          if (currentPhysicsAngle < 16.0) {
             trackingRing.classList.remove("visible");
           } else {
             const p = Math.max(0, Math.min(1.0, (currentPhysicsAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
@@ -1056,15 +1058,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const rawAngle = -Math.atan2(dx, dy) * (180 / Math.PI);
 
         // Magnetic snap: if close to cradle, snap cleanly to rest position
-        if (rawAngle < 12.0) {
+        if (rawAngle < 16.0) {
           targetPhysicsAngle = PHONO_REST_ANGLE;
         } else {
-          targetPhysicsAngle = Math.max(PHONO_OUTER_GROOVE_ANGLE, Math.min(36.8, rawAngle));
+          targetPhysicsAngle = Math.max(PHONO_OUTER_GROOVE_ANGLE, Math.min(50.5, rawAngle));
         }
 
         const dur = window.gothicSoundscape ? window.gothicSoundscape.phonographAudio.duration || 180 : 180;
 
-        if (targetPhysicsAngle < 13.5) {
+        if (targetPhysicsAngle < 18.0) {
           showTooltip("📍 Pin on Cradle (Release to Park)", e.clientX, e.clientY);
         } else {
           const p = Math.max(0, Math.min(1.0, (targetPhysicsAngle - PHONO_OUTER_GROOVE_ANGLE) / PHONO_GROOVE_SPAN));
@@ -1080,7 +1082,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toneArm.classList.remove("lifted");
         try { toneArm.releasePointerCapture(e.pointerId); } catch (_) {}
 
-        if (targetPhysicsAngle < 13.5) {
+        if (targetPhysicsAngle < 18.0) {
           // Park on cradle
           if (window.gothicSoundscape) {
             window.gothicSoundscape.pausePhonograph();

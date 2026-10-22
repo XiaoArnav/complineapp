@@ -1160,6 +1160,11 @@ body {
   transition: transform 0.12s ease-out !important;
 }
 
+/* When phonograph is playing, tonearm follows live 60fps micro-groove tracking smoothly */
+.phonograph-card.playing .tone-arm-assembly:not(.lifted):not(.touchdown) {
+  transition: transform 0.08s linear, filter 0.3s ease;
+}
+
 .tone-arm-base {
   position: absolute;
   top: 6px;
