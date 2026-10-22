@@ -1935,17 +1935,36 @@ body {
 .settings-select,
 .settings-input {
   width: 100%;
-  background: #0a0610;
+  background: #0d0816;
   border: 1px solid var(--gold-dim);
   border-radius: 6px;
-  padding: 9px 12px;
-  color: var(--gold-antique);
+  padding: 10px 14px;
+  color: #f7e6a6;
   font-family: var(--font-reading);
-  font-size: 14.5px;
+  font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   user-select: text;
   -webkit-user-select: text;
+}
+
+.settings-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 36px;
+  background-color: #0d0816;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px 14px;
+}
+
+.settings-select option {
+  background-color: #0d0816;
+  color: #f7e6a6;
+  padding: 8px 12px;
 }
 
 .settings-select:focus,

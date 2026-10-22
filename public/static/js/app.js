@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSaveSettings = document.getElementById("btnSaveSettings");
   const settingModel = document.getElementById("settingModel");
   const settingForceOffline = document.getElementById("settingForceOffline");
+  const settingDefaultTrack = document.getElementById("settingDefaultTrack");
   const settingPhonographSpeed = document.getElementById("settingPhonographSpeed");
   const settingDefaultCrackle = document.getElementById("settingDefaultCrackle");
 
@@ -129,16 +130,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- 1. Settings & Persistence ---
   function getSettings() {
     try {
-      return JSON.parse(localStorage.getItem("compline_settings")) || {
-        model: "gemma2:2b",
-        force_offline: false,
-        phonograph_speed: 1.0,
-        phonograph_crackle: true
+      const parsed = JSON.parse(localStorage.getItem("compline_settings")) || {};
+      return {
+        model: parsed.model || "gemma2:2b",
+        force_offline: !!parsed.force_offline,
+        default_track: typeof parsed.default_track === "number" ? parsed.default_track : 0,
+        phonograph_speed: typeof parsed.phonograph_speed === "number" ? parsed.phonograph_speed : 1.0,
+        phonograph_crackle: parsed.phonograph_crackle !== false
       };
     } catch (e) {
       return {
         model: "gemma2:2b",
         force_offline: false,
+        default_track: 0,
         phonograph_speed: 1.0,
         phonograph_crackle: true
       };
@@ -148,12 +152,50 @@ document.addEventListener("DOMContentLoaded", () => {
   function applySettings(settings) {
     if (settingModel) settingModel.value = settings.model || "gemma2:2b";
     if (settingForceOffline) settingForceOffline.checked = !!settings.force_offline;
-    if (settingPhonographSpeed) settingPhonographSpeed.value = String(settings.phonograph_speed || 1.0);
+
+    // Default Nocturne Opus
+    if (settingDefaultTrack) {
+      const targetTrack = parseInt(settings.default_track, 10);
+      if (!isNaN(targetTrack) && targetTrack >= 0 && targetTrack < settingDefaultTrack.options.length) {
+        settingDefaultTrack.selectedIndex = targetTrack;
+      } else {
+        settingDefaultTrack.selectedIndex = 0;
+      }
+    }
+
+    // Default Turntable Speed (Robust numeric matching & guaranteed fallback so select NEVER stays blank!)
+    if (settingPhonographSpeed) {
+      const targetSpeed = parseFloat(settings.phonograph_speed);
+      let matched = false;
+      for (let i = 0; i < settingPhonographSpeed.options.length; i++) {
+        const optVal = parseFloat(settingPhonographSpeed.options[i].value);
+        if (!isNaN(optVal) && !isNaN(targetSpeed) && Math.abs(optVal - targetSpeed) < 0.05) {
+          settingPhonographSpeed.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        settingPhonographSpeed.selectedIndex = 1; // 45 RPM default
+      }
+    }
+
     if (settingDefaultCrackle) settingDefaultCrackle.checked = settings.phonograph_crackle !== false;
 
     if (window.gothicSoundscape) {
-      window.gothicSoundscape.setPhonographSpeed(settings.phonograph_speed || 1.0);
+      const currentSpeed = (settingPhonographSpeed && !isNaN(parseFloat(settingPhonographSpeed.value)))
+        ? parseFloat(settingPhonographSpeed.value)
+        : (parseFloat(settings.phonograph_speed) || 1.0);
+      window.gothicSoundscape.setPhonographSpeed(currentSpeed);
       window.gothicSoundscape.setPhonographCrackle(settings.phonograph_crackle !== false);
+
+      const targetTrack = parseInt(settings.default_track, 10) || 0;
+      if (typeof window.gothicSoundscape.setTrack === "function" && targetTrack !== window.gothicSoundscape.currentTrackIndex) {
+        window.gothicSoundscape.setTrack(targetTrack, false);
+      }
+      if (typeof updatePhonographUI === "function") {
+        updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
+      }
     }
   }
 
@@ -177,14 +219,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   btnSaveSettings.addEventListener("click", () => {
+    const speedVal = (settingPhonographSpeed && !isNaN(parseFloat(settingPhonographSpeed.value)))
+      ? parseFloat(settingPhonographSpeed.value)
+      : 1.0;
+    const trackVal = (settingDefaultTrack && !isNaN(parseInt(settingDefaultTrack.value, 10)))
+      ? parseInt(settingDefaultTrack.value, 10)
+      : 0;
+
     const newSettings = {
-      model: settingModel.value,
-      force_offline: settingForceOffline.checked,
-      phonograph_speed: parseFloat(settingPhonographSpeed.value) || 1.0,
-      phonograph_crackle: settingDefaultCrackle.checked
+      model: settingModel ? settingModel.value : "gemma2:2b",
+      force_offline: settingForceOffline ? settingForceOffline.checked : false,
+      default_track: trackVal,
+      phonograph_speed: speedVal,
+      phonograph_crackle: settingDefaultCrackle ? settingDefaultCrackle.checked : true
     };
     localStorage.setItem("compline_settings", JSON.stringify(newSettings));
     applySettings(newSettings);
+    if (window.gothicSoundscape) {
+      window.gothicSoundscape.setTrack(trackVal, false);
+      if (typeof updatePhonographUI === "function") {
+        updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
+      }
+    }
     closeModal(settingsModal);
     showToast("Reliquary Settings Sealed ✠");
   });
@@ -882,7 +938,10 @@ document.addEventListener("DOMContentLoaded", () => {
         tab.classList.toggle("active", i === index);
       });
       const recordLabelSub = document.getElementById("recordLabelSub");
-      if (recordLabelSub) recordLabelSub.textContent = track.discLabel;
+      if (recordLabelSub && track) recordLabelSub.textContent = track.discLabel;
+      if (settingDefaultTrack && settingsModal && !settingsModal.classList.contains("active")) {
+        settingDefaultTrack.selectedIndex = index;
+      }
       updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
     };
 
@@ -1177,6 +1236,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     }
+
+    // Initial sync of Repertoire Cards, Platter Badges, Stepper & Phonograph HUD
+    updatePhonographUI(window.gothicSoundscape.isPhonographPlaying);
   }
 
   // --- 6. 📻 Tome Reading Bar Phonograph Button ---

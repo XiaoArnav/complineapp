@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=Pirata+One&family=UnifrakturMaguntia&display=swap">
 
-  <link rel="stylesheet" href="/static/css/gothic.css?v=40.0">
+  <link rel="stylesheet" href="/static/css/gothic.css?v=41.0">
   <link rel="stylesheet" href="/static/css/candle-intro.css?v=39.0">
   <link rel="stylesheet" href="/static/css/tarot.css?v=35.0">
   <link rel="icon" href="/static/assets/rose-window.svg" type="image/svg+xml">
@@ -1281,6 +1281,14 @@
         <div class="settings-section">
           <div class="settings-section-title"><span>📻</span> Abbey Phonograph Defaults</div>
           <div class="settings-row">
+            <label class="settings-label" for="settingDefaultTrack">Default Nocturne Opus</label>
+            <select id="settingDefaultTrack" class="settings-select">
+              <option value="0" selected>Opus I — Abbey Nocturne (Piano &amp; Strings)</option>
+              <option value="1">Opus II — Gothic Vespers (Sanctuary Bells &amp; Choir)</option>
+              <option value="2">Opus III — White Night Morpheus (Hypnagogic Chants)</option>
+            </select>
+          </div>
+          <div class="settings-row">
             <label class="settings-label" for="settingPhonographSpeed">Default Turntable Speed</label>
             <select id="settingPhonographSpeed" class="settings-select">
               <option value="0.85">33 RPM — Monastic Sloth (Slow &amp; Hypnagogic)</option>
@@ -1338,6 +1346,6 @@
   <script src="/static/js/candle-intro.js?v=39.0"></script>
   <script src="/static/js/tarot-cosmos.js?v=20.0"></script>
   <script src="/static/js/tarot-wheel.js?v=35.0"></script>
-  <script src="/static/js/app.js?v=40.0"></script>
+  <script src="/static/js/app.js?v=41.0"></script>
 </body>
 </html>
