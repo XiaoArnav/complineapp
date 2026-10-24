@@ -256,15 +256,15 @@ class GothicTarotWheel {
     scheduleClick();
   }
 
-  // Materialization Ethereal Whoosh & Celestial Harmonics
+  // Aerodynamic 3D Card Flight Whoosh & Air Cushion Settle
   playCardDrawWhoosh() {
     const ctx = this._getAudioContext();
     if (!ctx) return;
     const t = ctx.currentTime;
 
     try {
-      // 1. Astral Wind Resonant Sweep
-      const bufferSize = ctx.sampleRate * 1.5;
+      // 1. Aerodynamic Astral Wind Rushing Arc (1.45s)
+      const bufferSize = Math.floor(ctx.sampleRate * 1.5);
       const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
       let b0 = 0, b1 = 0, b2 = 0;
@@ -273,43 +273,60 @@ class GothicTarotWheel {
         b0 = 0.99 * b0 + white * 0.05;
         b1 = 0.95 * b1 + white * 0.1;
         b2 = 0.85 * b2 + white * 0.25;
-        output[i] = (b0 + b1 + b2) * 0.25;
+        output[i] = (b0 + b1 + b2) * 0.22;
       }
       const noise = ctx.createBufferSource();
       noise.buffer = noiseBuffer;
 
       const filter = ctx.createBiquadFilter();
       filter.type = "bandpass";
-      filter.frequency.setValueAtTime(180, t);
-      filter.frequency.exponentialRampToValueAtTime(1200, t + 0.7);
-      filter.frequency.exponentialRampToValueAtTime(260, t + 1.3);
-      filter.Q.value = 2.5;
+      filter.frequency.setValueAtTime(140, t);
+      filter.frequency.exponentialRampToValueAtTime(880, t + 0.65);
+      filter.frequency.exponentialRampToValueAtTime(280, t + 1.35);
+      filter.Q.value = 2.2;
 
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.3, t + 0.3);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+      gain.gain.linearRampToValueAtTime(0.28, t + 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.45);
 
       noise.connect(filter);
       filter.connect(gain);
       gain.connect(ctx.destination);
       noise.start(t);
 
-      // 2. Shimmering Pentatonic Celestial Chimes
-      [370, 440, 554, 740, 1108].forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const oscGain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, t + 0.25 + idx * 0.09);
-        oscGain.gain.setValueAtTime(0.001, t + 0.25 + idx * 0.09);
-        oscGain.gain.linearRampToValueAtTime(0.07, t + 0.35 + idx * 0.09);
-        oscGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+      // 2. Deep Sub-Bass Cosmic Swoop (physical 3D presence for the flying card)
+      const subOsc = ctx.createOscillator();
+      const subGain = ctx.createGain();
+      subOsc.type = "sine";
+      subOsc.frequency.setValueAtTime(55, t);
+      subOsc.frequency.exponentialRampToValueAtTime(95, t + 0.6);
+      subOsc.frequency.exponentialRampToValueAtTime(45, t + 1.3);
 
-        osc.connect(oscGain);
-        oscGain.connect(ctx.destination);
-        osc.start(t + 0.25 + idx * 0.09);
-        osc.stop(t + 2.3);
-      });
+      subGain.gain.setValueAtTime(0.001, t);
+      subGain.gain.linearRampToValueAtTime(0.18, t + 0.4);
+      subGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.35);
+
+      subOsc.connect(subGain);
+      subGain.connect(ctx.destination);
+      subOsc.start(t);
+      subOsc.stop(t + 1.4);
+
+      // 3. Gentle Air-Cushion Flutter Snap as the card settles in front of the screen
+      const snapOsc = ctx.createOscillator();
+      const snapGain = ctx.createGain();
+      snapOsc.type = "triangle";
+      snapOsc.frequency.setValueAtTime(320, t + 1.28);
+      snapOsc.frequency.exponentialRampToValueAtTime(120, t + 1.38);
+
+      snapGain.gain.setValueAtTime(0.001, t + 1.28);
+      snapGain.gain.linearRampToValueAtTime(0.12, t + 1.31);
+      snapGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.45);
+
+      snapOsc.connect(snapGain);
+      snapGain.connect(ctx.destination);
+      snapOsc.start(t + 1.28);
+      snapOsc.stop(t + 1.46);
     } catch (e) {}
   }
 
@@ -490,24 +507,36 @@ class GothicTarotWheel {
       elAura.style.background = `radial-gradient(circle, ${card.auraColor}66 0%, transparent 70%)`;
     }
 
-    // Materialize in 3D: play whoosh and trigger entry animation
+    // Materialize in 3D: play aerodynamic whoosh and trigger 3D flight animation
     this.playCardDrawWhoosh();
     this.cardEl.classList.remove("materializing");
+    if (this.shadowEl) {
+      this.shadowEl.classList.remove("shadow-flying");
+    }
     void this.cardEl.offsetWidth; // Force reflow
     this.cardEl.classList.add("materializing");
+    if (this.shadowEl) {
+      this.shadowEl.classList.add("shadow-flying");
+    }
     this.isMaterializing = true;
 
     this.modalEl.classList.add("active");
     this.modalEl.setAttribute("aria-hidden", "false");
-    if (window.tarotCosmos) window.tarotCosmos.start();
+    if (window.tarotCosmos) {
+      window.tarotCosmos.start();
+      window.tarotCosmos.triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
+    }
 
-    // After entry finishes, start live floating physics loop
+    // After 3D flight arrival finishes (1.5s), start live floating physics loop
     setTimeout(() => {
       this.isMaterializing = false;
       this.cardEl.classList.remove("materializing");
+      if (this.shadowEl) {
+        this.shadowEl.classList.remove("shadow-flying");
+      }
       this.cardEl.style.transform = "translate3d(0, 0, 0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)";
       this.startFloatingLoop();
-    }, 1100);
+    }, 1500);
   }
 
   updateFlipButtonState() {
@@ -831,6 +860,9 @@ class GothicTarotWheel {
     if (window.tarotCosmos) window.tarotCosmos.stop();
     this.modalEl.classList.remove("active");
     this.modalEl.setAttribute("aria-hidden", "true");
+    if (this.shadowEl) {
+      this.shadowEl.classList.remove("shadow-flying");
+    }
     if (this.cardEl) {
       this.cardEl.classList.remove("materializing");
       this.cardEl.classList.remove("is-faceup");
